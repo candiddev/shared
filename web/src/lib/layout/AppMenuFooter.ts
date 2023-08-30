@@ -7,7 +7,7 @@ export function AppMenuFooter (): m.Component {
 	return {
 		view: (): m.Children => {
 			return m("footer#app-menu-footer.AppMenuFooter", [
-				m("span#app-menu-footer-version", `${AppState.product} ${process.env.BUILD_VERSION_HOMECHART}`),
+				m("span#app-menu-footer-version", `${AppState.product} ${process.env.BUILD_VERSION}`),
 				m("span", [
 					`© 2018-${new Date()
 						.getFullYear()} `,

@@ -69,9 +69,6 @@ export interface App {
 	/** Enable/disable the MOTD. */
 	sessionHideMOTD: boolean,
 
-	/** Current language. */
-	sessionISO639Code: string,
-
 	/** InstallPrompt event data for PWA. */
 	sessionInstallPrompt: BeforeInstallPromptEvent | null,
 
@@ -196,6 +193,9 @@ export interface AppPreferences {
 
 	/** Time format. */
 	formatTime24: boolean,
+
+	/** Language. */
+	iso639Code: string,
 }
 
 interface appPreferencesMap extends AppPreferences {
@@ -235,7 +235,6 @@ function New (): App {
 		sessionDebug: false,
 		sessionDisplay: DisplayEnum.XLarge,
 		sessionHideMOTD: false,
-		sessionISO639Code: "en",
 		sessionInstallPrompt: null,
 		sessionInstallPromptDismissed: false,
 		sessionOnline: true,
@@ -357,7 +356,7 @@ export const AppState = {
 			);
 		}
 
-		return CivilDate.fromString(date!) // eslint-disable-line @typescript-eslint/no-non-null-assertion
+		return CivilDate.fromString(date as string) // eslint-disable-line @typescript-eslint/no-non-null-assertion
 			.toString(
 				AppState.preferences().formatDateOrder,
 				AppState.preferences().formatDateSeparator,
@@ -429,6 +428,10 @@ export const AppState = {
 
 		AppState.preferences.end(true);
 		AppState.preferences = preferences.map((preferences) => {
+			if (AppState.preferences().iso639Code !== preferences.iso639Code) {
+				AppState.setSessionISO639(preferences.iso639Code);
+			}
+
 			return {
 				...preferences,
 				...{
@@ -725,7 +728,6 @@ export const AppState = {
 	},
 	setSessionISO639: (code: ISO639Code): void => {
 		AppState.set({
-			sessionISO639Code: code,
 			translations: {
 				actionAdd: Translate(code, ActionAdd),
 				actionCancel: Translate(code, ActionCancel),

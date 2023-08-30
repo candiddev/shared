@@ -2,7 +2,7 @@
 
 cmd release Release all artifacts
 release () {
-	export GO_BUILD_TAGS=release
+	export BUILD_GO_TAGS=release
 	run-vault-secrets-github
 
 	# shellcheck disable=SC2153
@@ -25,6 +25,8 @@ releaseid=""
 
 cmd release-go-binary Release the go binary
 release-binary () {
+	run release-binary-pre
+
 	run-vault-secrets-github
 	build-go
 

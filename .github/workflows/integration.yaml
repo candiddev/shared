@@ -47,6 +47,9 @@ jobs:
       - name: Lint Web
         if: steps.setup.outputs.change_web == 'true' || github.ref_name == 'main'
         run: ./m lint-web
+      - name: Lint YAML8n
+        if: steps.setup.outputs.change_yaml8n == 'true' || github.ref_name == 'main'
+        run: ./m lint-yaml8n
 
   test_go:
     name: Test - Go

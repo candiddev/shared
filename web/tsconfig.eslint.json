@@ -11,7 +11,7 @@
 		"src/**/*.d.ts",
 		"stylelint.config.cjs",
 		"vite-default.config.ts",
-		"vite-homechart.config.ts",
+		"vite.config.ts",
 		"vitest.config.ts"
 	]
 }

@@ -60,7 +60,7 @@ export const ActionClose: Translation = {
 	es: `Cerca`,
 	fr: `Fermer`,
 	hi: `बंद करना`,
-	nl: `Dichtbij`,
+	nl: `Sluiten`,
 	zh: `关闭`,
 };
 
@@ -93,7 +93,7 @@ export const ActionDeleteConfirm: Translation = {
 	es: `Confirmar eliminación`,
 	fr: `Confirmation de la suppression`,
 	hi: `हटाने की पुष्टि करें`,
-	nl: `Bevestig verwijderen`,
+	nl: `Verwijderen bevestigen`,
 	zh: `确认删除`,
 };
 
@@ -104,7 +104,7 @@ export const ActionDeselectAll: Translation = {
 	es: `Deseleccionar todo`,
 	fr: `Tout déselectionner`,
 	hi: `सबको अचयनित करो`,
-	nl: `Deselecteer alles`,
+	nl: `Alles deselecteren`,
 	zh: `取消全选`,
 };
 
@@ -126,7 +126,7 @@ export const ActionEdit: Translation = {
 	es: `Editar`,
 	fr: `Modifier`,
 	hi: `संपादन करना`,
-	nl: `Bewerking`,
+	nl: `Bewerken`,
 	zh: `编辑`,
 };
 
@@ -148,7 +148,7 @@ export const ActionKeepAwake: Translation = {
 	es: `Mantenerse despierto`,
 	fr: `Reste éveillé`,
 	hi: `जागते रहना`,
-	nl: `Blijf wakker`,
+	nl: `Wakker houden`,
 	zh: `保持清醒`,
 };
 
@@ -192,7 +192,7 @@ export const ActionSearch: Translation = {
 	es: `Buscar`,
 	fr: `Recherche`,
 	hi: `खोज`,
-	nl: `Zoekopdracht`,
+	nl: `Zoeken`,
 	zh: `搜索`,
 };
 
@@ -203,7 +203,7 @@ export const ActionShow: Translation = {
 	es: `Espectáculo`,
 	fr: `Montrer`,
 	hi: `दिखाना`,
-	nl: `Show`,
+	nl: `Tonen`,
 	zh: `展示`,
 };
 
@@ -368,7 +368,7 @@ export const ColorTeal: Translation = {
 	es: `verde azulado`,
 	fr: `Sarcelle`,
 	hi: `टील`,
-	nl: `Wintertaling`,
+	nl: `Teal`,
 	zh: `蓝绿色`,
 };
 
@@ -522,7 +522,7 @@ export const FormItemInputIconTooltip: Translation = {
 	es: `Icono que se mostrará con el elemento. Utilice este enlace para buscar iconos en`,
 	fr: `Icône à afficher avec l'élément. Utilisez ce lien pour rechercher des icônes sur`,
 	hi: `आइटम के साथ प्रदर्शित किया जाने वाला चिह्न। आइकन खोजने के लिए इस लिंक का उपयोग करें`,
-	nl: `Pictogram dat bij het item moet worden weergegeven. Gebruik deze link om iconen op te zoeken`,
+	nl: `Icoon dat bij het item moet worden weergegeven. Gebruik deze link om iconen op te zoeken`,
 	zh: `与项目一起显示的图标。使用此链接搜索图标`,
 };
 
@@ -588,7 +588,7 @@ export const FormItemSelectCurrencyFormatTooltip: Translation = {
 	es: `Formato de visualización para monedas`,
 	fr: `Format d'affichage des devises`,
 	hi: `मुद्राओं के लिए प्रदर्शन प्रारूप`,
-	nl: `Weergaveformaat voor valuta&#39;s`,
+	nl: `Weergaveformaat voor valuta`,
 	zh: `货币显示格式`,
 };
 
@@ -632,7 +632,7 @@ export const FormRecurrenceEnd: Translation = {
 	es: `Terminar recurrencia en`,
 	fr: `Fin de la récurrence le`,
 	hi: `पुनरावृत्ति समाप्त करें`,
-	nl: `Einde herhaling aan`,
+	nl: `Einde herhaling op`,
 	zh: `结束循环`,
 };
 
@@ -643,7 +643,7 @@ export const FormRecurrenceEndTooltip: Translation = {
 	es: `Cuándo dejar de repetirse`,
 	fr: `Quand arrêter de se reproduire`,
 	hi: `आवर्ती कब बंद करें`,
-	nl: `Wanneer stoppen met terugkeren`,
+	nl: `Wanneer stoppen met herhalen`,
 	zh: `什么时候停止重复`,
 };
 
@@ -698,7 +698,7 @@ export const FormRecurrenceLast: Translation = {
 	es: `Último`,
 	fr: `Dernier`,
 	hi: `अंतिम`,
-	nl: `Laatst`,
+	nl: `Laatste`,
 	zh: `最后的`,
 };
 
@@ -808,7 +808,7 @@ export const FormRecurrenceYears: Translation = {
 	es: `Años`,
 	fr: `Années`,
 	hi: `साल`,
-	nl: `jaren`,
+	nl: `Jaren`,
 	zh: `年`,
 };
 
@@ -863,7 +863,7 @@ export const TableNothing: Translation = {
 	es: `Nada Encontrado`,
 	fr: `rien n'a été trouvé`,
 	hi: `कुछ भी नहीं मिला`,
-	nl: `niets gevonden`,
+	nl: `Niets gevonden`,
 	zh: `什么都没找到`,
 };
 

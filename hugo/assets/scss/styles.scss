@@ -25,6 +25,18 @@ main {
   padding: 10px;
 }
 
+.img {
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  border-radius: 8px;
+  height: auto;
+  margin-left: auto;
+  margin-right: auto;
+  max-width: 1320px;
+  margin-bottom: 20px;
+  margin-top: 20px;
+  width: 100%;
+}
+
 .nav-tabs {
   border-bottom: none;
   padding-left: 10px;
@@ -91,7 +103,6 @@ main {
 
 .td-navbar {
   background: #ffffff !important;
-  height: 4rem;
 }
 
 .td-navbar .td-search__input {

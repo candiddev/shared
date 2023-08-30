@@ -68,8 +68,14 @@ curl -s -L https://nodejs.org/dist/v${VERSION_NODE}/node-v${VERSION_NODE}-${OSNA
 chmod 0755 ${BINDIR}/node/bin/*"
 	fi
 
+	NPM_INSTALL=${EXEC_NPM}
+
 	printf "Refreshing node_modules..."
-	try "cd ${DIR}/web; ${EXEC_NPM} install"
+	if [[ -d ${DIR}/shared ]]; then
+		NPM_INSTALL="${BINDIR}/node/bin/npm --prefix ${DIR}/shared/web"
+	fi
+
+	try "${NPM_INSTALL} install"
 }
 
 cmd install-rclone Install Rclone, a tool for managing files
@@ -87,6 +93,14 @@ install-shellcheck () {
 	if ! ${EXEC_SHELLCHECK} --version 2>&1 | grep "${VERSION_SHELLCHECK}" > /dev/null; then
 		printf "Installing ShellCheck..."
 		try "curl -s -L https://github.com/koalaman/shellcheck/releases/download/v${VERSION_SHELLCHECK}/shellcheck-v${VERSION_SHELLCHECK}.${OSNAME}.x86_64.tar.xz | tar  --no-same-owner -C ${BINDIR} -xJ --strip-components=1 shellcheck-v${VERSION_SHELLCHECK}/shellcheck"
+	fi
+}
+
+cmd install-swag Install swag, a tool for generating API docs
+install-swag () {
+	if ! ${EXEC_SWAG} --version 2>&1 | grep "${VERSION_SWAG}" > /dev/null; then
+		printf "Installing swag..."
+		try "curl -s -L https://github.com/swaggo/swag/releases/download/v${VERSION_SWAG}/swag_${VERSION_SWAG}_${OSNAME}_x86_64.tar.gz | tar --no-same-owner -C ${BINDIR} -xz"
 	fi
 }
 

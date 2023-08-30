@@ -1,10 +1,11 @@
+import path from "path";
 import { defineConfig } from "vitest/config";
 
 export default defineConfig({
 	resolve: {
 		alias: {
-			"./Worker?worker": "src/homechart/worker/WorkerMock.ts",
-			"@lib": "src/lib",
+			"./Worker?worker": path.resolve("./src/worker/Worker.ts"), // Needed for service worker to resolve the web worker correctly
+			"@lib": path.resolve("./src/lib"),
 		},
 	},
 	test: {

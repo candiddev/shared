@@ -8,12 +8,13 @@ cmd () {
 	COMMANDS="${COMMANDS}${1}_${*: 2}"
 }
 
-run_cmds () {
-	IFS=$'\n'
-	for cmd in $(echo -e "${COMMANDS}"); do
-		cmd=${cmd%_*}
-		cmd=${cmd%,*}
+not_running () {
+	! ${CR} inspect "${1}" &> /dev/null
+}
 
+run () {
+	IFS=$'\n'
+	for cmd in $(declare -F | cut -d\  -f3); do
 		# shellcheck disable=SC2053
 		if [[ ${cmd} == ${1} ]]; then
 			${cmd}

@@ -143,7 +143,7 @@ test("AppMenu", async () => {
 
 	AppState.product = "test";
 	AppState.toggleLayoutAppMenuOpen(true);
-	process.env.BUILD_VERSION_HOMECHART = "1.0";
+	process.env.BUILD_VERSION = "1.0";
 	testing.redraw();
 	testing.find("#contact-us");
 	testing.text("#app-menu-footer-version", "test 1.0");

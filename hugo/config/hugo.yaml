@@ -1,3 +1,4 @@
+baseURL: /
 enableRobotsTXT: true
 defaultContentLanguageInSubdir: true
 languages:
@@ -45,10 +46,15 @@ markup:
 module:
   imports:
     - path: ../../shared/hugo
+outputs:
+  section:
+    - HTML
+    - RSS
 params:
   copyright: Candid Development LLC
   copyrightLink: https://www.candid.dev
   disable_click2copy_chroma: true
+  time_format_blog: 2006-01-02
   ui:
     sidebar_menu_foldable: true
 taxonomies:

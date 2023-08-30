@@ -1,5 +1,5 @@
 .bin
-.cache/go
+.cache
 .gcp
 
 go/coverage.out

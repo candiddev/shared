@@ -11,8 +11,8 @@ tag () {
 	git push -f origin "refs/tags/${TAG}"
 }
 
-cmd tag-release Create a new GitHub release from the latest tag
-tag-release () {
+cmd tag-github-release Create a new GitHub release from the latest tag
+tag-github-release () {
 	path="${GITHUB_PATH}/releases"
 	releaseid=$(run-github-release-id)
 

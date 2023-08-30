@@ -1,0 +1,10 @@
+root = "go"
+
+[build]
+bin = "./m run-go"
+cmd = "./m build-go"
+delay = 1000 # ms
+include_dir = [
+  "go",
+  "shared/go",
+]

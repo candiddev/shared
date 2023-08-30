@@ -1,0 +1,3 @@
+{{ $original := .Page.Resources.GetMatch (printf "**%s*" (.Get 0)) | fingerprint }}
+{{ $resize := $original.Resize "x1320" }}
+<a href={{ $original.RelPermalink }} target="_blank"><img alt={{ .Get 1 }} class="img" src="{{ $resize.RelPermalink }}"/></a>

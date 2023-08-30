@@ -1,5 +1,12 @@
 #!/usr/bin/env bash
 
+cmd run-air Run via Air
+run-air () {
+	install-air
+
+	${EXEC_AIR} -c "${DIR}/containers/air.toml"
+}
+
 cmd run-github Curl GitHub\'s API
 run-github () {
 	run-vault-secrets-github
@@ -23,24 +30,35 @@ run-github-release-id () {
 	run-github "${GITHUB_PATH}/releases/tags/${BUILD_TAG}" | jq -r .id
 }
 
+cmd run-go,rg Run Go command
+run-go () {
+	# shellcheck disable=SC2086
+	"${DIR}/${BUILD_NAME}" ${RUN_GO_ARGS}
+}
+rg () {
+	run-go
+}
+
 cmd run-hugo-start Start Hugo
 run-hugo-start () {
 	install-hugo
-	run-network
-	run-hugo-stop
 
-	printf "Starting Hugo..."
-	try "${CR} run \
-		-d \
-		${CR_LOGOPTS} \
-		${CR_USER} \
-		--name candiddev_hugo_${APP_NAME} \
-		-p 1313:1313 \
-		--restart always \
-		-v ${DIR}:/hugo \
-		-w /hugo/hugo \
-		debian:bullseye \
-		../.bin/hugo server --verbose --watch --bind 0.0.0.0 -b /"
+	run-network
+
+	if not_running "candiddev_hugo_${APP_NAME}"; then
+		printf "Starting Hugo..."
+		try "${CR} run \
+			-d \
+			${CR_LOGOPTS} \
+			${CR_USER} \
+			--name candiddev_hugo_${APP_NAME} \
+			--network candiddev \
+			-p 1313:1313 \
+			--restart always \
+			${CR_VOLUME} \
+			${CR_IMAGE} \
+			.bin/hugo server -b http://localhost:1313 --verbose --watch --bind 0.0.0.0 -s hugo"
+	fi
 }
 
 cmd run-hugo-stop Stop Hugo
@@ -51,28 +69,32 @@ run-hugo-stop () {
 
 cmd run-network Start network
 run-network () {
-	printf "Starting network..."
-	try "${CR} network create candiddev --subnet 172.31.0.0/24 || true"
+	if not_running candiddev; then
+		printf "Starting network..."
+		try "${CR} network create candiddev --subnet 172.31.0.0/24"
+	fi
 }
 
 cmd run-postgresql-start, Run PostgreSQL container
 run-postgresql-start () {
 	run-network
 
-	printf "Running PostgreSQL container..."
-	try "${CR} run \
-		-d \
-		-e POSTGRES_PASSWORD=postgres \
-		-e PGDATA=/pgtmpfs \
-		${CR_LOGOPTS} \
-		--name candiddev_postgresql \
-		--network candiddev \
-		-p 127.0.0.1:5432:5432 \
-		--restart always \
-		--tmpfs=/pgtmpfs \
-		-v ${DIR}/containers/initdb.sql:/docker-entrypoint-initdb.d/initdb.sql \
-		docker.io/postgres:${VERSION_POSTGRESQL} \
-		-c log_statement=all && sleep 2 || true"
+	if not_running candiddev_postgresql; then
+		printf "Running PostgreSQL container..."
+		try "${CR} run \
+			-d \
+			-e POSTGRES_PASSWORD=postgres \
+			-e PGDATA=/pgtmpfs \
+			${CR_LOGOPTS} \
+			--name candiddev_postgresql \
+			--network candiddev \
+			-p 127.0.0.1:5432:5432 \
+			--restart always \
+			--tmpfs=/pgtmpfs \
+			-v ${DIR}/containers/initdb.sql:/docker-entrypoint-initdb.d/initdb.sql \
+			docker.io/postgres:${VERSION_POSTGRESQL} \
+			-c log_statement=all && sleep 2"
+		fi
 }
 
 cmd run-postgresql-backup,rpb Run PostgreSQL backup
@@ -115,15 +137,12 @@ run-postgresql-stop () {
 
 cmd run-start Start all containers
 run-start () {
-	run_cmds run-*-start
-
-	printf "network..."
-	try "${CR} network rm candiddev || true"
+	run run-*-start
 }
 
 cmd run-stop Stop all running containers
 run-stop () {
-	run_cmds run-*-stop
+	run run-*-stop
 
 	printf "Stopping network..."
 	try "${CR} network rm candiddev || true"
@@ -159,35 +178,51 @@ run-vault-secrets-kv () {
 	${EXEC_VAULT} read -field="${1}" "${2}"
 }
 
+cmd run-vault-ssh Run Vault read SSH credentials
+run-vault-ssh () {
+	${EXEC_VAULT} write -field=signed_key "ssh/sign/${VAULT_SSH_ROLE}" public_key=@"${DIR}/id_rsa.pub" > "${DIR}/id_rsa-cert.pub"
+}
+
+cmd run-web Run web dev server
+run-web () {
+	install-node
+
+	${EXEC_NPM} run dev
+}
+
 cmd run-yaml8n-start,rys Run YAML8n listeners
 run-yaml8n-start () {
 	run-network
-	run-yaml8n-stop
 
 	for i in "${DIR}"/yaml8n/*; do
 		name="$(basename "${i}" | cut -d. -f1)"
-		printf "Running YAML8n %s container..." "${name}"
 
-		try "${CR} run \
-			-d \
-			${CR_LOGOPTS} \
-			${CR_USER} \
-			--name candiddev_yaml8n_${name} \
-			--network candiddev \
-			--pull always \
-			--restart always \
-			-v ${DIR}:/work \
-			-w /work \
-			${CR_REGISTRY}/candiddev/yaml8n:latest \
-			watch /work/yaml8n/${name}.yaml"
+		if not_running "candiddev_yaml8n_${name}"; then
+			printf "Running YAML8n %s container..." "${name}"
+
+			try "${CR} run \
+				-d \
+				${CR_LOGOPTS} \
+				${CR_USER} \
+				--name candiddev_yaml8n_${name} \
+				--network candiddev \
+				--pull always \
+				--restart always \
+				-v ${DIR}:/work \
+				-w /work \
+				${CR_REGISTRY}/candiddev/yaml8n:latest \
+				watch /work/yaml8n/${name}.yaml"
+			fi
 	done
 }
 rys () {
 	run-yaml8n-start
 }
+
 cmd run-yaml8n-stop Stop YAML8n listeners
 run-yaml8n-stop() {
+	printf "Stopping all YAML8n containers..."
 	for i in "${DIR}"/yaml8n/*; do
-		${CR} rm -f "candiddev_yaml8n_$(basename "${i}" | cut -d. -f1)" || true
+		try "${CR} rm -f candiddev_yaml8n_$(basename "${i}" | cut -d. -f1) || true"
 	done
 }

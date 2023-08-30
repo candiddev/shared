@@ -15,6 +15,10 @@ issues:
         - gosec
         - noctx
         - paralleltest
+    - path: templates/templates.go
+      linters:
+        - revive
+      text: "(argument-limit|exported): "
     - text: "ST1000:"
       linters:
         - stylecheck
@@ -22,7 +26,7 @@ issues:
       linters:
         - errcheck
         - gosec
-    - source: "(var Err)|((CLIConfig|Default|GetRegisteredClaims|MarshalJSON|Parse|PrivateKey|PublicKey|Scan|SliceString|String|UnmarshalJSON|Type|Value)\\()"
+    - source: "(var Err)|((CLIConfig|Default|GetRegisteredClaims|MarshalJSON|Parse|PrivateKey|PublicKey|Scan|SetID|SliceString|String|UnmarshalJSON|Type|Value)\\()"
       linters:
         - revive
       text: "exported: "

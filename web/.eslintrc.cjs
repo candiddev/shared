@@ -17,6 +17,9 @@ module.exports = {
 		{
 			files: [
 				"**/*.d.ts",
+				"!src/components/*.ts",
+				"!src/lib/**/*.ts",
+				"src/*.ts",
 			],
 			rules: {
 				"jsdoc/require-jsdoc": "off",

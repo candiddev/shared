@@ -6,7 +6,10 @@ COMMANDS=""
 DIR=$(cd -- "$(dirname "$0")" >/dev/null 2>&1; pwd -P)
 export DIR
 export BINDIR=${BINDIR:-${DIR}/.bin}
+export BUILD_SOURCE=${BUILD_SOURCE:-dev}
+
 mkdir -p "${BINDIR}"
+mkdir -p "${DIR}/.cache"
 
 export PATH="${BINDIR}/go/lib/bin:${BINDIR}/go/local/bin:${BINDIR}/node/bin:${BINDIR}:${PATH}"
 

@@ -67,7 +67,7 @@ YAMLList:
 	assert.Equal(t, tn, `APIValue: world
 DNSA: 10.0.1.11
 DNSCNAME: lbl01.has1.candid.dev.
-DNSTxt: v=spf1 include:_spf.google.com -all
+DNSTxt: google-site-verification=2Ron2YuzBwpi82WEqfCEhuSjgLhJ2gD01VcNv9NH2pcv=spf1 include:_spf.google.com -all
 EmptyValue: 
 JSONList: [{"hello":"goodbye"}]
 New: true
@@ -83,7 +83,7 @@ YAMLList:
 		APIValue: "world",
 		DNSA:     "10.0.1.11",
 		DNSCNAME: "lbl01.has1.candid.dev.",
-		DNSTxt:   "v=spf1 include:_spf.google.com -all",
+		DNSTxt:   "google-site-verification=2Ron2YuzBwpi82WEqfCEhuSjgLhJ2gD01VcNv9NH2pcv=spf1 include:_spf.google.com -all",
 		JSONList: []map[string]any{
 			{
 				"hello": "goodbye",
