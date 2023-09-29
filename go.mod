@@ -6,7 +6,7 @@ require (
 	github.com/Masterminds/sprig/v3 v3.2.3
 	github.com/disintegration/imaging v1.6.2
 	github.com/golang-jwt/jwt/v4 v4.5.0
-	github.com/gomarkdown/markdown v0.0.0-20230716120725-531d2d74bc12
+	github.com/gomarkdown/markdown v0.0.0-20230922105210-14b16010c2ee
 	github.com/google/go-cmp v0.5.9
 	github.com/google/uuid v1.3.0
 	github.com/jackc/pgx/v5 v5.4.3

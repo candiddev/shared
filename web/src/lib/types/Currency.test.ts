@@ -33,6 +33,12 @@ const tests = [
 	},
 	{
 		enums: [
+			CurrencyEnum.CLP,
+		],
+		string: "CLP 123,456",
+	},
+	{
+		enums: [
 			CurrencyEnum.DKK,
 		],
 		string: "DKK 1,234.56",

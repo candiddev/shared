@@ -1,5 +1,6 @@
 import "./Table.css";
 
+import type { FilterType } from "@lib/types/Filter";
 import { Clone } from "@lib/utilities/Clone";
 import m from "mithril";
 
@@ -11,7 +12,7 @@ import type { ButtonAttrs } from "./Button";
 import { Button } from "./Button";
 import type { ButtonArrayAttrs } from "./ButtonArray";
 import { TableData } from "./TableData";
-import type { TableColumnAttrs, TableLayoutAttrs } from "./TableHeader";
+import type { TableColumnAttrs, TableHeaderSortAttrs, TableLayoutAttrs } from "./TableHeader";
 import { TableHeader } from "./TableHeader";
 import type { TableSearchAttrs } from "./TableSearch";
 import { TableSearch } from "./TableSearch";
@@ -49,12 +50,45 @@ export interface TableAttrs extends TableLayoutAttrs {
 
 let route = "";
 
-const scroll: {
-	[route: string]: number,
+const history: {
+	[route: string]: {
+		scroll: number,
+		sort: TableHeaderSortAttrs | undefined,
+		tableColumnsNameEnabled: FilterType,
+	},
 } = {};
 
 export function Table (): m.Component<TableAttrs> {
+	let scrolled = false;
+
 	return {
+		oncreate: (vnode): void => {
+			route = m.route.get();
+
+			if (history[route] !== undefined) {
+				if (history[route].sort !== undefined && vnode.attrs.sort !== undefined) {
+					vnode.attrs.sort(history[route].sort as TableHeaderSortAttrs);
+				}
+
+				vnode.attrs.tableColumnsNameEnabled(history[route].tableColumnsNameEnabled);
+			}
+
+		},
+		onremove: (vnode): void => {
+			history[route] = {
+				scroll: (document.getElementById(`tablediv${StringToID(vnode.attrs.id)}`) as HTMLElement).scrollTop,
+				sort: vnode.attrs.sort === undefined ?
+					undefined :
+					vnode.attrs.sort(),
+				tableColumnsNameEnabled: vnode.attrs.tableColumnsNameEnabled(),
+			};
+		},
+		onupdate: (vnode): void => {
+			if (vnode.attrs.loaded && !scrolled && history[route] !== undefined) {
+				(document.getElementById(`tablediv${StringToID(vnode.attrs.id)}`) as HTMLElement).scrollTop = history[route].scroll;
+				scrolled = true;
+			}
+		},
 		view: (vnode): m.Children => {
 			return m("div.Table__container", {
 				class: vnode.attrs.class,
@@ -102,7 +136,7 @@ export function Table (): m.Component<TableAttrs> {
 					[] :
 					m(TableSearch, vnode.attrs.search),
 				[
-					m("div.Table__div", m("table.Table", {
+					m(`div.Table__div#tablediv${StringToID(vnode.attrs.id)}`, m("table.Table", {
 						id: `table${StringToID(vnode.attrs.id)}`,
 					}, [
 						m(TableHeader, {
@@ -113,18 +147,7 @@ export function Table (): m.Component<TableAttrs> {
 							tableColumns: vnode.attrs.tableColumns,
 							tableColumnsNameEnabled: vnode.attrs.tableColumnsNameEnabled,
 						}),
-						m("tbody", {
-							oncreate: (tvnode): void => {
-								route = m.route.get();
-
-								if (scroll[route] !== undefined) {
-									tvnode.dom.scrollTop = scroll[route];
-								}
-							},
-							onremove: (tvnode): void => {
-								scroll[route] = tvnode.dom.scrollTop;
-							},
-						}, vnode.attrs.loaded ?
+						m("tbody", vnode.attrs.loaded ?
 							vnode.attrs.data === null ?
 								[] :
 								vnode.attrs.data

@@ -103,7 +103,7 @@ export function AppMenuComponent (): m.Component<AppMenuComponentAttrs> {
 						let vRoute = "";
 
 						if (v.link !== "") {
-							if (v.linkOnly === true || ! v.link.startsWith("/")) {
+							if (v.linkOnly === true || v.link.startsWith("http")) {
 								vRoute = v.link;
 							} else {
 								vRoute = `/${vnode.attrs.cLower}${v.link}`;
@@ -141,7 +141,7 @@ export function AppMenuComponent (): m.Component<AppMenuComponentAttrs> {
 												key: Date.now(),
 											},
 										},
-									target: v.link.startsWith("/") ?
+									target: vRoute.startsWith("/") ?
 										undefined :
 										"_blank",
 								}, [

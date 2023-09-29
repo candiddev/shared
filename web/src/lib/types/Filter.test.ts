@@ -36,4 +36,12 @@ test("filter", () => {
 		.toStrictEqual([
 			data[0],
 		]);
+
+	expect(Filter.array(data, {
+		"name": "a",
+		"name+id": "a1",
+	}, {}))
+		.toStrictEqual([
+			data[0],
+		]);
 });

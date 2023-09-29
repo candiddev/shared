@@ -130,6 +130,23 @@ test("Table", async () => {
 		.toBeTruthy();
 	testing.text("#table-data-c-count", "3");
 
+	// Test state restore
+	document.getElementById("tablediv")!.scrollTop = 1000;
+	testing.mount("div");
+	attrs.tableColumnsNameEnabled({});
+	attrs.sort!({
+		...attrs.sort!(),
+		invert: false,
+	});
+	testing.mount(Table, attrs);
+	await testing.sleep(100);
+	expect(document.getElementById("tablediv")!.scrollTop)
+		.toBe(1000);
+	expect(attrs.sort!().invert)
+		.toBeTruthy();
+	expect(Object.keys(attrs.tableColumnsNameEnabled()))
+		.toHaveLength(4);
+
 	attrs.data = [];
 	AppState.data.layoutAppToolbarActionButtons = [
 		{

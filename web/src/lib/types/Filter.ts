@@ -31,6 +31,10 @@ export const Filter = {
 					const properties = property.split(".");
 
 					value = item[properties[0]][properties[1]];
+				} else if (property.includes("+")) {
+					const properties = property.split("+");
+
+					value = item[properties[0]] + item[properties[1]]; // eslint-disable-line @typescript-eslint/restrict-plus-operands
 				} else {
 					value = item[property];
 				}

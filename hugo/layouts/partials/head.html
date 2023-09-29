@@ -22,6 +22,14 @@
 {{ template "_internal/schema.html" . -}}
 {{ template "_internal/twitter_cards.html" . -}}
 {{ partialCached "head-css.html" . "asdf" -}}
+<script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "url": {{ .Site.BaseURL }},
+    "logo": {{ printf "%slogo.png" .Site.BaseURL }}
+  }
+</script>
 <script
   src="https://code.jquery.com/jquery-3.6.3.min.js"
   integrity="sha512-STof4xm1wgkfm7heWqFJVn58Hm3EtS31XFaagaa8VMReCXAkQnJZ+jEy8PCC/iT18dFy95WcExNHFTqLyp72eQ=="

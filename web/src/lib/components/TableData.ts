@@ -86,7 +86,9 @@ async function onDragEnd (dragEnd: () => Promise<void | Err>): Promise<void> {
 }
 
 function onDragStart (el: HTMLElement): void {
-	Drag.start(el.parentElement as HTMLElement, "TableData__dragging");
+	Drag.start(el.parentElement?.tagName === "TD"
+		? el.parentElement?.parentElement as HTMLElement
+		: el.parentElement as HTMLElement, "TableData__dragging");
 }
 
 export function TableData (): m.Component<TableColumnAttrs> {
@@ -227,11 +229,13 @@ export function TableData (): m.Component<TableColumnAttrs> {
 						}
 					},
 					ontouchmove: async (e: m.Event<TouchEvent>) => { // eslint-disable-line @typescript-eslint/no-explicit-any
-
 						e.redraw = false;
 						e.preventDefault();
 						const touches = e.changedTouches[0];
-						onDrag(`${e.target.parentElement?.id}`, touches.clientX, touches.clientY);
+						const id = `${e.target.parentElement?.tagName === "TD"
+							? e.target.parentElement?.parentElement?.id
+							: e.target.parentElement?.id}`;
+						onDrag(id, touches.clientX, touches.clientY);
 					},
 					ontouchstart: async (e: m.Event<TouchEvent>) => {
 						onDragStart(e.target);

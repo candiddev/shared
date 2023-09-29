@@ -48,6 +48,10 @@ export function FormItemSelectCurrencyFormat (): m.Component<FormItemSelectCurre
 							name: `CHF - ${Currency.toString(123456, CurrencyEnum.CHF)}`,
 						},
 						{
+							id: `${CurrencyEnum.CLP}`,
+							name: `CLP - ${Currency.toString(123456, CurrencyEnum.CLP)}`,
+						},
+						{
 							id: `${CurrencyEnum.DKK}`,
 							name: `DKK - ${Currency.toString(123456, CurrencyEnum.DKK)}`,
 						},

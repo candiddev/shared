@@ -16,11 +16,12 @@ export enum CurrencyEnum {
 	AED,
 	DKK,
 	TWD,
+	CLP,
 }
 
 export const Currency = {
 	toNumber: (currency: string): number => {
-		let n = parseInt(currency.replace(/[((AED)(CHF)(MX)(SEK)(NT)(ZAR)R€₹¥₩£$.,\s]/g, ""), 10);
+		let n = parseInt(currency.replace(/[((AED)(CHF)(CLP)(MX)(SEK)(NT)(ZAR)R€₹¥₩£$.,\s]/g, ""), 10);
 		if (n === undefined || isNaN(n)) {
 			return 0;
 		}
@@ -43,7 +44,7 @@ export const Currency = {
 			n = 0;
 		}
 
-		if (format !== CurrencyEnum.JPY && format !== CurrencyEnum.KRW && format !== CurrencyEnum.RUB) {
+		if (format !== CurrencyEnum.CLP && format !== CurrencyEnum.JPY && format !== CurrencyEnum.KRW && format !== CurrencyEnum.RUB) {
 			n /= 100;
 		}
 
