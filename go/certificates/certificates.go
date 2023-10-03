@@ -7,10 +7,26 @@ import (
 	"crypto/tls"
 	"crypto/x509"
 	"crypto/x509/pkix"
+	"encoding/base64"
 	"fmt"
 	"math/big"
 	"time"
 )
+
+// GetBase64 returns a certificate from a base64 certificate and private key.
+func GetBase64(certificate string, key string) (tls.Certificate, error) {
+	c, err := base64.StdEncoding.DecodeString(certificate)
+	if err != nil {
+		return tls.Certificate{}, fmt.Errorf("error base64 decoding certificate: %w", err)
+	}
+
+	k, err := base64.StdEncoding.DecodeString(key)
+	if err != nil {
+		return tls.Certificate{}, fmt.Errorf("error base64 decoding key: %w", err)
+	}
+
+	return tls.X509KeyPair(c, k)
+}
 
 // GetSelfSigned returns a self signed certificate valid for one year based on the provided commonName.
 func GetSelfSigned(commonName string) (tls.Certificate, error) {

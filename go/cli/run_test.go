@@ -15,6 +15,7 @@ func TestRun(t *testing.T) {
 
 	ctx := context.Background()
 	c := Config{}
+	c.RunMock()
 	c.RunMockErrors([]error{fmt.Errorf("hello"), nil})
 	c.RunMockOutputs([]string{
 		"a",
@@ -29,7 +30,7 @@ func TestRun(t *testing.T) {
 	}{
 		{
 			name:       "real",
-			wantOutput: "config.yaml\n",
+			wantOutput: "config.json\n",
 		},
 		{
 			mock:       true,
@@ -46,7 +47,7 @@ func TestRun(t *testing.T) {
 
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
-			c.RunMock(tc.mock)
+			c.runMockEnable = tc.mock
 
 			o, err := c.Run(ctx, RunOpts{
 				Args: []string{
@@ -72,7 +73,7 @@ func TestRun(t *testing.T) {
 		},
 	})
 
-	c.RunMock(true)
+	c.RunMock()
 	c.Run(ctx, RunOpts{
 		Args: []string{
 			"world",
@@ -92,7 +93,7 @@ func TestRun(t *testing.T) {
 	assert.Equal(t, regexp.MustCompile(fmt.Sprintf(`^/usr/bin/%s run -i --rm --name etcha_\S+ --privileged -v /a:/a -v /b:/b -w /test example hello world$`, cri)).MatchString(c.runMock.inputs[0].Exec), true)
 	assert.Equal(t, c.runMock.inputs[0].WorkDir, "/test")
 
-	c.RunMock(false)
+	c.runMockEnable = false
 
 	out, err := c.Run(ctx, RunOpts{
 		Command: "cat",

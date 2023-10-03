@@ -86,6 +86,10 @@ linters:
     - test
     - unused
 linters-settings:
+  forbidigo:
+    forbid:
+        - ^fmt\.Fprint.*
+        - ^fmt\.Print.*
   godot:
     exclude:
       - '@Tags'

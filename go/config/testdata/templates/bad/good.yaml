@@ -1,3 +1,0 @@
-{{ $vault := "hello"}}
-app:
-  vault: {{ $vault }}

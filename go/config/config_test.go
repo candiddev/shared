@@ -6,10 +6,17 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"os"
+	"strings"
 	"testing"
 
 	"github.com/candiddev/shared/go/assert"
 )
+
+type customStrings []string
+
+func (*customStrings) ParseString(input string) any {
+	return strings.Split(input, ",")
+}
 
 type config struct {
 	App      configApp       `json:"app"`
@@ -18,17 +25,18 @@ type config struct {
 }
 
 type configApp struct {
-	Arg1               string   `json:"arg1"`
-	Arg2               string   `json:"arg2"`
-	Arg3               string   `json:"arg3"`
-	Env                string   `json:"env"`
-	PostgreSQLUsername string   `json:"postgreSQLUsername"`
-	Debug              bool     `json:"debug"`
-	Lists              []string `json:"lists"`
-	ListEl             string   `json:"listEl"`
-	Port               int      `json:"port"`
-	Vault              any      `json:"vault"`
-	Yes                bool     `json:"bool"`
+	Arg1               string        `json:"arg1"`
+	Arg2               string        `json:"arg2"`
+	Arg3               string        `json:"arg3"`
+	Env                string        `json:"env"`
+	PostgreSQLUsername string        `json:"postgreSQLUsername"`
+	Debug              bool          `json:"debug"`
+	Lists              []string      `json:"lists"`
+	ListEl             string        `json:"listEl"`
+	Port               int           `json:"port"`
+	Strings            customStrings `json:"strings"`
+	Vault              any           `json:"vault"`
+	Yes                bool          `json:"bool"`
 }
 
 type configCommand struct {
@@ -49,7 +57,7 @@ var vaultSrv = httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r
 	w.Write(j)
 }))
 
-func TestGet(t *testing.T) {
+func TestParse(t *testing.T) {
 	ctx := context.Background()
 
 	os.Setenv("VAULT_ADDR", vaultSrv.URL) //nolint:tenv
@@ -58,10 +66,11 @@ func TestGet(t *testing.T) {
 	t.Setenv("HOMECHART_APP_ARG2", "b")
 	t.Setenv("HOMECHART_APP_ARG3", "c")
 	t.Setenv("HOMECHART_APP_PORT", "22")
-	t.Setenv("HOMECHART_CONFIG", `app:
-  env: {{ env "ENV" }}
-vars:
-  arg: 1`)
+	t.Setenv("HOMECHART_CONFIG", `{
+  vars: {
+    arg: 1
+  }
+}`)
 	t.Setenv("ENV", "prd")
 	t.Setenv("HOMECHART_APP_YES", "yes")
 
@@ -89,11 +98,11 @@ vars:
 		},
 		Commands: []configCommand{
 			{
-				Exec: "this",
-				Path: "that",
+				Exec: "hello",
+				Path: "this",
 			},
 			{
-				Exec: "this",
+				Exec: "hello",
 				Path: "that",
 			},
 		},
@@ -103,6 +112,6 @@ vars:
 		},
 	}
 
-	assert.Equal(t, Parse(ctx, &c, "HOMECHART", "", `app_arg1=d,config={"vars":{"test": false}},vars_arg=2`, "testdata/good.json,testdata/good.yaml"), nil)
+	assert.Equal(t, Parse(ctx, &c, "HOMECHART", "", `app_arg1=d,config={"vars":{"test": false}},vars_arg=2`, "testdata/good.json,testdata/good.jsonnet"), nil)
 	assert.Equal(t, c, want)
 }

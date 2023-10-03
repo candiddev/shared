@@ -1,2 +1,0 @@
-  - exec: {{ .exec }}
-    path: {{ (index .path 0).something }}

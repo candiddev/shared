@@ -41,17 +41,21 @@ func TestPrint(t *testing.T) {
 		},
 	}
 
-	tests := map[string]struct {
-		input  bool
-		output string
-	}{
-		"json": {
-			input: true,
-			output: `{
+	logger.SetStd()
+
+	assert.Equal(t, printConfig(ctx, App[*C]{
+		Config: &c,
+		HideConfigFields: []string{
+			"Hide",
+			"Other",
+		},
+	}), nil)
+
+	assert.Equal(t, logger.ReadStd(), `{
   "CLI": {
-    "debug": false,
-    "noColor": false,
-    "outputJSON": true
+    "logFormat": "",
+    "logLevel": "",
+    "noColor": false
   },
   "Hide": {
     "Message": "Hello"
@@ -60,36 +64,5 @@ func TestPrint(t *testing.T) {
     "Message": "World"
   }
 }
-`,
-		},
-		"yaml": {
-			output: `CLI:
-  debug: false
-  noColor: false
-  outputJSON: false
-Hide:
-  Message: Hello
-Show:
-  Message: World
-`,
-		},
-	}
-
-	for name, tc := range tests {
-		t.Run(name, func(t *testing.T) {
-			logger.SetStd()
-
-			c.CLI.OutputJSON = tc.input
-
-			assert.Equal(t, printConfig(ctx, App[*C]{
-				Config: &c,
-				HideConfigFields: []string{
-					"Hide",
-					"Other",
-				},
-			}), nil)
-
-			assert.Equal(t, logger.ReadStd(), tc.output)
-		})
-	}
+`)
 }

@@ -7,14 +7,24 @@ import (
 	"github.com/candiddev/shared/go/assert"
 )
 
-func TestErrAppend(t *testing.T) {
-	err1 := errors.New("hello")
-	err2 := errors.New("world")
-	e1 := ErrClientBadRequestMissing.Append(err1)
-	e2 := ErrClientBadRequestMissing.Append(err2)
+func TestErr(t *testing.T) {
+	e1 := errors.New("hello")
+	e2 := errors.New("world")
 
-	assert.Equal(t, e1.Is(err1), true)
-	assert.Equal(t, e1.Is(err2), false)
-	assert.Equal(t, e2.Is(err1), false)
-	assert.Equal(t, e2.Is(err2), true)
+	err1 := ErrReceiver.Wrap(e1)
+	err2 := err1.Wrap(e2)
+
+	assert.Equal(t, err1.Is(e1), true)
+	assert.Equal(t, err1.Is(err1), true)
+	assert.Equal(t, err1.Is(e2), false)
+	assert.Equal(t, err1.Is(err2), false)
+	assert.Equal(t, err2.Is(e1), true)
+	assert.Equal(t, err2.Is(err1), true)
+	assert.Equal(t, err2.Is(e2), true)
+	assert.Equal(t, err2.Is(err2), true)
+	assert.Equal(t, err1.Like(ErrReceiver), true)
+	assert.Equal(t, err1.Like(ErrSenderBadRequest), false)
+
+	err1 = err1.Set("123")
+	assert.Equal(t, err1.Message(), "123")
 }

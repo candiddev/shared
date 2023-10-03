@@ -25,7 +25,7 @@ func TestMain(m *testing.M) {
 
 	metrics.Setup("homechart")
 
-	ctx = logger.SetDebug(ctx, true)
+	ctx = logger.SetLevel(ctx, logger.LevelDebug)
 	r := m.Run()
 	os.Exit(r)
 }

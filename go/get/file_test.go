@@ -58,9 +58,16 @@ func TestFile(t *testing.T) {
 		{
 			lastModified: h.LastModified(),
 			name:         "no change",
-			src:          h.URL() + "/good2",
+			src:          h.URL() + "/good2#a:b\r\na:c\r\nc:d",
 			wantHTTPRequest: HTTPMockRequest{
 				Headers: http.Header{
+					"A": {
+						"b",
+						"c",
+					},
+					"C": {
+						"d",
+					},
 					"If-Modified-Since": []string{h.LastModifiedHeader()},
 				},
 				Status: http.StatusNotModified,

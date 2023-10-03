@@ -1,3 +1,7 @@
 {
-  "recommendations": ["golang.go", "ms-vscode-remote.remote-containers"]
+  "recommendations": [
+    "golang.go",
+    "grafana.vscode-jsonnet",
+    "ms-vscode-remote.remote-containers"
+  ]
 }

@@ -79,7 +79,7 @@ func TestMain(m *testing.M) {
 	}
 
 	p.Exec(ctx, "DROP OWNED BY current_user", nil)
-	ctx = logger.SetDebug(ctx, true)
+	ctx = logger.SetLevel(ctx, logger.LevelDebug)
 	r := m.Run()
 	os.Exit(r)
 }
@@ -146,7 +146,7 @@ INSERT INTO TEST_DATA (
 		},
 		{
 			name:          "exists",
-			err:           errs.ErrClientConflictExists,
+			err:           errs.ErrSenderConflict,
 			inputArgument: &d,
 			inputQuery: `
 INSERT INTO test_data (
@@ -178,7 +178,7 @@ INSERT INTO join_data (
 		},
 		{
 			name: "missing",
-			err:  errs.ErrClientBadRequestProperty,
+			err:  errs.ErrSenderBadRequest,
 			inputArgument: &JoinData{
 				ID:   "2",
 				Test: "2",
@@ -457,7 +457,7 @@ INSERT INTO test_data (
 		},
 		{
 			name:        "missing",
-			err:         errs.ErrClientBadRequestMissing,
+			err:         errs.ErrSenderNotFound,
 			inputColumn: "id",
 			inputValue:  "3",
 		},
@@ -512,7 +512,7 @@ INSERT INTO test_data (
 		},
 		{
 			name:        "missing",
-			err:         errs.ErrClientBadRequestMissing,
+			err:         errs.ErrSenderNotFound,
 			inputColumn: "id",
 			inputValue:  "3",
 		},

@@ -39,7 +39,7 @@ func TestAppRun(t *testing.T) {
 			},
 			"fail": {
 				Run: func(ctx context.Context, args []string, config *C) errs.Err {
-					return errs.ErrClientPaymentRequired
+					return errs.ErrSenderPaymentRequired
 				},
 				Usage: "Fails the thing",
 			},
@@ -69,7 +69,7 @@ Does things
 Commands:
   fail
     	Fails the thing
-  hello world [arg1] [arg2, optional]
+  hello world [arg1] [arg2]
     	Does the thing
   show-config
     	Print the current configuration
@@ -78,27 +78,30 @@ Commands:
 
 Flags:
   -c string
-    	Path to JSON/YAML configuration files separated by a comma
-  -d	Enable debug logging
-  -j	Output JSON instead of YAML
+    	Path to JSON/Jsonnet configuration files separated by a comma
+  -f string
+    	Set log format (human, kv, raw, default: human)
+  -l string
+    	Set minimum log level (none, debug, info, error, default: info)
   -n	Disable colored logging
   -x string
     	Comma separated list of config key=value pairs
 `,
 		},
 		"config": {
-			args: []string{"-n", "-c", "./testdata/config.yaml", "show-config"},
+			args: []string{"-n", "-c", "./testdata/config.json", "show-config"},
 			output: `
-Show:
-  Message: Hello World`,
+  "Show": {
+    "Message": "Hello World"
+  }`,
 		},
 		"world": {
-			args: []string{"-n", "-c", "./testdata/config.yaml", "hello", "world"},
+			args: []string{"-n", "-c", "./testdata/config.json", "hello", "world"},
 			run:  true,
 		},
 		"fail": {
-			args:   []string{"-n", "-c", "./testdata/config.yaml", "fail"},
-			err:    errs.ErrClientPaymentRequired,
+			args:   []string{"-n", "-c", "./testdata/config.json", "fail"},
+			err:    errs.ErrSenderPaymentRequired,
 			output: "",
 		},
 		"usage no parse": {
@@ -112,19 +115,21 @@ Does things
 Commands:
   fail
     	Fails the thing
-  hello world [arg1] [arg2, optional]
+  hello world [arg1] [arg2]
     	Does the thing
   version
     	Print version information
 
 Flags:
-  -d	Enable debug logging
-  -j	Output JSON instead of YAML
+  -f string
+    	Set log format (human, kv, raw, default: human)
+  -l string
+    	Set minimum log level (none, debug, info, error, default: info)
   -n	Disable colored logging
 `,
 		},
 		"missing-arg": {
-			args:      []string{"-n", "-c", "./testdata/config.yaml", "hello"},
+			args:      []string{"-n", "-c", "./testdata/config.json", "hello"},
 			buildDate: types.CivilDateToday().AddDays(-1 * 30 * 5).String(),
 			err:       ErrUnknownCommand,
 		},
@@ -141,7 +146,6 @@ Build Date: %s`, date),
 		t.Run(name, func(t *testing.T) {
 			delete(a.Commands, "show-config")
 			BuildDate = tc.buildDate
-			a.Config.CLI.Debug = false
 			a.Config.CLI.NoColor = false
 			a.NoParse = tc.noParse
 			run = false
