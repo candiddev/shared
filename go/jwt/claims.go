@@ -2,6 +2,7 @@ package jwt
 
 import (
 	"encoding/json"
+	"strconv"
 	"strings"
 )
 
@@ -25,34 +26,34 @@ type CustomClaims interface {
 // Audience is a string or array of strings.
 type Audience []string
 
-// MarshalText converts an audience string to JSON array or singleton.
-func (a Audience) MarshalText() ([]byte, error) {
+func (a Audience) MarshalJSON() ([]byte, error) {
 	switch {
 	case len(a) == 0:
 		return nil, nil
 	case len(a) == 1:
-		return []byte(a[0]), nil
+		return []byte(strconv.Quote(a[0])), nil
 	}
 
 	return json.Marshal([]string(a))
 }
 
-// UnmarshalText converts an audience string to JSON array or singleton.
-func (a *Audience) UnmarshalText(data []byte) error {
+func (a *Audience) UnmarshalJSON(data []byte) error {
 	if data == nil {
 		return nil
 	}
 
-	if strings.HasPrefix(string(data), "[") {
-		as := []string{}
-		if err := json.Unmarshal(data, &as); err != nil {
-			return err
-		}
+	str := string(data)
 
-		*a = Audience(as)
-	} else {
-		*a = Audience{string(data)}
+	if !strings.HasPrefix(str, "[") {
+		str = "[" + str + "]"
 	}
+
+	as := []string{}
+	if err := json.Unmarshal([]byte(str), &as); err != nil {
+		return err
+	}
+
+	*a = Audience(as)
 
 	return nil
 }

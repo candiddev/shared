@@ -30,8 +30,14 @@ func TestWebPushSend(t *testing.T) {
 	srvPrv, srvPub, err := NewWebPushVAPID()
 	assert.HasErr(t, err, nil)
 
-	cliPrv, cliPub, err := NewWebPushVAPID()
+	cprv, _, err := cryptolib.NewECP256()
 	assert.HasErr(t, err, nil)
+
+	key, err := cprv.PrivateKeyECDH()
+	assert.HasErr(t, err, nil)
+
+	cliPrv := base64.RawURLEncoding.EncodeToString(key.Bytes())
+	cliPub := base64.RawURLEncoding.EncodeToString(key.PublicKey().Bytes())
 
 	msg := WebPushMessage{
 		Actions: WebPushActions{
@@ -166,7 +172,6 @@ func TestWebPushSend(t *testing.T) {
 	for name, tc := range tests {
 		t.Run(name, func(t *testing.T) {
 			c := WebPush{
-				BaseURL:         "hello",
 				VAPIDPublicKey:  tc.srvPub,
 				VAPIDPrivateKey: tc.srvPrv,
 			}
@@ -176,7 +181,7 @@ func TestWebPushSend(t *testing.T) {
 			m.Client = tc.client
 			resStatus = tc.resStatus
 
-			assert.HasErr(t, c.Send(ctx, &m), tc.wantErr)
+			assert.HasErr(t, c.Send(ctx, "hello", &m), tc.wantErr)
 
 			if tc.wantErr == nil {
 				assert.Equal(t, gotHeader.Get("Content-Encoding"), "aes128gcm")

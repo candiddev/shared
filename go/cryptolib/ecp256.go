@@ -9,6 +9,7 @@ import (
 	"crypto/x509"
 	"encoding/base64"
 	"fmt"
+	"math/big"
 	"sync"
 )
 
@@ -136,12 +137,16 @@ func (e ECP256PrivateKey) Sign(message []byte, hash crypto.Hash) (signature []by
 		return nil, fmt.Errorf("%w: %w", ErrCreatingHash, err)
 	}
 
-	sig, err := ecdsa.SignASN1(rand.Reader, k, n.Sum(nil))
+	r, s, err := ecdsa.Sign(rand.Reader, k, n.Sum(nil))
 	if err != nil {
 		return nil, fmt.Errorf("%w: %w", ErrSign, err)
 	}
 
-	return sig, nil
+	out := make([]byte, 2*32)
+	r.FillBytes(out[0:32])
+	s.FillBytes(out[32:])
+
+	return out, nil
 }
 
 func (ECP256PublicKey) Algorithm() Algorithm {
@@ -216,7 +221,10 @@ func (e ECP256PublicKey) Verify(message []byte, hash crypto.Hash, signature []by
 		return fmt.Errorf("%w: %w", ErrCreatingHash, err)
 	}
 
-	if !ecdsa.VerifyASN1(k, n.Sum(nil), signature) {
+	r := big.NewInt(0).SetBytes(signature[:32])
+	s := big.NewInt(0).SetBytes(signature[32:])
+
+	if !ecdsa.Verify(k, n.Sum(nil), r, s) {
 		return ErrVerify
 	}
 

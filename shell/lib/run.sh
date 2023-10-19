@@ -108,9 +108,22 @@ rpb () {
 	run-postgresql-backup
 }
 
+cmd run-postgresql-clean Run PostgreSQL clean
+run-postgresql-clean () {
+	# quoting this causes the command to break
+	# shellcheck disable=SC2086
+	echo -e "DROP OWNED BY homechart;" | ${CR} exec ${CR_EXEC_POSTGRESQL} homechart
+	# shellcheck disable=SC2086
+	echo -e "DROP OWNED BY homechart;" | ${CR} exec ${CR_EXEC_POSTGRESQL} homechart_self_hosted
+	# shellcheck disable=SC2086
+	echo -e "GRANT ALL PRIVILEGES ON DATABASE homechart TO homechart" | ${CR} exec ${CR_EXEC_POSTGRESQL} homechart
+	# shellcheck disable=SC2086
+	echo -e "GRANT ALL PRIVILEGES ON DATABASE homechart_self_hosted TO homechart" | ${CR} exec ${CR_EXEC_POSTGRESQL} homechart_self_hosted
+}
+
 cmd run-postgresql-cli,rpc Run PostgreSQL CLI
 run-postgresql-cli () {
-	run-postgresql
+	run-postgresql-start
 
 	# quoting this causes the command to break
 	# shellcheck disable=SC2086
@@ -122,7 +135,7 @@ rpc () {
 
 cmd run-postgresql-restore,rpr Run PostgreSQL restore
 run-postgresql-restore () {
-	clean-postgresql
+	run-postgresql-clean
 
 	printf "Running PostgreSQL restore..."
 	try "${CR} exec ${CR_EXEC_POSTGRESQL} < postgresql.sql"

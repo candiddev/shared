@@ -135,6 +135,10 @@
 	border-bottom: var(--border);
 }
 
+.FormItem__multi:not(:first-of-type) {
+	padding-top: var(--padding);
+}
+
 .FormItem__multi--disabled {
 	width: auto;
 }

@@ -3,7 +3,6 @@ package cryptolib
 import (
 	"crypto"
 	"crypto/ecdsa"
-	"encoding/base64"
 	"testing"
 
 	"github.com/candiddev/shared/go/assert"
@@ -57,10 +56,6 @@ func TestECP256(t *testing.T) {
 	assert.HasErr(t, err, nil)
 
 	err = pubStr.Verify(m, crypto.SHA256, sig)
-	assert.HasErr(t, err, nil)
-
-	b, _ := base64.StdEncoding.DecodeString("MEQCIELkh1ThrJlhYVdMlhaRG7RdZgZ/R3zCd1q2C7haDa6eAiBc8Xw+0b9blcdTlVAh6Be77aqHruiZ5fLS7U2V6e4QrA==")
-	err = pubStr.Verify(m, crypto.SHA256, b)
 	assert.HasErr(t, err, nil)
 
 	// ECDH

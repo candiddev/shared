@@ -72,7 +72,7 @@ func TestToken(t *testing.T) {
 
 			m1, _ := got1.GetSignMessage(a, prv.ID)
 			assert.Equal(t, got1.HeaderBase64 != "", true)
-			assert.Equal(t, m1, got1.HeaderBase64+got1.PayloadBase64)
+			assert.Equal(t, m1, got1.HeaderBase64+"."+got1.PayloadBase64)
 
 			assert.HasErr(t, got1.Sign(prv), nil)
 			assert.Equal(t, got1.SignatureBase64 != "", true)

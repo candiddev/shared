@@ -1,18 +1,18 @@
-import { NewRSAKey, rsaDecrypt, rsaEncrypt } from "./RSA";
+import { NewRSA2048Key, rsa2048OAEPDecrypt, rsa2048OAEPEncrypt } from "./RSA2048";
 
-test("RSA", async () => {
-	const key = await NewRSAKey() as {
+test("RSA2048", async () => {
+	const key = await NewRSA2048Key() as {
 		privateKey: string,
 		publicKey: string,
 	};
 
 	const input = "testing";
 
-	let output = await rsaEncrypt(key.publicKey, input) as string;
+	let output = await rsa2048OAEPEncrypt(key.publicKey, input) as string;
 	expect(output)
 		.toHaveLength(344);
 
-	output = await rsaDecrypt(key.privateKey, output) as string;
+	output = await rsa2048OAEPDecrypt(key.privateKey, output) as string;
 	expect(output)
 		.toBe(input);
 
@@ -21,15 +21,15 @@ test("RSA", async () => {
 	key.publicKey = "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA1VduJ6wj3k+4zEczSb7H6rFpIHGDbtu3ZFncFmbkNshMSw6u9jLMQd7qIxbTblmkGYr98mTGus0zkbrv+iNBLzncVr8XpEF/vt9nqGK3nvBi4ip1qSRll4JyFISaWwL7tW1wke+JRpnFR/x56IcrY5AA1kJJAHF7MdEDS8c7gNyLWoSck+D3PTdODKhkVCWg63uw512/JjGW/GytqIop3P/sBvuWW703olDyhU1GyISqHbfe9uKs2Pzr6XmR+t1WD483Jft5ciCMuBA2jrgtJb4E5qEUGWUyDMK8kxyv/qkAf0tVpuEO/woO5270HHIcNjLxZrX9Ut3RpQ1UBMn30QIDAQAB";
 	const goOutput = "lvhMxKGaKzkUtZE2mhzAc6bD2qfaySflKmHC8zdLeG3kce7LiHppI/5xL4FauRZItJ/Bukb8Z3njOGGqkzu3kBEgE5PD/B5qO5odWjYDOPMc17iqJdWUm9Ifdpltokr4hsE0LnvoA6OP9ArbrOOUjt6TrNIk5mBWOz9VyUmbnEbzRqAkyYGycbTnDbLr2PTWB4vm9JxHsjd3D6C3sus9eLhvwjhTlq81QeeEn3YqfFVwXAKC4JH/sI+Ep9lh03o9tBkNHiBt7Sm/lIasLLd3u/C8dS3NgFaJXD0TzCuujVsjhorN3bR+YFIzfk8w5sT2lDURfe6Wie1ex9VRJYx2TQ==";
 
-	output = await rsaEncrypt(key.publicKey, input) as string;
+	output = await rsa2048OAEPEncrypt(key.publicKey, input) as string;
 	expect(output)
 		.toHaveLength(344);
 
-	output = await rsaDecrypt(key.privateKey, output) as string;
+	output = await rsa2048OAEPDecrypt(key.privateKey, output) as string;
 	expect(output)
 		.toBe(input);
 
-	output = await rsaDecrypt(key.privateKey, goOutput) as string;
+	output = await rsa2048OAEPDecrypt(key.privateKey, goOutput) as string;
 	expect(output)
 		.toBe(input);
 });

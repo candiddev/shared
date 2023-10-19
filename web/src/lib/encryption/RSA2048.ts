@@ -2,7 +2,7 @@ import type { Err } from "@lib/services/Log";
 import { IsErr, NewErr } from "@lib/services/Log";
 import { ArrayBufferToBase64, Base64ToArrayBuffer } from "@lib/utilities/ArrayBuffer";
 
-export async function NewRSAKey (): Promise<{privateKey: string, publicKey: string,} | Err> { // eslint-disable-line jsdoc/require-jsdoc
+export async function NewRSA2048Key (): Promise<{privateKey: string, publicKey: string,} | Err> { // eslint-disable-line jsdoc/require-jsdoc
 	const key = await crypto.subtle.generateKey({
 		hash: "SHA-256",
 		modulusLength: 2048,
@@ -32,7 +32,7 @@ export async function NewRSAKey (): Promise<{privateKey: string, publicKey: stri
 	};
 }
 
-export async function importRSAKey (key: string, publicKey?: boolean): Promise<CryptoKey | Err> {
+export async function importRSA2048Key (key: string, publicKey?: boolean): Promise<CryptoKey | Err> {
 	return crypto.subtle.importKey(publicKey === true ?
 		"spki" :
 		"pkcs8", Base64ToArrayBuffer(key), {
@@ -50,8 +50,8 @@ export async function importRSAKey (key: string, publicKey?: boolean): Promise<C
 		});
 }
 
-export async function rsaEncrypt (publicKey: string, input: string): Promise<string | Err> {
-	const key = await importRSAKey(publicKey, true);
+export async function rsa2048OAEPEncrypt (publicKey: string, input: string): Promise<string | Err> {
+	const key = await importRSA2048Key(publicKey, true);
 
 	if (IsErr(key)) {
 		return key;
@@ -72,8 +72,8 @@ export async function rsaEncrypt (publicKey: string, input: string): Promise<str
 	return ArrayBufferToBase64(enc);
 }
 
-export async function rsaDecrypt (privateKey: string, input: string): Promise<string | Err> {
-	const key = await importRSAKey(privateKey);
+export async function rsa2048OAEPDecrypt (privateKey: string, input: string): Promise<string | Err> {
+	const key = await importRSA2048Key(privateKey);
 
 	if (IsErr(key)) {
 		return key;

@@ -44,7 +44,7 @@ const (
 // TokenHeader is a JWT header.
 type TokenHeader struct {
 	Algorithm Algorithm `json:"alg"`
-	KeyID     string    `json:"kid"`
+	KeyID     string    `json:"kid,omitempty"`
 	Type      string    `json:"typ"`
 }
 
@@ -133,7 +133,7 @@ func Parse(token string, keys cryptolib.KeysVerify) (*Token, cryptolib.KeyVerify
 	}
 
 	for i := range keys {
-		err = keys[i].Verify([]byte(strings.Join(parts[0:2], "")), header.getHash(), sig)
+		err = keys[i].Verify([]byte(strings.Join(parts[0:2], ".")), header.getHash(), sig)
 		if err == nil {
 			p = keys[i]
 
@@ -180,7 +180,7 @@ func (t *Token) GetSignMessage(a Algorithm, keyID string) (string, error) {
 
 	t.HeaderBase64 = base64.RawURLEncoding.EncodeToString(p)
 
-	return t.HeaderBase64 + t.PayloadBase64, nil
+	return t.HeaderBase64 + "." + t.PayloadBase64, nil
 }
 
 // ParsePayload parses a token payload and validates it.  Returns an error if any validation fails.

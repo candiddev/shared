@@ -2,14 +2,14 @@ import type { Err } from "@lib/services/Log";
 import { IsErr, NewErr } from "@lib/services/Log";
 import { ArrayBufferToBase64, Base64ToArrayBuffer } from "@lib/utilities/ArrayBuffer";
 
-async function importAESKey (key: string): Promise<CryptoKey> {
+async function importAES128Key (key: string): Promise<CryptoKey> {
 	return crypto.subtle.importKey("raw", Base64ToArrayBuffer(key), "AES-GCM", true, [
 		"encrypt",
 		"decrypt",
 	]);
 }
 
-export async function NewAESKey (): Promise<string | Err> {
+export async function NewAES128Key (): Promise<string | Err> {
 	const key = await crypto.subtle.generateKey({
 		length: 128,
 		name: "AES-GCM",
@@ -32,8 +32,8 @@ export async function NewAESKey (): Promise<string | Err> {
 	return ArrayBufferToBase64(b);
 }
 
-export async function aesEncrypt (key: string, input: string): Promise<string | Err> {
-	const aes = await importAESKey(key);
+export async function aes128GCMEncrypt (key: string, input: string): Promise<string | Err> {
+	const aes = await importAES128Key(key);
 	const iv = crypto.getRandomValues(new Uint8Array(12));
 	const enc = await crypto.subtle.encrypt({
 		iv: iv,
@@ -59,8 +59,8 @@ export async function aesEncrypt (key: string, input: string): Promise<string | 
 	return ArrayBufferToBase64(output);
 }
 
-export async function aesDecrypt (key: string, input: string): Promise<string | Err> {
-	const aes = await importAESKey(key);
+export async function aes128GCMDecrypt (key: string, input: string): Promise<string | Err> {
+	const aes = await importAES128Key(key);
 	const enc = Base64ToArrayBuffer(input);
 	const iv = enc.slice(0, 12);
 	const encText = enc.slice(12);

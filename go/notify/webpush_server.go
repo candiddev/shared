@@ -31,7 +31,6 @@ import (
 
 // WebPush is the server details for sending push notifications.
 type WebPush struct {
-	BaseURL         string `json:"-"`
 	VAPIDPrivateKey string `json:"vapidPrivateKey"`
 	VAPIDPublicKey  string `json:"vapidPublicKey"`
 }
@@ -63,20 +62,22 @@ type WebPushMessage struct {
 
 // NewWebPushVAPID generates a new private and public VAPID.
 func NewWebPushVAPID() (prv, pub string, err error) {
-	p, _, err := cryptolib.NewECP256()
+	prv1, pub1, err := cryptolib.NewECP256()
 	if err != nil {
 		return "", "", fmt.Errorf("error generating private key: %w", err)
 	}
 
-	k, err := p.PrivateKeyECDH()
+	pr, err := base64.StdEncoding.DecodeString(string(prv1))
 	if err != nil {
 		return "", "", fmt.Errorf("error generating private key: %w", err)
 	}
 
-	prv = base64.RawURLEncoding.EncodeToString(k.Bytes())
-	pub = base64.RawURLEncoding.EncodeToString(k.PublicKey().Bytes())
+	pu, err := base64.StdEncoding.DecodeString(string(pub1))
+	if err != nil {
+		return "", "", fmt.Errorf("error generating private key: %w", err)
+	}
 
-	return prv, pub, nil
+	return base64.RawURLEncoding.EncodeToString(pr), base64.RawURLEncoding.EncodeToString(pu), nil
 }
 
 // WebPushActions are the actions to take for the web push.
@@ -176,13 +177,15 @@ func getWebPushCipherNonce(client *ecdh.PublicKey, server *ecdh.PrivateKey, auth
 }
 
 // generateJWT must be called during a mutex lock.
-func (c *WebPush) getJWT(endpoint string) (string, error) {
+func (c *WebPush) getJWT(baseURL, endpoint string) (string, error) {
 	u, err := url.Parse(endpoint)
 	if err != nil {
 		return "", fmt.Errorf("error parsing endpoint: %w", err)
 	}
 
-	t, err := jwt.New(&webPushJWT{}, time.Now().Add(5*time.Hour), []string{fmt.Sprintf("%s://%s", u.Scheme, u.Hostname())}, "", "", c.BaseURL)
+	w := &webPushJWT{}
+
+	t, err := jwt.New(w, time.Now().Add(5*time.Hour), []string{fmt.Sprintf("%s://%s", u.Scheme, u.Hostname())}, "", "", baseURL)
 	if err != nil {
 		return "", err
 	}
@@ -204,7 +207,7 @@ func (c *WebPush) getJWT(endpoint string) (string, error) {
 }
 
 // Send POSTs a WebPushMessage to a WebPush provider.
-func (c *WebPush) Send(ctx context.Context, m *WebPushMessage) errs.Err {
+func (c *WebPush) Send(ctx context.Context, baseURL string, m *WebPushMessage) errs.Err {
 	if c.VAPIDPrivateKey == "" || c.VAPIDPublicKey == "" {
 		metrics.Notifications.WithLabelValues("webpush", "cancelled").Add(1)
 
@@ -256,7 +259,7 @@ func (c *WebPush) Send(ctx context.Context, m *WebPushMessage) errs.Err {
 		return logger.Error(ctx, errs.ErrReceiver.Wrap(ErrSend, fmt.Errorf("error generating crypto: %w", err)))
 	}
 
-	token, err := c.getJWT(m.Client.Endpoint)
+	token, err := c.getJWT(baseURL, m.Client.Endpoint)
 	if err != nil {
 		metrics.Notifications.WithLabelValues("webpush", "failure").Add(1)
 

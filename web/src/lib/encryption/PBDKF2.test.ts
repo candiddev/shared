@@ -1,4 +1,4 @@
-import { aesDecrypt, aesEncrypt } from "@lib/encryption/AES";
+import { aes128GCMDecrypt, aes128GCMEncrypt } from "@lib/encryption/AES128";
 
 import { NewPBDKF2AES128Key } from "./PBDKF2";
 
@@ -7,6 +7,6 @@ test("PBDKF2", async () => {
 	expect(key)
 		.toBe("Zg8nzLfVZ6/wDjDFgIXWew==");
 
-	expect(await aesDecrypt(key, await aesEncrypt(key, "secret") as string))
+	expect(await aes128GCMDecrypt(key, await aes128GCMEncrypt(key, "secret") as string))
 		.toBe("secret");
 });
