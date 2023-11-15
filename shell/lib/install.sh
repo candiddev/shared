@@ -21,6 +21,14 @@ ${EXEC_GO} clean -modcache"
 	fi
 }
 
+cmd install-etcha Install Etcha
+install-etcha () {
+	if ! ${EXEC_ETCHA} version 2>&1 | grep "$(curl -sL https://github.com/candiddev/etcha/releases/latest/download/version)" > /dev/null; then
+		printf "Install Etcha..."
+		try "curl -sL https://github.com/candiddev/etcha/releases/latest/download/etcha_${OSNAME}_${OSARCH}.tar.gz | tar -C .bin -xz etcha"
+	fi
+}
+
 cmd install-go Install Go
 install-go () {
 	if ! ${EXEC_GO} version 2>&1 | grep "${VERSION_GO}" > /dev/null || ! command -v "${EXEC_GOVULNCHECK}" > /dev/null; then 

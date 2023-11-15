@@ -22,6 +22,7 @@ export APP_NAME=${APP_NAME:-}
 
 export BUILD_COMMIT=${BUILD_COMMIT:-$(git rev-parse --short HEAD 2>/dev/null)}
 export BUILD_DATE=${BUILD_DATE:-$(date "+%Y-%m-%d")}
+export BUILD_ENV=${BUILD_ENV:-dev}
 export BUILD_GO_DIR=${BUILD_GO_DIR:-}
 export BUILD_GO_TAGS=${BUILD_GO_TAGS:-develop}
 export BUILD_GO_VARS=${BUILD_GO_VARS:-}
@@ -35,9 +36,11 @@ export BUILD_NAME=${APP_NAME}_${BUILD_TARGET_OS}_${BUILD_TARGET_ARCH}
 
 case ${BUILD_SOURCE} in
 	main)
+		BUILD_ENV="stg"
 		BUILD_TAG="main"
 		;;
 	tag)
+		BUILD_ENV="prd"
 		BUILD_TAG=$(git tag --points-at HEAD | grep -v main)
 		;;
 	*)
@@ -71,6 +74,7 @@ export DEBUG=${DEBUG:-}
 export DEPLOY_HOSTS=${DEPLOY_HOSTS:-}
 
 export EXEC_AIR=${BINDIR}/go/local/bin/air
+export EXEC_ETCHA=${BINDIR}/etcha
 export EXEC_GO=${BINDIR}/go/lib/bin/go
 export EXEC_GOLANGCILINT="${BINDIR}/golangci-lint"
 export EXEC_GOVULNCHECK=${BINDIR}/go/local/bin/govulncheck

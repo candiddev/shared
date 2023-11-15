@@ -7,6 +7,14 @@ run-air () {
 	${EXEC_AIR} -c "${DIR}/containers/air.toml"
 }
 
+cmd run-etcha,re Run Etcha
+run-etcha () {
+	${EXEC_ETCHA} "${@}"
+}
+re () {
+	run-etcha "${@}"
+}
+
 cmd run-github Curl GitHub\'s API
 run-github () {
 	run-vault-secrets-github
@@ -148,6 +156,14 @@ cmd run-postgresql-stop Stop PostgreSQL container
 run-postgresql-stop () {
 	printf "Stopping PostgreSQL container..."
 	try "${CR} rm -fv candiddev_postgresql || true"
+}
+
+cmd run-rclone,rr Run Rclone
+run-rclone () {
+	${EXEC_RCLONE} "${@}"
+}
+rr () {
+	run-rclone "${@}"
 }
 
 cmd run-start Start all containers
