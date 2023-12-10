@@ -69,4 +69,24 @@ func TestECP256(t *testing.T) {
 
 	_, err = ECP256PrivateKey("HIOI1gk7T/rVrDkKmj1K3szf0HyGH0j4CdLA0ROIqHQ=").PrivateKeyECDH()
 	assert.HasErr(t, err, nil)
+
+	// KDF
+	v := []byte("test")
+	v1, err := pubStr.EncryptAsymmetric(v, "123", EncryptionAES128GCM)
+	assert.HasErr(t, err, nil)
+	assert.Equal(t, v1.KDF, KDFECDHP256)
+	assert.Equal(t, v1.KDFInput != "", true)
+	assert.Equal(t, v1.KeyID, "123")
+
+	out, err := prvStr.DecryptAsymmetric(v1)
+	assert.HasErr(t, err, nil)
+	assert.Equal(t, out, v)
+
+	v2, _ := pubStr.EncryptAsymmetric(v, "123", EncryptionAES128GCM)
+	assert.Equal(t, v1.KDFInput != v2.KDFInput, true)
+
+	prvStr, _, _ = NewECP256()
+
+	_, err = prvStr.DecryptAsymmetric(v1)
+	assert.HasErr(t, err, ErrDecryptingKey)
 }

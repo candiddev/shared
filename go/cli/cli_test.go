@@ -71,6 +71,8 @@ Commands:
     	Fails the thing
   hello world [arg1] [arg2]
     	Does the thing
+  jq
+    	Query JSON from stdin using jq.  Supports standard JQ queries, and the -r flag to render raw values
   show-config
     	Print the current configuration
   version
@@ -78,7 +80,7 @@ Commands:
 
 Flags:
   -c string
-    	Path to JSON/Jsonnet configuration files separated by a comma
+    	Path to JSON/Jsonnet configuration files separated by a comma (default "app.jsonnet")
   -f string
     	Set log format (human, kv, raw, default: human)
   -l string
@@ -117,6 +119,8 @@ Commands:
     	Fails the thing
   hello world [arg1] [arg2]
     	Does the thing
+  jq
+    	Query JSON from stdin using jq.  Supports standard JQ queries, and the -r flag to render raw values
   version
     	Print version information
 

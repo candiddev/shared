@@ -14,8 +14,8 @@ var ErrGetTemplate = errors.New("error getting template")
 var ErrPostTemplate = errors.New("error running post template")
 
 // Parse reads a config from envPrefix and paths.  If envPrefix is an empty string, env will not be parsed.
-func Parse(ctx context.Context, c any, configArgs []string, envPrefix, extension, paths string) errs.Err { //nolint:revive
-	if err := getFiles(ctx, c, paths); err != nil {
+func Parse(ctx context.Context, c any, configArgs []string, envPrefix, path string) errs.Err {
+	if err := GetFile(ctx, c, path); err != nil {
 		return logger.Error(ctx, err)
 	}
 

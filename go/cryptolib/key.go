@@ -3,6 +3,7 @@ package cryptolib
 import (
 	"context"
 	"crypto"
+	"crypto/rand"
 	"database/sql/driver"
 	"encoding/gob"
 	"errors"
@@ -19,9 +20,8 @@ import (
 // Algorithm is the type of key.
 type Algorithm string
 
-const (
-	AlgorithmDefault Algorithm = "default"
-)
+// AlgorithmBest will select he best Algorithm.
+const AlgorithmBest Algorithm = "best"
 
 var ErrParseKeyUnknown = errors.New("unknown key format")
 var ErrParseKeyNotImplemented = errors.New("key cannot be used for the required operation")
@@ -49,37 +49,117 @@ type Key[T KeyProvider] struct {
 // KeyProvider is something that can be a key.
 type KeyProvider interface {
 	Algorithm() Algorithm
+	Provides(e Encryption) bool
 }
 
 // KeyProviderDecryptAsymmetric is a key that decrypts asymmetrically.
 type KeyProviderDecryptAsymmetric interface {
 	DecryptAsymmetric(input EncryptedValue) (output []byte, err error)
+	Sign(message []byte, hash crypto.Hash) (signature []byte, err error)
+	KeyProvider
+}
+
+// KeyProviderDecryptKDF is a key used for decrypting a KDF with existing inputs.
+type KeyProviderDecryptKDF interface {
+	KDF() KDF
+	DecryptKDF(input, keyID string) (key []byte, err error)
 	KeyProvider
 }
 
 // KeyProviderEncryptAsymmetric is a key that encrypts asymmetrically.
 type KeyProviderEncryptAsymmetric interface {
-	EncryptAsymmetric(input []byte) (output EncryptedValue, err error)
+	EncryptAsymmetric(input []byte, keyID string, encryption Encryption) (output EncryptedValue, err error)
+	Verify(message []byte, hash crypto.Hash, signature []byte) (err error)
+	KeyProvider
+}
+
+// KeyProviderEncryptKDF is a key that creates a new KDF.
+type KeyProviderEncryptKDF interface {
+	KDF() KDF
+	EncryptKDF() (input string, key []byte, err error)
 	KeyProvider
 }
 
 // KeyProviderEncryptSymmetric is a key that encrypts symmetrically.
 type KeyProviderEncryptSymmetric interface {
 	DecryptSymmetric(input EncryptedValue) (output []byte, err error)
-	EncryptSymmetric(input []byte) (output EncryptedValue, err error)
+	EncryptSymmetric(input []byte, keyID string) (output EncryptedValue, err error)
 	KeyProvider
 }
 
-// KeyProviderSign is a key that signs things.
-type KeyProviderSign interface {
-	Sign(message []byte, hash crypto.Hash) (signature []byte, err error)
-	KeyProvider
-}
+// GenerateKeys is a helper function for CLI apps to generate crypto keys.
+func GenerateKeys[T cli.AppConfig[any]]() cli.Command[T] {
+	return cli.Command[T]{
+		ArgumentsRequired: []string{
+			"encrypt-asymmetric, encrypt-symmetric, sign-verify",
+		},
+		ArgumentsOptional: []string{
+			"name",
+			"algorithm, default: best",
+		},
+		Name: "generate-keys",
+		Run: func(ctx context.Context, args []string, c T) errs.Err {
+			m := map[string]string{}
 
-// KeyProviderVerify is a key that verifies things.
-type KeyProviderVerify interface {
-	Verify(message []byte, hash crypto.Hash, signature []byte) (err error)
-	KeyProvider
+			a := EncryptionBest
+			n := newID()
+
+			if len(args) > 2 {
+				n = args[2]
+			}
+
+			if len(args) > 3 {
+				a = Encryption(args[2])
+			}
+
+			var k string
+
+			var pu string
+
+			switch args[1] {
+			case "encrypt-symmetric":
+				key, err := NewKeyEncryptSymmetric(a)
+				if err != nil {
+					return logger.Error(ctx, errs.ErrReceiver.Wrap(err))
+				}
+
+				key.ID = n
+
+				k = key.String()
+			case "encrypt-asymmetric":
+				fallthrough
+			case "sign-verify":
+				prv, pub, err := NewKeysEncryptAsymmetric(a)
+				if err != nil {
+					return logger.Error(ctx, errs.ErrReceiver.Wrap(err))
+				}
+
+				prv.ID = n
+				pub.ID = n
+				k = prv.String()
+				pu = pub.String()
+			}
+
+			v, err := EncryptKDF(Argon2ID, n, []byte(k), EncryptionBest)
+			if err != nil {
+				return logger.Error(ctx, errs.ErrReceiver.Wrap(err))
+			}
+
+			if v.Ciphertext != "" {
+				k = v.String()
+			}
+
+			if pu == "" {
+				m["key"] = k
+			} else {
+				m["privateKey"] = k
+				m["publicKey"] = pu
+			}
+
+			return cli.Print(m)
+		},
+		Usage: "Generate cryptographic keys",
+	}
 }
 
 // ParseKey turns a string into a Key or error.
@@ -89,9 +169,11 @@ func ParseKey[T KeyProvider](s string) (Key[T], error) {
 	var kp KeyProvider
 
 	if r := strings.Split(s, ":"); len(r) == 2 || len(r) == 3 {
-		switch Algorithm(r[0]) {
+		switch Algorithm(r[0]) { //nolint:exhaustive
 		case AlgorithmAES128:
 			kp = AES128Key(r[1])
+		case AlgorithmChaCha20:
+			kp = ChaCha20Key(r[1])
 		case AlgorithmECP256Private:
 			kp = ECP256PrivateKey(r[1])
 		case AlgorithmECP256Public:
@@ -106,7 +188,6 @@ func ParseKey[T KeyProvider](s string) (Key[T], error) {
 			kp = RSA2048PublicKey(r[1])
 		case AlgorithmNone:
 			kp = None(r[1])
-		case AlgorithmDefault:
 		}
 
 		a, ok := any(kp).(T)
@@ -124,10 +205,6 @@ func ParseKey[T KeyProvider](s string) (Key[T], error) {
 	}
 
 	return k, fmt.Errorf("%w: %s", ErrParseKeyUnknown, s)
-}
-
-func (k Key[T]) Algorithm() Algorithm {
-	return k.Key.Algorithm()
 }
 
 // IsNil returns whether the key is nil.
@@ -172,152 +249,55 @@ func (k *Key[T]) UnmarshalText(data []byte) error {
 	return err
 }
 
-// GenerateKeys is a helper function for CLI apps to generate crypto keys.
-func GenerateKeys[T cli.AppConfig[any]]() cli.Command[T] {
-	return cli.Command[T]{
-		ArgumentsRequired: []string{
-			"encrypt-asymmetric, encrypt-symmetric, sign-verify",
-		},
-		Name: "generate-keys",
-		Run: func(ctx context.Context, args []string, _ T) errs.Err {
-			m := map[string]string{}
+func NewKeysEncryptAsymmetric(e Encryption) (Key[KeyProviderDecryptAsymmetric], Key[KeyProviderEncryptAsymmetric], error) {
+	var prv KeyProviderDecryptAsymmetric
 
-			switch args[1] {
-			case "encrypt-symmetric":
-				key, err := NewKeyEncryptSymmetric()
-				if err != nil {
-					return logger.Error(ctx, errs.ErrReceiver.Wrap(err))
-				}
+	var pub KeyProviderEncryptAsymmetric
 
-				m["key"] = key.String()
-			case "encrypt-asymmetric":
-				prv, pub, err := NewKeysEncryptAsymmetric()
-				if err != nil {
-					return logger.Error(ctx, errs.ErrReceiver.Wrap(err))
-				}
+	var err error
 
-				m["privateKey"] = prv.String()
-				m["publicKey"] = pub.String()
-			case "sign-verify":
-				prv, pub, err := NewKeysSign()
-				if err != nil {
-					return logger.Error(ctx, errs.ErrReceiver.Wrap(err))
-				}
-
-				m["privateKey"] = prv.String()
-				m["publicKey"] = pub.String()
-			}
-
-			logger.Raw(types.JSONToString(m) + "\n")
-
-			return nil
-		},
-		Usage: "Generate cryptographic keys",
+	switch e { //nolint:exhaustive
+	case EncryptionBest:
+		fallthrough
+	case Encryption(KDFECDHX25519):
+		prv, pub, err = NewEd25519()
+	case Encryption(KDFECDHP256):
+		prv, pub, err = NewECP256()
+	case EncryptionRSA2048OAEPSHA256:
+		prv, pub, err = NewRSA2048()
+	default:
+		err = fmt.Errorf("%w: valid values are ed25519, ecp256, and rsa2048", ErrUnknownAlgorithm)
 	}
-}
 
-// KeyDecryptAsymmetric is Key that decrypts asymmetrically.
-type KeyDecryptAsymmetric struct {
-	Key[KeyProviderDecryptAsymmetric]
-}
-
-func (k *KeyDecryptAsymmetric) DecryptAsymmetric(input EncryptedValue) ([]byte, error) {
-	return k.Key.Key.DecryptAsymmetric(input)
-}
-
-type KeysDecryptAsymmetric []KeyDecryptAsymmetric
-
-// KeyEncryptAsymmetric is Key that encrypts asymmetrically.
-type KeyEncryptAsymmetric struct {
-	Key[KeyProviderEncryptAsymmetric]
-}
-
-func (k *KeyEncryptAsymmetric) EncryptAsymmetric(value []byte) (EncryptedValue, error) {
-	o, err := k.Key.Key.EncryptAsymmetric(value)
-	o.KeyID = k.ID
-
-	return o, err
-}
-
-func NewKeysEncryptAsymmetric() (KeyDecryptAsymmetric, KeyEncryptAsymmetric, error) {
-	prv, pub, err := NewRSA2048()
 	id := newID()
 
-	return KeyDecryptAsymmetric{
-			Key: Key[KeyProviderDecryptAsymmetric]{
-				ID:  id,
-				Key: prv,
-			},
+	return Key[KeyProviderDecryptAsymmetric]{
+			ID:  id,
+			Key: prv,
 		},
-		KeyEncryptAsymmetric{
-			Key: Key[KeyProviderEncryptAsymmetric]{
-				ID:  id,
-				Key: pub,
-			},
+		Key[KeyProviderEncryptAsymmetric]{
+			ID:  id,
+			Key: pub,
 		}, err
 }
+func NewKeyEncryptSymmetric(e Encryption) (Key[KeyProviderEncryptSymmetric], error) {
+	var k KeyProviderEncryptSymmetric
 
-// KeyEncryptSymmetric is Key that encrypts Symmetrically.
-type KeyEncryptSymmetric struct {
-	Key[KeyProviderEncryptSymmetric]
-}
+	var err error
 
-func NewKeyEncryptSymmetric() (KeyEncryptSymmetric, error) {
-	k, err := NewAES128Key()
+	switch e { //nolint:exhaustive
+	case EncryptionAES128GCM:
+		k, err = NewAES128Key(rand.Reader)
+	case EncryptionBest:
+		fallthrough
+	case EncryptionChaCha20Poly1305:
+		k, err = NewChaCha20Key(rand.Reader)
+	default:
+		err = fmt.Errorf("%w: valid values are aes128 and chacha20", ErrUnknownAlgorithm)
+	}
 
-	return KeyEncryptSymmetric{
-		Key: Key[KeyProviderEncryptSymmetric]{
-			ID:  types.RandString(10),
-			Key: k,
-		},
+	return Key[KeyProviderEncryptSymmetric]{
+		ID:  types.RandString(10),
+		Key: k,
 	}, err
-}
-
-func (k *KeyEncryptSymmetric) DecryptSymmetric(input EncryptedValue) ([]byte, error) {
-	return k.Key.Key.DecryptSymmetric(input)
-}
-
-func (k *KeyEncryptSymmetric) EncryptSymmetric(value []byte) (EncryptedValue, error) {
-	o, err := k.Key.Key.EncryptSymmetric(value)
-	o.KeyID = k.ID
-
-	return o, err
-}
-
-// KeySign is Key that signs things.
-type KeySign struct {
-	Key[KeyProviderSign]
-}
-
-func (k *KeySign) Sign(message []byte, hash crypto.Hash) (signature []byte, err error) {
-	return k.Key.Key.Sign(message, hash)
-}
-
-// KeyVerify is Key that verifies things.
-type KeyVerify struct {
-	Key[KeyProviderVerify]
-}
-
-// KeysVerify are Keys that verifies things.
-type KeysVerify []KeyVerify
-
-func (k *KeyVerify) Verify(message []byte, hash crypto.Hash, signature []byte) (err error) {
-	return k.Key.Key.Verify(message, hash, signature)
-}
-
-func NewKeysSign() (KeySign, KeyVerify, error) {
-	prv, pub, err := NewEd25519()
-	id := newID()
-
-	return KeySign{
-			Key: Key[KeyProviderSign]{
-				ID:  id,
-				Key: prv,
-			},
-		}, KeyVerify{
-			Key: Key[KeyProviderVerify]{
-				ID:  id,
-				Key: pub,
-			},
-		}, err
 }

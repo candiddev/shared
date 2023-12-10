@@ -4,15 +4,22 @@ import (
 	"crypto"
 	"crypto/ed25519"
 	"crypto/rand"
+	"crypto/sha512"
 	"crypto/x509"
 	"encoding/base64"
 	"fmt"
 	"sync"
+
+	"filippo.io/edwards25519"
+	"golang.org/x/crypto/curve25519"
 )
 
 const (
-	AlgorithmEd25519Private Algorithm = "ed25519private"
-	AlgorithmEd25519Public  Algorithm = "ed25519public"
+	AlgorithmEd25519        Algorithm     = "ed25519"
+	AlgorithmEd25519Private Algorithm     = "ed25519private"
+	AlgorithmEd25519Public  Algorithm     = "ed25519public"
+	KDFECDHX25519           KDF           = "ecdhx25519"
+	SignatureHashEd25519    SignatureHash = "ed25519"
 )
 
 // Ed25519PrivateKey is a private key type.
@@ -59,6 +66,51 @@ func (Ed25519PrivateKey) Algorithm() Algorithm {
 	return AlgorithmEd25519Private
 }
 
+func (e Ed25519PrivateKey) DecryptAsymmetric(input EncryptedValue) ([]byte, error) {
+	return DecryptKDF(e, input)
+}
+
+func (e Ed25519PrivateKey) DecryptKDF(input, _ string) (key []byte, err error) {
+	pub := Ed25519PublicKey(input)
+
+	pubE, err := pub.PublicKeyECDH()
+	if err != nil {
+		return nil, err
+	}
+
+	prvE, err := e.PrivateKeyECDH()
+	if err != nil {
+		return nil, err
+	}
+
+	k, err := curve25519.X25519(prvE, pubE)
+	if err != nil {
+		return nil, fmt.Errorf("%w: %w", ErrGeneratingKDF, err)
+	}
+
+	return k, nil
+}
+
+func (Ed25519PrivateKey) KDF() KDF {
+	return KDFECDHX25519
+}
+
+func (e Ed25519PrivateKey) PrivateKeyECDH() ([]byte, error) {
+	p, err := e.PrivateKey()
+	if err != nil {
+		return nil, fmt.Errorf("%w: %w", ErrParsingPrivateKey, err)
+	}
+
+	h := sha512.New()
+	if _, err := h.Write(p.Seed()); err != nil {
+		return nil, fmt.Errorf("%w: %w", ErrParsingPrivateKey, err)
+	}
+
+	out := h.Sum(nil)
+
+	return out[:curve25519.ScalarSize], nil
+}
+
 func (e Ed25519PrivateKey) PrivateKey() (ed25519.PrivateKey, error) {
 	ed25519PrivateKeys.mutex.Lock()
 
@@ -96,6 +148,10 @@ func (e Ed25519PrivateKey) PrivateKey() (ed25519.PrivateKey, error) {
 	return p, nil
 }
 
+func (Ed25519PrivateKey) Provides(Encryption) bool {
+	return false
+}
+
 func (e Ed25519PrivateKey) Sign(message []byte, _ crypto.Hash) (signature []byte, err error) {
 	k, err := e.PrivateKey()
 	if err != nil {
@@ -107,6 +163,42 @@ func (e Ed25519PrivateKey) Sign(message []byte, _ crypto.Hash) (signature []byte
 
 func (Ed25519PublicKey) Algorithm() Algorithm {
 	return AlgorithmEd25519Public
+}
+
+func (e Ed25519PublicKey) EncryptAsymmetric(input []byte, keyID string, encryption Encryption) (EncryptedValue, error) {
+	return EncryptKDF(e, keyID, input, encryption)
+}
+
+func (Ed25519PublicKey) KDF() KDF {
+	return KDFECDHX25519
+}
+
+func (e Ed25519PublicKey) EncryptKDF() (input string, key []byte, err error) {
+	pubE, err := e.PublicKeyECDH()
+	if err != nil {
+		return "", nil, err
+	}
+
+	prv, pub, err := NewEd25519()
+	if err != nil {
+		return "", nil, err
+	}
+
+	prvE, err := prv.PrivateKeyECDH()
+	if err != nil {
+		return "", nil, err
+	}
+
+	key, err = curve25519.X25519(prvE, pubE)
+	if err != nil {
+		return "", nil, fmt.Errorf("%w: %w", ErrGeneratingKDF, err)
+	}
+
+	return string(pub), key, nil
+}
+
+func (Ed25519PublicKey) Provides(Encryption) bool {
+	return false
 }
 
 func (e Ed25519PublicKey) PublicKey() (ed25519.PublicKey, error) {
@@ -141,6 +233,20 @@ func (e Ed25519PublicKey) PublicKey() (ed25519.PublicKey, error) {
 	}
 
 	return p, nil
+}
+
+func (e Ed25519PublicKey) PublicKeyECDH() ([]byte, error) {
+	p, err := e.PublicKey()
+	if err != nil {
+		return nil, fmt.Errorf("%w: %w", ErrParsingPublicKey, err)
+	}
+
+	pk, err := new(edwards25519.Point).SetBytes(p)
+	if err != nil {
+		return nil, fmt.Errorf("%w: %w", ErrParsingPublicKey, err)
+	}
+
+	return pk.BytesMontgomery(), nil
 }
 
 func (e Ed25519PublicKey) Verify(message []byte, _ crypto.Hash, signature []byte) error {

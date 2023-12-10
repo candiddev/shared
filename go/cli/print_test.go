@@ -21,8 +21,8 @@ func (c *C) CLIConfig() *Config {
 	return &c.CLI
 }
 
-func (c *C) Parse(ctx context.Context, configArgs []string, paths string) errs.Err {
-	return config.Parse(ctx, c, configArgs, "cli", "", paths)
+func (c *C) Parse(ctx context.Context, configArgs []string) errs.Err {
+	return config.Parse(ctx, c, configArgs, "cli", c.CLI.ConfigPath)
 }
 
 type msg struct {
@@ -30,6 +30,23 @@ type msg struct {
 }
 
 func TestPrint(t *testing.T) {
+	out := map[string]any{
+		"b": true,
+		"d": 1,
+		"a": "e",
+	}
+
+	logger.SetStd()
+	assert.HasErr(t, Print(out), nil)
+	assert.Equal(t, logger.ReadStd(), `{
+  "a": "e",
+  "b": true,
+  "d": 1
+}
+`)
+}
+
+func TestPrintConfig(t *testing.T) {
 	ctx := context.Background()
 
 	c := C{
@@ -53,12 +70,10 @@ func TestPrint(t *testing.T) {
 
 	assert.Equal(t, logger.ReadStd(), `{
   "CLI": {
+    "configPath": "",
     "logFormat": "",
     "logLevel": "",
     "noColor": false
-  },
-  "Hide": {
-    "Message": "Hello"
   },
   "Show": {
     "Message": "World"

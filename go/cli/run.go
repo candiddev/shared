@@ -331,7 +331,7 @@ func (c *Config) runMockLock() {
 }
 
 // RunMain wraps a main function with args to parse the output.
-func RunMain(main func(), stdin string, args ...string) string {
+func RunMain(m func() errs.Err, stdin string, args ...string) (string, errs.Err) {
 	os.Args = append([]string{""}, args...)
 
 	SetStdin(stdin)
@@ -339,7 +339,7 @@ func RunMain(main func(), stdin string, args ...string) string {
 
 	flag.CommandLine = flag.NewFlagSet(os.Args[0], flag.ExitOnError)
 
-	main()
+	err := m()
 
-	return logger.ReadStd()
+	return strings.TrimSpace(logger.ReadStd()), err
 }

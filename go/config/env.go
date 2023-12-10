@@ -32,7 +32,7 @@ func getEnv(ctx context.Context, config any, prefix string) errs.Err {
 		return logger.Error(ctx, errs.ErrReceiver.Wrap(ErrUpdateEnv, err))
 	}
 
-	if err := parseValue(ctx, config, prefix+"_", os.Environ()); err != nil {
+	if err := ParseValues(ctx, config, prefix+"_", os.Environ()); err != nil {
 		return logger.Error(ctx, errs.ErrReceiver.Wrap(ErrUpdateEnv, err))
 	}
 

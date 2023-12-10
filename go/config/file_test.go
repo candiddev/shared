@@ -14,6 +14,8 @@ func TestGetFile(t *testing.T) {
 
 	stdin := os.Stdin
 
+	os.WriteFile("../good.jsonnet", []byte(`{app:{debug: false}}`), 0600)
+
 	tests := map[string]struct {
 		err   bool
 		input string
@@ -32,7 +34,18 @@ func TestGetFile(t *testing.T) {
 		},
 		"good json": {
 			input: "testdata/good.json",
-			want:  false,
+		},
+		"good jsonnet": {
+			input: "good.jsonnet",
+		},
+		"bad jsonnet": {
+			input: "good.json",
+			want:  true,
+		},
+		"bad jsonnet path": {
+			err:   true,
+			input: "./good.json",
+			want:  true,
 		},
 	}
 
@@ -43,10 +56,11 @@ func TestGetFile(t *testing.T) {
 			c := config{}
 			c.App.Debug = true
 
-			assert.Equal(t, getFiles(ctx, &c, tc.input) != nil, tc.err)
+			assert.Equal(t, GetFile(ctx, &c, tc.input) != nil, tc.err)
 			assert.Equal(t, c.App.Debug, tc.want)
 		})
 	}
 
 	os.Stdin = stdin
+	os.Remove("../good.jsonnet")
 }

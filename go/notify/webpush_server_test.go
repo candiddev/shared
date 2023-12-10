@@ -194,12 +194,8 @@ func TestWebPushSend(t *testing.T) {
 				srvB, err := base64.RawURLEncoding.DecodeString(tc.srvPub)
 				assert.HasErr(t, err, nil)
 
-				token, _, err := jwt.Parse(strings.Split(gotHeader.Get("Authorization"), " ")[1], cryptolib.KeysVerify{
-					{
-						Key: cryptolib.Key[cryptolib.KeyProviderVerify]{
-							Key: cryptolib.ECP256PublicKey(base64.StdEncoding.EncodeToString(srvB)),
-						},
-					},
+				token, _, err := jwt.Parse(strings.Split(gotHeader.Get("Authorization"), " ")[1], []cryptolib.KeyProviderEncryptAsymmetric{
+					cryptolib.ECP256PublicKey(base64.StdEncoding.EncodeToString(srvB)),
 				})
 				assert.HasErr(t, err, nil)
 

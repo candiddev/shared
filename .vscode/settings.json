@@ -8,7 +8,7 @@
   },
   "editor.tabSize": 2,
   "editor.codeActionsOnSave": {
-    "source.fixAll.eslint": true
+    "source.fixAll.eslint": "explicit"
   },
   "eslint.workingDirectories": ["web"],
   "files.eol": "\n",

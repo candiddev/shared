@@ -44,7 +44,7 @@ func TestImportsEqual(t *testing.T) {
 }
 
 func TestGetPath(t *testing.T) {
-	logger.UseTestLogger(t)
+	ctx := logger.UseTestLogger(t)
 
 	c := config{
 		Vars: map[string]any{
@@ -109,7 +109,7 @@ func TestGetPath(t *testing.T) {
 }
 
 func TestGetString(t *testing.T) {
-	logger.UseTestLogger(t)
+	ctx := logger.UseTestLogger(t)
 
 	c := config{
 		Vars: map[string]any{

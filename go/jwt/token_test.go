@@ -17,8 +17,8 @@ func TestToken(t *testing.T) {
 	rsa2048prv, rsa2048pub, _ := cryptolib.NewRSA2048()
 
 	tests := map[string]struct {
-		private cryptolib.KeyProviderSign
-		public  cryptolib.KeyProviderVerify
+		private cryptolib.KeyProviderDecryptAsymmetric
+		public  cryptolib.KeyProviderEncryptAsymmetric
 	}{
 		"ed25519": {
 			private: ed25519prv,
@@ -38,17 +38,13 @@ func TestToken(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			e := time.Now().Add(10 * time.Second)
 
-			prv := cryptolib.KeySign{
-				Key: cryptolib.Key[cryptolib.KeyProviderSign]{
-					ID:  types.RandString(10),
-					Key: tc.private,
-				},
+			prv := cryptolib.Key[cryptolib.KeyProviderDecryptAsymmetric]{
+				ID:  types.RandString(10),
+				Key: tc.private,
 			}
-			pub := cryptolib.KeyVerify{
-				Key: cryptolib.Key[cryptolib.KeyProviderVerify]{
-					ID:  types.RandString(10),
-					Key: tc.public,
-				},
+			pub := cryptolib.Key[cryptolib.KeyProviderEncryptAsymmetric]{
+				ID:  types.RandString(10),
+				Key: tc.public,
 			}
 			j1 := jwtCustom{
 				Licensed: true,
@@ -77,11 +73,11 @@ func TestToken(t *testing.T) {
 			assert.HasErr(t, got1.Sign(prv), nil)
 			assert.Equal(t, got1.SignatureBase64 != "", true)
 
-			gotT1, p, err := Parse(got1.String(), cryptolib.KeysVerify{
-				pub,
+			gotT1, p, err := Parse(got1.String(), []cryptolib.KeyProviderEncryptAsymmetric{
+				pub.Key,
 			})
 			assert.HasErr(t, err, nil)
-			assert.Equal(t, p, pub)
+			assert.Equal(t, p, pub.Key)
 
 			jOut1 := &jwtCustom{}
 			assert.HasErr(t, gotT1.ParsePayload(jOut1, "", "", ""), nil)
@@ -99,8 +95,8 @@ func TestToken(t *testing.T) {
 			assert.HasErr(t, err, nil)
 			assert.HasErr(t, got2.Sign(prv), nil)
 
-			gotT2, _, err := Parse(got2.String(), cryptolib.KeysVerify{
-				pub,
+			gotT2, _, err := Parse(got2.String(), []cryptolib.KeyProviderEncryptAsymmetric{
+				pub.Key,
 			})
 			assert.HasErr(t, err, nil)
 

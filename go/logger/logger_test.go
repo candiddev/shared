@@ -79,7 +79,7 @@ func TestLog(t *testing.T) {
 
 			ctx = SetFormat(ctx, tc.format)
 			ctx = SetLevel(ctx, tc.minLevel)
-			noColor = tc.noColor
+			ctx = SetNoColor(ctx, tc.noColor)
 
 			switch tc.level { //nolint:exhaustive
 			case LevelDebug:

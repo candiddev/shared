@@ -15,9 +15,10 @@ func TestRSA2048(t *testing.T) {
 
 	v := []byte("testing")
 
-	got, err := pub.EncryptAsymmetric(v)
+	got, err := pub.EncryptAsymmetric(v, "123", EncryptionNone)
 	assert.Equal(t, err, nil)
 	assert.Equal(t, len(got.Ciphertext), 344)
+	assert.Equal(t, got.KeyID, "123")
 
 	gotString, err := prv.DecryptAsymmetric(got)
 	assert.Equal(t, err, nil)
@@ -28,7 +29,7 @@ func TestRSA2048(t *testing.T) {
 	pub = RSA2048PublicKey("MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAs10JFml2RJIkbndR664EkmFKsH2BpbAbtcHh2pI9g6zCYZoVWhklTPfM3iVUwR5+O+ikhUCqhZcu/+OkY879PZNeQOqPBASpSColHLVlkVeWCcRaBNC+for9ncXOd3bD9p+HN9YbWdjXbTy9TS+8NBiI4Tdf6tXa1XnbeSCv+FvqZxvFQqvxNq/i0dsIbAKHPI1hPlBJbvYGsxg2xEJQUTeJ6CgncLGvjKpOCST9JsiZCt0fKlHsABF7K5YrkUMChCcyoq74pblIjwLYEjFmeeDI9C85DYFie7dYFQ5WmQY2QFwudfHtN5uWmZ96631CqmPJKiRjuFqbKo3jIyhMFwIDAQAB")
 	jsOutput, _ := ParseEncryptedValue(string(EncryptionRSA2048OAEPSHA256) + ":WIuY/t9cIWH/BrUf6FzEGpTD8n5wCYix4Ykf0vNZ2QlQrN9CWACYAddjKPMKFudHSqh12DrWS65M85NdA+g9wMaWtNyJ60SYvyCLmjqdW1sLCHFnRJO+mvBbZZhysbvx3//bhd9MbrKJ/9kE3PCdJ++bEx/QP/npXIErv1mvfV1h7f88uUm2nuT7j3e80hEMa9BY5ajbAJ0yJCUyaHhHn331Q1MhtboehzD1/hHaE/ja6ve6diOR9McsuRMmrj68jmoZcX+lscivGUym1uD8E0/ox2AX92V+mTDZHqjDdbl7KrCTQvOXRb/1Ib2viLhg6hK7kftjBEEUOxV+czGHmQ==")
 
-	got, err = pub.EncryptAsymmetric(v)
+	got, err = pub.EncryptAsymmetric(v, "", EncryptionNone)
 	assert.Equal(t, err, nil)
 	assert.Equal(t, len(got.Ciphertext), 344)
 

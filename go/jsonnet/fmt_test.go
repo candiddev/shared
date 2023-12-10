@@ -8,7 +8,8 @@ import (
 )
 
 func TestFmt(t *testing.T) {
-	logger.NoColor()
+	ctx := logger.UseTestLogger(t)
+	ctx = logger.SetFormat(ctx, logger.FormatHuman)
 
 	tests := map[string]struct {
 		imports    *Imports

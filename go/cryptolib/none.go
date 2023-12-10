@@ -27,3 +27,7 @@ func (None) EncryptSymmetric(value []byte, keyID string) (EncryptedValue, error)
 func (None) DecryptSymmetric(value EncryptedValue) ([]byte, error) {
 	return base64.StdEncoding.DecodeString(value.Ciphertext)
 }
+
+func (None) Provides(e Encryption) bool {
+	return e == EncryptionNone
+}

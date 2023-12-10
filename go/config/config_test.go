@@ -77,7 +77,14 @@ func TestParse(t *testing.T) {
 	t.Setenv("ENV", "prd")
 	t.Setenv("HOMECHART_app_yes", "true")
 
-	c := config{}
+	c := config{
+		App: configApp{
+			Lists: []string{
+				"a",
+				"b",
+			},
+		},
+	}
 
 	want := config{
 		App: configApp{
@@ -90,7 +97,7 @@ func TestParse(t *testing.T) {
 				"this",
 				"that",
 			},
-			ListEl: "world",
+			ListEl: "b",
 			Nested: map[string]*configAppNested{
 				"something": {
 					Bool: true,
@@ -107,11 +114,11 @@ func TestParse(t *testing.T) {
 		},
 		Commands: []configCommand{
 			{
-				Exec: "hello",
+				Exec: "a",
 				Path: "this",
 			},
 			{
-				Exec: "hello",
+				Exec: "a",
 				Path: "that",
 			},
 		},
@@ -121,6 +128,6 @@ func TestParse(t *testing.T) {
 		},
 	}
 
-	assert.Equal(t, Parse(ctx, &c, strings.Split(`app_arg1=d,config={"vars":{"test": false}},vars_arg=2`, ","), "HOMECHART", "", "testdata/good.json,testdata/good.jsonnet"), nil)
+	assert.Equal(t, Parse(ctx, &c, strings.Split(`app_arg1=d,config={"vars":{"test": false}},vars_arg=2`, ","), "HOMECHART", "testdata/good.jsonnet"), nil)
 	assert.Equal(t, c, want)
 }

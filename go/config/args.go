@@ -11,7 +11,7 @@ import (
 var ErrUpdateArg = errors.New("error updating config from argument")
 
 func getArgs(ctx context.Context, config any, args []string) errs.Err {
-	if err := parseValue(ctx, config, "", args); err != nil {
+	if err := ParseValues(ctx, config, "", args); err != nil {
 		return logger.Error(ctx, errs.ErrReceiver.Wrap(ErrUpdateArg, err))
 	}
 

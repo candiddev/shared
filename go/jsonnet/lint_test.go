@@ -10,7 +10,7 @@ import (
 )
 
 func TestLint(t *testing.T) {
-	logger.UseTestLogger(t)
+	ctx := logger.UseTestLogger(t)
 
 	c := config{}
 

@@ -1,7 +1,7 @@
 package jwt
 
 import (
-	gocrypto "crypto"
+	"crypto"
 	"encoding/base64"
 	"encoding/json"
 	"errors"
@@ -97,8 +97,8 @@ func New(claims CustomClaims, expiresAt time.Time, audience []string, id, issuer
 }
 
 // Parse takes a token and parses it into a Token struct for future use and the public key that verified it.  Returns an error if the signature does not match or the token format is invalid.
-func Parse(token string, keys cryptolib.KeysVerify) (*Token, cryptolib.KeyVerify, error) {
-	var p cryptolib.KeyVerify
+func Parse(token string, keys []cryptolib.KeyProviderEncryptAsymmetric) (*Token, cryptolib.KeyProviderEncryptAsymmetric, error) {
+	var p cryptolib.KeyProviderEncryptAsymmetric
 
 	parts := strings.Split(token, ".")
 	if len(parts) != 3 {
@@ -145,7 +145,7 @@ func Parse(token string, keys cryptolib.KeysVerify) (*Token, cryptolib.KeyVerify
 		return t, p, err
 	}
 
-	m, err := getSigningMethod(p.Key.Algorithm())
+	m, err := getSigningMethod(p.Algorithm())
 	if err != nil {
 		return t, p, err
 	}
@@ -157,9 +157,9 @@ func Parse(token string, keys cryptolib.KeysVerify) (*Token, cryptolib.KeyVerify
 	return t, p, nil
 }
 
-func (h *TokenHeader) getHash() gocrypto.Hash {
+func (h *TokenHeader) getHash() crypto.Hash {
 	if h.Algorithm == AlgorithmES2565 || h.Algorithm == AlgorithmRS256 {
-		return gocrypto.SHA256
+		return crypto.SHA256
 	}
 
 	return 0
@@ -254,7 +254,7 @@ func (t *Token) ParsePayload(claims CustomClaims, audRegex string, jidRegex stri
 	return claims.Valid()
 }
 
-func (t *Token) Sign(k cryptolib.KeySign) error {
+func (t *Token) Sign(k cryptolib.Key[cryptolib.KeyProviderDecryptAsymmetric]) error {
 	a, err := getSigningMethod(k.Key.Algorithm())
 	if err != nil {
 		return err
@@ -265,7 +265,7 @@ func (t *Token) Sign(k cryptolib.KeySign) error {
 		return err
 	}
 
-	sig, err := k.Key.Key.Sign([]byte(m), t.Header.getHash())
+	sig, err := k.Key.Sign([]byte(m), t.Header.getHash())
 	if err != nil {
 		return err
 	}

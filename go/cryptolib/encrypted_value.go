@@ -12,34 +12,76 @@ import (
 // Encryption is the type of encryption.
 type Encryption string
 
-const EncryptionDefault = "default"
+const (
+	EncryptionBest           Encryption = "best"
+	BestEncryptionAsymmetric            = Encryption(KDFECDHX25519)
+	BestEncryptionSymmetric             = EncryptionChaCha20Poly1305
+)
+
+var (
+	EncryptionAsymmetric = []string{ //nolint:gochecknoglobals
+		string(EncryptionBest),
+		string(KDFECDHP256),
+		string(KDFECDHX25519),
+	}
+	EncryptionSymmetric = []string{ //nolint:gochecknoglobals
+		string(EncryptionBest),
+		string(EncryptionAES128GCM),
+		string(EncryptionChaCha20Poly1305),
+	}
+)
+
+// KDF is a Key Derivation Function.
+type KDF string
 
 // EncryptedValue is a decoded encrypted value.
 type EncryptedValue struct {
 	Ciphertext string
 	Encryption Encryption
 	KeyID      string
+	KDF        KDF
+	KDFInput   string
 }
 
 // ParseEncryptedValue turns a string into an EncryptedValue or error.
 func ParseEncryptedValue(s string) (EncryptedValue, error) {
-	if r := strings.Split(s, ":"); len(r) == 2 || len(r) == 3 {
-		var e Encryption
+	v := EncryptedValue{}
 
-		switch Encryption(r[0]) {
+	if r := strings.Split(s, "@"); len(r) == 2 {
+		s = r[1]
+
+		if k := strings.Split(r[0], ":"); len(k) == 2 {
+			switch KDF(k[0]) {
+			case KDFArgon2ID:
+				v.KDF = KDFArgon2ID
+			case KDFECDHX25519:
+				v.KDF = KDFECDHX25519
+			case KDFECDHP256:
+				v.KDF = KDFECDHP256
+			}
+
+			if v.KDF == "" {
+				return v, ErrUnknownKDF
+			}
+
+			v.KDFInput = k[1]
+		}
+	}
+
+	if r := strings.Split(s, ":"); len(r) == 2 || len(r) == 3 {
+		switch Encryption(r[0]) { //nolint:exhaustive
 		case EncryptionNone:
-			e = EncryptionNone
+			v.Encryption = EncryptionNone
 		case EncryptionAES128GCM:
-			e = EncryptionAES128GCM
+			v.Encryption = EncryptionAES128GCM
+		case EncryptionChaCha20Poly1305:
+			v.Encryption = EncryptionChaCha20Poly1305
 		case EncryptionRSA2048OAEPSHA256:
-			e = EncryptionRSA2048OAEPSHA256
+			v.Encryption = EncryptionRSA2048OAEPSHA256
 		}
 
-		if e != "" {
-			v := EncryptedValue{
-				Ciphertext: r[1],
-				Encryption: e,
-			}
+		if v.Encryption != "" {
+			v.Ciphertext = r[1]
 
 			if len(r) == 3 {
 				v.KeyID = r[2]
@@ -50,6 +92,65 @@ func ParseEncryptedValue(s string) (EncryptedValue, error) {
 	}
 
 	return EncryptedValue{}, ErrUnknownEncryption
+}
+
+// Decrypt is a generic way to decrypt a value from a list of keys.
+func (e EncryptedValue) Decrypt(keys []KeyProvider) ([]byte, error) {
+	var err error
+
+	var match bool
+
+	var out []byte
+
+	// Handle KDFs right away
+	if e.KDF != "" {
+		// Decrypt PBKDFs
+		if e.KDF == KDFArgon2ID {
+			match = true
+			out, err = DecryptKDF(Argon2ID, e)
+		} else {
+			// Iterate keys
+			for i := range keys {
+				// If the key can be used as a KDF, the KDF type matches the EV (we could check KeyID stuff here, but this lets us test all available keys.  Could be inefficient, but better UX if the KeyID is changed...)
+				if d, ok := keys[i].(KeyProviderDecryptKDF); ok {
+					out, err = DecryptKDF(d, e)
+
+					// End loop if we decrypted it
+					if len(out) > 0 {
+						match = true
+
+						break
+					}
+				}
+			}
+		}
+	} else {
+		// For everything else...
+		for i := range keys {
+			// If the key provides encryption, try decrypting
+			if keys[i].Provides(e.Encryption) {
+				switch t := keys[i].(type) {
+				case KeyProviderDecryptAsymmetric:
+					out, err = t.DecryptAsymmetric(e)
+				case KeyProviderEncryptSymmetric:
+					out, err = t.DecryptSymmetric(e)
+				}
+			}
+
+			// End loop if we decrypted it
+			if len(out) > 0 {
+				match = true
+
+				break
+			}
+		}
+	}
+
+	if !match && err == nil {
+		err = ErrDecryptingKey
+	}
+
+	return out, err
 }
 
 func (e EncryptedValue) ErrUnsupportedDecrypt() error {
@@ -67,9 +168,10 @@ func (e EncryptedValue) MarshalJSON() ([]byte, error) {
 }
 
 func (e *EncryptedValue) String() string {
-	o := fmt.Sprintf("%s:%s", e.Encryption, e.Ciphertext)
-	if e.KeyID != "" {
-		o += ":" + e.KeyID
+	o := fmt.Sprintf("%s:%s:%s", e.Encryption, e.Ciphertext, e.KeyID)
+
+	if e.KDF != "" {
+		o = fmt.Sprintf("%s:%s@%s", e.KDF, e.KDFInput, o)
 	}
 
 	return o

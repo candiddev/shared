@@ -4,45 +4,29 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
-	"strings"
 
+	"github.com/candiddev/shared/go/config"
 	"github.com/candiddev/shared/go/errs"
 	"github.com/candiddev/shared/go/logger"
 	"github.com/candiddev/shared/go/types"
 )
 
-var ErrPrint = errors.New("error printing config")
+// Print takes any input, marshals to JSON, and prints it to stdout.
+func Print(out any) errs.Err {
+	o, err := json.MarshalIndent(out, "", "  ")
+	if err != nil {
+		return errs.ErrReceiver.Wrap(errors.New("error printing"), err)
+	}
+
+	logger.Raw(string(o) + "\n")
+
+	return nil
+}
 
 func printConfig[T AppConfig[any]](ctx context.Context, a App[T]) errs.Err {
-	var out map[string]any
-
-	j, err := json.Marshal(a.Config)
+	out, err := config.Mask(ctx, a.Config, a.HideConfigFields)
 	if err != nil {
-		return logger.Error(ctx, errs.ErrReceiver.Wrap(ErrPrint, err))
-	}
-
-	err = json.Unmarshal(j, &out)
-	if err != nil {
-		return logger.Error(ctx, errs.ErrReceiver.Wrap(ErrPrint, err))
-	}
-
-	for _, field := range a.HideConfigFields {
-		f1 := field
-		f2 := ""
-
-		if strings.Contains(field, ".") {
-			str := strings.Split(field, ".")
-			f1 = str[0]
-			f2 = str[1]
-		}
-
-		if f2 == "" {
-			if out[field] != nil && len(out[field].(map[string]any)) == 0 {
-				delete(out, field)
-			}
-		} else {
-			delete(out[f1].(map[string]any), f2)
-		}
+		return logger.Error(ctx, err)
 	}
 
 	logger.Info(logger.SetFormat(ctx, logger.FormatRaw), types.JSONToString(out))

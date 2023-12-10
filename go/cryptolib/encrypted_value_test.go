@@ -15,20 +15,20 @@ func TestParseEncryptedValue(t *testing.T) {
 	}{
 		"None": {
 			input: EncryptionNone + ":none",
-			want:  "none:none",
+			want:  "none:none:",
 		},
 		"AES128": {
 			input: EncryptionAES128GCM + ":aes",
-			want:  "aes128gcm:aes",
+			want:  "aes128gcm:aes:",
 		},
 		"RSA2048": {
 			input: EncryptionRSA2048OAEPSHA256 + ":rsa",
-			want:  "rsa2048oaepsha256:rsa",
+			want:  "rsa2048oaepsha256:rsa:",
 		},
 		"Unknown": {
 			input: Encryption("unknown:unknown"),
 			err:   ErrUnknownEncryption,
-			want:  ":",
+			want:  "::",
 		},
 	}
 
@@ -48,7 +48,7 @@ func TestEncryptedValue(t *testing.T) {
 	}
 
 	// Marshal
-	strout := fmt.Sprintf("%s:%s", ev.Encryption, ev.Ciphertext)
+	strout := fmt.Sprintf("%s:%s:%s", ev.Encryption, ev.Ciphertext, ev.KeyID)
 	bytout := []byte(fmt.Sprintf(`"%s"`, strout))
 	jsonout, _ := ev.MarshalJSON()
 	assert.Equal(t, bytout, jsonout)
@@ -67,6 +67,32 @@ func TestEncryptedValue(t *testing.T) {
 	evout = EncryptedValue{}
 	evout.Scan(strout)
 	assert.Equal(t, evout, ev)
+
+	// Decrypt
+	prv, pub, _ := NewKeysEncryptAsymmetric(EncryptionBest)
+	k, _ := NewKeyEncryptSymmetric(EncryptionBest)
+	keys := []KeyProvider{
+		prv.Key,
+		pub.Key,
+		k.Key,
+	}
+
+	v := []byte("hello")
+
+	ev, _ = k.Key.EncryptSymmetric(v, "")
+	out, err := ev.Decrypt(keys)
+	assert.HasErr(t, err, nil)
+	assert.Equal(t, out, v)
+
+	ev, _ = pub.Key.EncryptAsymmetric(v, "123", EncryptionAES128GCM)
+	out, err = ev.Decrypt(keys)
+	assert.HasErr(t, err, nil)
+	assert.Equal(t, out, v)
+
+	ev, _ = pub.Key.EncryptAsymmetric(v, "", EncryptionAES128GCM)
+	_, err = ev.Decrypt(keys[:0])
+
+	assert.HasErr(t, err, ErrDecryptingKey)
 }
 
 func TestEncryptedValues(t *testing.T) {
@@ -81,11 +107,11 @@ func TestEncryptedValues(t *testing.T) {
 		},
 	}
 
-	bytout := []byte(`["none:test1","none:test2"]`)
+	bytout := []byte(`["none:test1:","none:test2:"]`)
 	jsonout, _ := ev.MarshalJSON()
 	assert.Equal(t, jsonout, bytout)
 
-	vout := []byte("{none:test1,none:test2}")
+	vout := []byte("{none:test1:,none:test2:}")
 	valout, _ := ev.Value()
 	assert.Equal(t, valout.([]byte), vout)
 

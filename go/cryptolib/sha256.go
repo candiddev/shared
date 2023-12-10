@@ -8,6 +8,8 @@ import (
 	"os"
 )
 
+const SignatureHashSHA256 SignatureHash = "sha256"
+
 // SHA256File accepts a file and returns the SHA or an error.
 func SHA256File(f *os.File) (string, error) {
 	s := sha256.New()

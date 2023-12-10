@@ -13,7 +13,7 @@ import (
 )
 
 func TestImportRender(t *testing.T) {
-	logger.UseTestLogger(t)
+	ctx := logger.UseTestLogger(t)
 
 	t.Setenv("hello", "world")
 

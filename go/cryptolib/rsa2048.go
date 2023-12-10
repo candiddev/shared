@@ -11,6 +11,7 @@ import (
 )
 
 const (
+	AlgorithmRSA2048            Algorithm  = "rsa2048"
 	AlgorithmRSA2048Private     Algorithm  = "rsa2048private"
 	AlgorithmRSA2048Public      Algorithm  = "rsa2048public"
 	EncryptionRSA2048OAEPSHA256 Encryption = "rsa2048oaepsha256"
@@ -62,7 +63,7 @@ func (RSA2048PrivateKey) Algorithm() Algorithm {
 }
 
 func (r RSA2048PrivateKey) DecryptAsymmetric(input EncryptedValue) ([]byte, error) {
-	if input.Encryption == EncryptionDefault || input.Encryption == EncryptionRSA2048OAEPSHA256 {
+	if input.Encryption == EncryptionRSA2048OAEPSHA256 {
 		b, err := base64.StdEncoding.DecodeString(input.Ciphertext)
 		if err != nil {
 			return nil, fmt.Errorf("%w: %w", ErrDecodingValue, err)
@@ -119,6 +120,10 @@ func (r RSA2048PrivateKey) PrivateKey() (*rsa.PrivateKey, error) {
 	}
 
 	return p, nil
+}
+
+func (RSA2048PrivateKey) Provides(e Encryption) bool {
+	return e == EncryptionRSA2048OAEPSHA256
 }
 
 func (r RSA2048PrivateKey) Sign(message []byte, hash crypto.Hash) (signature []byte, err error) {
@@ -178,12 +183,13 @@ func (r RSA2048PublicKey) PublicKey() (*rsa.PublicKey, error) {
 	return p, nil
 }
 
-func (r RSA2048PublicKey) EncryptAsymmetric(value []byte) (EncryptedValue, error) {
+func (r RSA2048PublicKey) EncryptAsymmetric(value []byte, keyID string, _ Encryption) (EncryptedValue, error) {
 	v, err := r.EncryptOAEPSHA256(value)
 
 	return EncryptedValue{
 		Ciphertext: base64.StdEncoding.EncodeToString(v),
 		Encryption: EncryptionRSA2048OAEPSHA256,
+		KeyID:      keyID,
 	}, err
 }
 
@@ -199,6 +205,10 @@ func (r RSA2048PublicKey) EncryptOAEPSHA256(value []byte) ([]byte, error) {
 	}
 
 	return out, nil
+}
+
+func (RSA2048PublicKey) Provides(e Encryption) bool {
+	return e == EncryptionRSA2048OAEPSHA256
 }
 
 func (r RSA2048PublicKey) Verify(message []byte, hash crypto.Hash, signature []byte) error {

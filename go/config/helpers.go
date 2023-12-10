@@ -146,7 +146,8 @@ func getValueFromString(input string, value reflect.Value) (reflect.Value, error
 	return reflect.Value{}, nil
 }
 
-func parseValue(ctx context.Context, config any, prefix string, kvs []string) error { //nolint:gocognit
+// ParseValues will set config values from a list of kv pairs, like environment variables.
+func ParseValues(ctx context.Context, config any, prefix string, kvs []string) error { //nolint:gocognit
 	j := map[string]any{}
 
 	b, err := json.Marshal(config)

@@ -6,10 +6,12 @@ import (
 	"errors"
 	"flag"
 	"fmt"
+	"os"
 	"sort"
 	"strings"
 	"sync"
 
+	"github.com/candiddev/shared/go/config"
 	"github.com/candiddev/shared/go/errs"
 	"github.com/candiddev/shared/go/logger"
 )
@@ -22,6 +24,7 @@ var BuildVersion string //nolint:gochecknoglobals
 
 // Config manages the CLI configuration.
 type Config struct {
+	ConfigPath    string        `json:"configPath"`
 	LogFormat     logger.Format `json:"logFormat"`
 	LogLevel      logger.Level  `json:"logLevel"`
 	NoColor       bool          `json:"noColor"`
@@ -82,11 +85,11 @@ type App[T AppConfig[any]] struct {
 // AppConfig is a configuration that can be used with CLI.
 type AppConfig[T any] interface {
 	CLIConfig() *Config
-	Parse(ctx context.Context, configArgs []string, paths string) errs.Err
+	Parse(ctx context.Context, configArgs []string) errs.Err
 }
 
 // Run is the main entrypoint into a CLI app.
-func (a App[T]) Run() errs.Err { //nolint:gocognit
+func (a App[T]) Run() errs.Err {
 	ctx := context.Background()
 
 	flag.Usage = func() {
@@ -132,12 +135,17 @@ Commands:
 		flag.PrintDefaults()
 	}
 
-	var paths string
+	a.Commands["jq"] = Command[T]{
+		Run:   jq[T],
+		Usage: "Query JSON from stdin using jq.  Supports standard JQ queries, and the -r flag to render raw values",
+	}
 
 	c := ConfigArgs{}
 
 	if !a.NoParse {
-		flag.StringVar(&paths, "c", "", "Path to JSON/Jsonnet configuration files separated by a comma")
+		a.Config.CLIConfig().ConfigPath = strings.ToLower(a.Name) + ".jsonnet"
+
+		flag.StringVar(&a.Config.CLIConfig().ConfigPath, "c", a.Config.CLIConfig().ConfigPath, "Path to JSON/Jsonnet configuration files separated by a comma")
 
 		a.Commands["show-config"] = Command[T]{
 			Run: func(ctx context.Context, args []string, config T) errs.Err {
@@ -159,28 +167,25 @@ Commands:
 		Usage: "Print version information",
 	}
 
-	flag.StringVar((*string)(&a.Config.CLIConfig().LogFormat), "f", string(a.Config.CLIConfig().LogLevel), "Set log format (human, kv, raw, default: human)")
+	flag.StringVar((*string)(&a.Config.CLIConfig().LogFormat), "f", string(a.Config.CLIConfig().LogFormat), "Set log format (human, kv, raw, default: human)")
 	flag.StringVar((*string)(&a.Config.CLIConfig().LogLevel), "l", string(a.Config.CLIConfig().LogLevel), "Set minimum log level (none, debug, info, error, default: info)")
 	flag.BoolVar(&a.Config.CLIConfig().NoColor, "n", a.Config.CLIConfig().NoColor, "Disable colored logging")
 
 	flag.Parse()
 
+	// Parse CLI environment early for logging options.
+	if err := config.ParseValues(ctx, a.Config, strings.ToUpper(a.Name)+"_cli_", os.Environ()); err != nil {
+		return logger.Error(ctx, errs.ErrReceiver.Wrap(config.ErrUpdateEnv, err))
+	}
+
+	ctx = logger.SetFormat(ctx, a.Config.CLIConfig().LogFormat)
+	ctx = logger.SetLevel(ctx, a.Config.CLIConfig().LogLevel)
+	ctx = logger.SetNoColor(ctx, a.Config.CLIConfig().NoColor)
+
 	if !a.NoParse {
-		if err := a.Config.Parse(ctx, c, paths); err != nil {
+		if err := a.Config.Parse(ctx, c); err != nil {
 			return err
 		}
-	}
-
-	if a.Config.CLIConfig().LogFormat != "" {
-		ctx = logger.SetFormat(ctx, a.Config.CLIConfig().LogFormat)
-	}
-
-	if a.Config.CLIConfig().LogLevel != "" {
-		ctx = logger.SetLevel(ctx, a.Config.CLIConfig().LogLevel)
-	}
-
-	if a.Config.CLIConfig().NoColor {
-		logger.NoColor()
 	}
 
 	args := flag.Args()

@@ -79,4 +79,24 @@ func TestEd25519(t *testing.T) {
 	b, _ = base64.StdEncoding.DecodeString("KBu0AQf1MgyvaLV9Z2VF+sqtTxz/9GVZJ03+x0BNwahJbjouT0PRRZ/C9JLyPzuk+7gPfUUgObmarOTpOkzrCw==")
 	err = pubStr.Verify(m, 0, b)
 	assert.HasErr(t, err, nil)
+
+	// KDF
+	v := []byte("test")
+	v1, err := pubStr.EncryptAsymmetric(v, "123", EncryptionAES128GCM)
+	assert.HasErr(t, err, nil)
+	assert.Equal(t, v1.KDF, KDFECDHX25519)
+	assert.Equal(t, v1.KDFInput != "", true)
+	assert.Equal(t, v1.KeyID, "123")
+
+	out, err := prvStr.DecryptAsymmetric(v1)
+	assert.HasErr(t, err, nil)
+	assert.Equal(t, out, v)
+
+	v2, _ := pubStr.EncryptAsymmetric(v, "123", EncryptionAES128GCM)
+	assert.Equal(t, v1.KDFInput != v2.KDFInput, true)
+
+	prvStr, _, _ = NewEd25519()
+
+	_, err = prvStr.DecryptAsymmetric(v1)
+	assert.HasErr(t, err, ErrDecryptingKey)
 }

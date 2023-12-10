@@ -9,62 +9,51 @@ import (
 )
 
 func TestNewKeyEncryptSymmetric(t *testing.T) {
-	k, err := NewKeyEncryptSymmetric()
+	k, err := NewKeyEncryptSymmetric(EncryptionBest)
 	assert.HasErr(t, err, nil)
-	assert.Equal(t, k.Key.Algorithm(), AlgorithmAES128)
+	assert.Equal(t, k.Key.Algorithm(), AlgorithmChaCha20)
 }
 
 func TestNewKeyEncryptAsymmetric(t *testing.T) {
-	prv, pub, err := NewKeysEncryptAsymmetric()
-	assert.HasErr(t, err, nil)
-	assert.Equal(t, prv.Key.Algorithm(), AlgorithmRSA2048Private)
-	assert.Equal(t, pub.Key.Algorithm(), AlgorithmRSA2048Public)
-}
-
-func TestNewKeysSign(t *testing.T) {
-	prv, pub, err := NewKeysSign()
+	prv, pub, err := NewKeysEncryptAsymmetric(EncryptionBest)
 	assert.HasErr(t, err, nil)
 	assert.Equal(t, prv.Key.Algorithm(), AlgorithmEd25519Private)
 	assert.Equal(t, pub.Key.Algorithm(), AlgorithmEd25519Public)
 }
 
 func TestParseKey(t *testing.T) {
-	aes, _ := NewKeyEncryptSymmetric()
+	aes, _ := NewKeyEncryptSymmetric(EncryptionBest)
 
 	k, err := ParseKey[KeyProviderEncryptSymmetric](aes.String())
 	assert.HasErr(t, err, nil)
 	assert.Equal(t, k.ID, aes.ID)
 	assert.Equal(t, k.String(), aes.String())
 
-	_, err = ParseKey[KeyEncryptAsymmetric](aes.String())
+	_, err = ParseKey[KeyProviderEncryptAsymmetric](aes.String())
 	assert.HasErr(t, err, ErrParseKeyNotImplemented)
 
-	_, err = ParseKey[KeyEncryptAsymmetric]("hello!")
+	_, err = ParseKey[KeyProviderEncryptAsymmetric]("hello!")
 	assert.HasErr(t, err, ErrParseKeyUnknown)
 }
 
 func TestKey(t *testing.T) {
-	aes, _ := NewKeyEncryptSymmetric()
+	aes, _ := NewKeyEncryptSymmetric(EncryptionBest)
 
 	j, err := aes.MarshalText()
 	assert.HasErr(t, err, nil)
 	assert.Equal(t, string(j), aes.String())
 
-	assert.Equal(t, aes.String(), fmt.Sprintf("%s:%s:%s", aes.Key.Algorithm(), aes.Key.Key, aes.ID))
+	assert.Equal(t, aes.String(), fmt.Sprintf("%s:%s:%s", aes.Key.Algorithm(), aes.Key, aes.ID))
 
-	var s KeyDecryptAsymmetric
-
-	assert.Equal(t, s.String(), "")
-
-	k := KeyEncryptSymmetric{}
+	k := Key[KeyProviderEncryptSymmetric]{}
 	k.UnmarshalText(j)
 	assert.Equal(t, k, aes)
 }
 
 func TestKeys(t *testing.T) {
-	_, v, _ := NewKeysSign()
+	_, v, _ := NewKeysEncryptAsymmetric(EncryptionBest)
 
-	k := KeysVerify{
+	k := []Key[KeyProviderEncryptAsymmetric]{
 		v,
 	}
 
@@ -73,7 +62,7 @@ func TestKeys(t *testing.T) {
 	assert.HasErr(t, err, nil)
 	assert.Equal(t, string(j), fmt.Sprintf(`["%s"]`, v.String()))
 
-	n := KeysVerify{}
+	n := []Key[KeyProviderEncryptAsymmetric]{}
 
 	assert.HasErr(t, json.Unmarshal(j, &n), nil)
 	assert.Equal(t, n, k)

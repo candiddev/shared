@@ -14,8 +14,10 @@ import (
 )
 
 const (
+	AlgorithmECP256        Algorithm = "ecp256"
 	AlgorithmECP256Private Algorithm = "ecp256private"
 	AlgorithmECP256Public  Algorithm = "ecp256public"
+	KDFECDHP256            KDF       = "ecdhp256"
 	ecp256publicRawLen               = 65
 	ecp256privateRawLen              = 32
 )
@@ -64,6 +66,35 @@ func NewECP256() (privateKey ECP256PrivateKey, publicKey ECP256PublicKey, err er
 
 func (ECP256PrivateKey) Algorithm() Algorithm {
 	return AlgorithmECP256Private
+}
+
+func (e ECP256PrivateKey) DecryptAsymmetric(input EncryptedValue) ([]byte, error) {
+	return DecryptKDF(e, input)
+}
+
+func (e ECP256PrivateKey) DecryptKDF(input, _ string) (key []byte, err error) {
+	pub := ECP256PublicKey(input)
+
+	pubE, err := pub.PublicKeyECDH()
+	if err != nil {
+		return nil, err
+	}
+
+	prvE, err := e.PrivateKeyECDH()
+	if err != nil {
+		return nil, err
+	}
+
+	k, err := prvE.ECDH(pubE)
+	if err != nil {
+		return nil, fmt.Errorf("%w: %w", ErrGeneratingKDF, err)
+	}
+
+	return k, nil
+}
+
+func (ECP256PrivateKey) KDF() KDF {
+	return KDFECDHP256
 }
 
 func (e ECP256PrivateKey) PrivateKey() (*ecdsa.PrivateKey, error) {
@@ -149,8 +180,48 @@ func (e ECP256PrivateKey) Sign(message []byte, hash crypto.Hash) (signature []by
 	return out, nil
 }
 
+func (ECP256PrivateKey) Provides(Encryption) bool {
+	return false
+}
+
 func (ECP256PublicKey) Algorithm() Algorithm {
 	return AlgorithmECP256Public
+}
+
+func (e ECP256PublicKey) EncryptAsymmetric(input []byte, keyID string, encryption Encryption) (EncryptedValue, error) {
+	return EncryptKDF(e, keyID, input, encryption)
+}
+
+func (ECP256PublicKey) KDF() KDF {
+	return KDFECDHP256
+}
+
+func (e ECP256PublicKey) EncryptKDF() (input string, key []byte, err error) {
+	pubE, err := e.PublicKeyECDH()
+	if err != nil {
+		return "", nil, err
+	}
+
+	prv, pub, err := NewECP256()
+	if err != nil {
+		return "", nil, err
+	}
+
+	prvE, err := prv.PrivateKeyECDH()
+	if err != nil {
+		return "", nil, err
+	}
+
+	key, err = prvE.ECDH(pubE)
+	if err != nil {
+		return "", nil, fmt.Errorf("%w: %w", ErrGeneratingKDF, err)
+	}
+
+	return string(pub), key, nil
+}
+
+func (ECP256PublicKey) Provides(Encryption) bool {
+	return false
 }
 
 func (e ECP256PublicKey) PublicKey() (*ecdsa.PublicKey, error) {

@@ -30,7 +30,7 @@ issues:
       linters:
         - revive
       text: "exported: "
-    - source: "(Algorithm|Decrypt|Encrypt)"
+    - source: "(Algorithm|Decrypt|Encrypt|KDF|Signature)"
       linters:
         - revive
       path: cryptolib

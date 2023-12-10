@@ -64,6 +64,20 @@ func SetAttribute(ctx context.Context, key string, value any) context.Context {
 	return ctx
 }
 
+// GetNoColor for current context.
+func GetNoColor(ctx context.Context) bool {
+	if v, ok := ctx.Value(ctxKey("noColor")).(bool); ok {
+		return v
+	}
+
+	return false
+}
+
+// SetNoColor for context.
+func SetNoColor(ctx context.Context, n bool) context.Context {
+	return context.WithValue(ctx, ctxKey("noColor"), n)
+}
+
 // GetFormat for current context.
 func GetFormat(ctx context.Context) Format {
 	if v, ok := ctx.Value(ctxKey("logFormat")).(Format); ok && v != "" {
