@@ -195,7 +195,7 @@ func (c *WebPush) getJWT(baseURL, endpoint string) (string, error) {
 		return "", fmt.Errorf("error decoding private key: %w", err)
 	}
 
-	if err := t.Sign(cryptolib.Key[cryptolib.KeyProviderDecryptAsymmetric]{
+	if err := t.Sign(cryptolib.Key[cryptolib.KeyProviderPrivate]{
 		Key: cryptolib.ECP256PrivateKey(base64.StdEncoding.EncodeToString(b)),
 	}); err != nil {
 		return "", err

@@ -1,7 +1,6 @@
 package cryptolib
 
 import (
-	"encoding/json"
 	"fmt"
 	"testing"
 
@@ -9,35 +8,35 @@ import (
 )
 
 func TestNewKeyEncryptSymmetric(t *testing.T) {
-	k, err := NewKeyEncryptSymmetric(EncryptionBest)
+	k, err := NewKeyEncryptSymmetric(AlgorithmBest)
 	assert.HasErr(t, err, nil)
 	assert.Equal(t, k.Key.Algorithm(), AlgorithmChaCha20)
 }
 
 func TestNewKeyEncryptAsymmetric(t *testing.T) {
-	prv, pub, err := NewKeysEncryptAsymmetric(EncryptionBest)
+	prv, pub, err := NewKeysEncryptAsymmetric(AlgorithmBest)
 	assert.HasErr(t, err, nil)
 	assert.Equal(t, prv.Key.Algorithm(), AlgorithmEd25519Private)
 	assert.Equal(t, pub.Key.Algorithm(), AlgorithmEd25519Public)
 }
 
 func TestParseKey(t *testing.T) {
-	aes, _ := NewKeyEncryptSymmetric(EncryptionBest)
+	aes, _ := NewKeyEncryptSymmetric(AlgorithmBest)
 
-	k, err := ParseKey[KeyProviderEncryptSymmetric](aes.String())
+	k, err := ParseKey[KeyProviderSymmetric](aes.String())
 	assert.HasErr(t, err, nil)
 	assert.Equal(t, k.ID, aes.ID)
 	assert.Equal(t, k.String(), aes.String())
 
-	_, err = ParseKey[KeyProviderEncryptAsymmetric](aes.String())
+	_, err = ParseKey[KeyProviderPrivate](aes.String())
 	assert.HasErr(t, err, ErrParseKeyNotImplemented)
 
-	_, err = ParseKey[KeyProviderEncryptAsymmetric]("hello!")
+	_, err = ParseKey[KeyProviderSymmetric]("hello!")
 	assert.HasErr(t, err, ErrParseKeyUnknown)
 }
 
 func TestKey(t *testing.T) {
-	aes, _ := NewKeyEncryptSymmetric(EncryptionBest)
+	aes, _ := NewKeyEncryptSymmetric(AlgorithmBest)
 
 	j, err := aes.MarshalText()
 	assert.HasErr(t, err, nil)
@@ -45,25 +44,31 @@ func TestKey(t *testing.T) {
 
 	assert.Equal(t, aes.String(), fmt.Sprintf("%s:%s:%s", aes.Key.Algorithm(), aes.Key, aes.ID))
 
-	k := Key[KeyProviderEncryptSymmetric]{}
+	k := Key[KeyProviderSymmetric]{}
 	k.UnmarshalText(j)
 	assert.Equal(t, k, aes)
 }
 
 func TestKeys(t *testing.T) {
-	_, v, _ := NewKeysEncryptAsymmetric(EncryptionBest)
+	_, pub1, _ := NewKeysEncryptAsymmetric(AlgorithmBest)
+	_, pub2, _ := NewKeysEncryptAsymmetric(AlgorithmBest)
 
-	k := []Key[KeyProviderEncryptAsymmetric]{
-		v,
+	k := Keys[KeyProviderPublic]{
+		pub1,
+		pub2,
 	}
 
-	j, err := json.Marshal(k)
+	bytout := []byte(fmt.Sprintf(`["%s","%s"]`, pub1.String(), pub2.String()))
+	jsonout, _ := k.MarshalJSON()
+	assert.Equal(t, jsonout, bytout)
 
-	assert.HasErr(t, err, nil)
-	assert.Equal(t, string(j), fmt.Sprintf(`["%s"]`, v.String()))
+	vout := []byte(fmt.Sprintf(`{%s,%s}`, pub1.String(), pub2.String()))
+	valout, _ := k.Value()
+	assert.Equal(t, valout.([]byte), vout)
 
-	n := []Key[KeyProviderEncryptAsymmetric]{}
+	var kout Keys[KeyProviderPublic]
 
-	assert.HasErr(t, json.Unmarshal(j, &n), nil)
-	assert.Equal(t, n, k)
+	kout.Scan(vout)
+
+	assert.Equal(t, kout, k)
 }

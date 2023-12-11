@@ -9,47 +9,49 @@ import (
 )
 
 func TestNewSignatureVerify(t *testing.T) {
-	edprv, edpub, _ := NewKeysEncryptAsymmetric(Encryption(KDFECDHX25519))
-	ecprv, ecpub, _ := NewKeysEncryptAsymmetric(Encryption(KDFECDHP256))
-	rsprv, rspub, _ := NewKeysEncryptAsymmetric(EncryptionRSA2048OAEPSHA256)
+	edprv, edpub, _ := NewKeysEncryptAsymmetric(AlgorithmEd25519)
+	ecprv, ecpub, _ := NewKeysEncryptAsymmetric(AlgorithmECP256)
+	rsprv, rspub, _ := NewKeysEncryptAsymmetric(AlgorithmRSA2048)
 	msg := []byte("hello world")
 	tests := map[string]struct {
-		sign          KeyProviderDecryptAsymmetric
-		verify        KeyProviderEncryptAsymmetric
+		sign          Key[KeyProviderPrivate]
+		verify        Key[KeyProviderPublic]
 		wantSignErr   error
 		wantVerifyErr error
 	}{
 		"ed25519": {
-			sign:   edprv.Key,
-			verify: edpub.Key,
+			sign:   edprv,
+			verify: edpub,
 		},
 		"ecp256": {
-			sign:   ecprv.Key,
-			verify: ecpub.Key,
+			sign:   ecprv,
+			verify: ecpub,
 		},
 		"rsa": {
-			sign:   rsprv.Key,
-			verify: rspub.Key,
+			sign:   rsprv,
+			verify: rspub,
 		},
 		"wrong": {
-			sign:        Ed25519PrivateKey("hello"),
-			verify:      rspub.Key,
+			sign: Key[KeyProviderPrivate]{
+				Key: Ed25519PrivateKey("hello"),
+			},
+			verify:      rspub,
 			wantSignErr: ErrDecodingPrivateKey,
 		},
 		"mix": {
-			sign:          ecprv.Key,
-			verify:        rspub.Key,
+			sign:          ecprv,
+			verify:        rspub,
 			wantVerifyErr: ErrVerify,
 		},
 	}
 
 	for name, tc := range tests {
 		t.Run(name, func(t *testing.T) {
-			sig, err := NewSignature(tc.sign, "123", msg)
+			sig, err := NewSignature(tc.sign, msg)
 			assert.HasErr(t, err, tc.wantSignErr)
 
 			if tc.wantSignErr == nil {
-				assert.HasErr(t, sig.Verify(msg, []KeyProviderEncryptAsymmetric{
+				assert.HasErr(t, sig.Verify(msg, Keys[KeyProviderPublic]{
 					tc.verify,
 				}), tc.wantVerifyErr)
 			}
@@ -88,9 +90,9 @@ func TestParseSignature(t *testing.T) {
 }
 
 func TestSignature(t *testing.T) {
-	prv, _, _ := NewKeysEncryptAsymmetric(EncryptionBest)
+	prv, _, _ := NewKeysEncryptAsymmetric(AlgorithmBest)
 
-	sig, _ := NewSignature(prv.Key, prv.ID, []byte("helloworld"))
+	sig, _ := NewSignature(prv, []byte("helloworld"))
 
 	// Marshal
 	strout := fmt.Sprintf("%s:%s:%s", sig.Hash, base64.StdEncoding.EncodeToString(sig.Signature), sig.KeyID)

@@ -69,8 +69,8 @@ func TestEncryptedValue(t *testing.T) {
 	assert.Equal(t, evout, ev)
 
 	// Decrypt
-	prv, pub, _ := NewKeysEncryptAsymmetric(EncryptionBest)
-	k, _ := NewKeyEncryptSymmetric(EncryptionBest)
+	prv, pub, _ := NewKeysEncryptAsymmetric(AlgorithmBest)
+	k, _ := NewKeyEncryptSymmetric(AlgorithmBest)
 	keys := []KeyProvider{
 		prv.Key,
 		pub.Key,

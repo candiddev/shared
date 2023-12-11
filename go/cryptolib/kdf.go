@@ -14,13 +14,13 @@ var (
 	}
 )
 
-func DecryptKDF(k KeyProviderDecryptKDF, input EncryptedValue) ([]byte, error) {
-	v, err := k.DecryptKDF(input.KDFInput, input.KeyID)
+func KDFGet(k KeyProviderKDFGet, input EncryptedValue) ([]byte, error) {
+	v, err := k.KDFGet(input.KDFInput, input.KeyID)
 	if err != nil {
 		return nil, err
 	}
 
-	var key KeyProviderEncryptSymmetric
+	var key KeyProviderSymmetric
 
 	switch input.Encryption { //nolint:exhaustive
 	case EncryptionAES128GCM:
@@ -42,10 +42,10 @@ func DecryptKDF(k KeyProviderDecryptKDF, input EncryptedValue) ([]byte, error) {
 	return key.DecryptSymmetric(input)
 }
 
-func EncryptKDF(k KeyProviderEncryptKDF, keyID string, value []byte, e Encryption) (EncryptedValue, error) {
+func KDFSet(k KeyProviderKDFSet, keyID string, value []byte, e Encryption) (EncryptedValue, error) {
 	v := EncryptedValue{}
 
-	i, key, err := k.EncryptKDF()
+	i, key, err := k.KDFSet()
 	if err != nil {
 		return v, err
 	}
@@ -54,7 +54,7 @@ func EncryptKDF(k KeyProviderEncryptKDF, keyID string, value []byte, e Encryptio
 		return v, err
 	}
 
-	var ke KeyProviderEncryptSymmetric
+	var ke KeyProviderSymmetric
 
 	switch e { //nolint:exhaustive
 	case EncryptionAES128GCM:

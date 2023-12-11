@@ -69,10 +69,10 @@ func (ECP256PrivateKey) Algorithm() Algorithm {
 }
 
 func (e ECP256PrivateKey) DecryptAsymmetric(input EncryptedValue) ([]byte, error) {
-	return DecryptKDF(e, input)
+	return KDFGet(e, input)
 }
 
-func (e ECP256PrivateKey) DecryptKDF(input, _ string) (key []byte, err error) {
+func (e ECP256PrivateKey) KDFGet(input, _ string) (key []byte, err error) {
 	pub := ECP256PublicKey(input)
 
 	pubE, err := pub.PublicKeyECDH()
@@ -189,14 +189,14 @@ func (ECP256PublicKey) Algorithm() Algorithm {
 }
 
 func (e ECP256PublicKey) EncryptAsymmetric(input []byte, keyID string, encryption Encryption) (EncryptedValue, error) {
-	return EncryptKDF(e, keyID, input, encryption)
+	return KDFSet(e, keyID, input, encryption)
 }
 
 func (ECP256PublicKey) KDF() KDF {
 	return KDFECDHP256
 }
 
-func (e ECP256PublicKey) EncryptKDF() (input string, key []byte, err error) {
+func (e ECP256PublicKey) KDFSet() (input string, key []byte, err error) {
 	pubE, err := e.PublicKeyECDH()
 	if err != nil {
 		return "", nil, err

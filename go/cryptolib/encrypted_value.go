@@ -107,13 +107,13 @@ func (e EncryptedValue) Decrypt(keys []KeyProvider) ([]byte, error) {
 		// Decrypt PBKDFs
 		if e.KDF == KDFArgon2ID {
 			match = true
-			out, err = DecryptKDF(Argon2ID, e)
+			out, err = KDFGet(Argon2ID, e)
 		} else {
 			// Iterate keys
 			for i := range keys {
 				// If the key can be used as a KDF, the KDF type matches the EV (we could check KeyID stuff here, but this lets us test all available keys.  Could be inefficient, but better UX if the KeyID is changed...)
-				if d, ok := keys[i].(KeyProviderDecryptKDF); ok {
-					out, err = DecryptKDF(d, e)
+				if d, ok := keys[i].(KeyProviderKDFGet); ok {
+					out, err = KDFGet(d, e)
 
 					// End loop if we decrypted it
 					if len(out) > 0 {
@@ -130,9 +130,9 @@ func (e EncryptedValue) Decrypt(keys []KeyProvider) ([]byte, error) {
 			// If the key provides encryption, try decrypting
 			if keys[i].Provides(e.Encryption) {
 				switch t := keys[i].(type) {
-				case KeyProviderDecryptAsymmetric:
+				case KeyProviderPrivate:
 					out, err = t.DecryptAsymmetric(e)
-				case KeyProviderEncryptSymmetric:
+				case KeyProviderSymmetric:
 					out, err = t.DecryptSymmetric(e)
 				}
 			}

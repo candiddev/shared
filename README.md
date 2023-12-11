@@ -2,7 +2,7 @@
 
 > A collection of stuff used by Candid Development
 
-Once upon a time, Candid Development used a monorepo and life was easy.  When we split our monorepo into product specific repos, this shared repository is the junk draw equivalent of the leftover code.  Other Candid repositories heavily use this via submodule and symlinks.
+Once upon a time, Candid Development used a monorepo and life was easy.  When we split our monorepo into product specific repos, this shared repository is the junk drawer equivalent of the leftover code.  Other Candid repositories heavily use this via submodule and symlinks.
 
 ## License
 

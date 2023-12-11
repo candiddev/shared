@@ -32,10 +32,10 @@ type Signature struct {
 	Signature []byte
 }
 
-func NewSignature(k KeyProviderDecryptAsymmetric, keyID string, message []byte) (Signature, error) {
+func NewSignature(k Key[KeyProviderPrivate], message []byte) (Signature, error) {
 	var hash SignatureHash
 
-	switch k.Algorithm() { //nolint:exhaustive
+	switch k.Key.Algorithm() { //nolint:exhaustive
 	case AlgorithmEd25519Private:
 		hash = SignatureHashEd25519
 	default:
@@ -44,7 +44,7 @@ func NewSignature(k KeyProviderDecryptAsymmetric, keyID string, message []byte) 
 
 	s := Signature{
 		Hash:  hash,
-		KeyID: keyID,
+		KeyID: k.ID,
 	}
 
 	h, err := hash.getHash()
@@ -52,7 +52,7 @@ func NewSignature(k KeyProviderDecryptAsymmetric, keyID string, message []byte) 
 		return s, err
 	}
 
-	sig, err := k.Sign(message, h)
+	sig, err := k.Key.Sign(message, h)
 	if err != nil {
 		return s, err
 	}
@@ -127,14 +127,14 @@ func (s Signature) Value() (driver.Value, error) {
 	return s.String(), nil
 }
 
-func (s Signature) Verify(message []byte, keys []KeyProviderEncryptAsymmetric) error {
+func (s Signature) Verify(message []byte, keys Keys[KeyProviderPublic]) error {
 	h, err := s.Hash.getHash()
 	if err != nil {
 		return err
 	}
 
 	for k := range keys {
-		if err := keys[k].Verify(message, h, s.Signature); err == nil {
+		if err := keys[k].Key.Verify(message, h, s.Signature); err == nil {
 			return nil
 		}
 	}
