@@ -89,7 +89,7 @@ type AppConfig[T any] interface {
 }
 
 // Run is the main entrypoint into a CLI app.
-func (a App[T]) Run() errs.Err {
+func (a App[T]) Run() errs.Err { //nolint:gocognit
 	ctx := context.Background()
 
 	flag.Usage = func() {
@@ -143,7 +143,7 @@ Commands:
 	c := ConfigArgs{}
 
 	if !a.NoParse {
-		a.Config.CLIConfig().ConfigPath = config.FindFilenameAscending(ctx, strings.ToLower(a.Name)+".jsonnet")
+		a.Config.CLIConfig().ConfigPath = strings.ToLower(a.Name) + ".jsonnet"
 
 		flag.StringVar(&a.Config.CLIConfig().ConfigPath, "c", a.Config.CLIConfig().ConfigPath, "Path to JSON/Jsonnet configuration files separated by a comma")
 
@@ -183,6 +183,11 @@ Commands:
 	ctx = logger.SetNoColor(ctx, a.Config.CLIConfig().NoColor)
 
 	if !a.NoParse {
+		// Resolve the real config path early by walking parent directories.  If the real config path exists (isn't "") and is different than the current one, update the path value.
+		if p := config.FindPathAscending(ctx, a.Config.CLIConfig().ConfigPath); p != "" && p != a.Config.CLIConfig().ConfigPath {
+			a.Config.CLIConfig().ConfigPath = p
+		}
+
 		if err := a.Config.Parse(ctx, c); err != nil {
 			return err
 		}
