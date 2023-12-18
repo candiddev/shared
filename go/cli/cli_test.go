@@ -5,6 +5,7 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"path/filepath"
 	"testing"
 
 	"github.com/candiddev/shared/go/assert"
@@ -52,6 +53,8 @@ func TestAppRun(t *testing.T) {
 		Name: "App",
 	}
 
+	wd, _ := os.Getwd()
+
 	tests := map[string]struct {
 		args      []string
 		buildDate string
@@ -59,6 +62,7 @@ func TestAppRun(t *testing.T) {
 		output    string
 		noParse   bool
 		run       bool
+		wantPath  string
 	}{
 		"usage": {
 			err: ErrUnknownCommand,
@@ -89,6 +93,7 @@ Flags:
   -x value
     	Set config key=value (can be provided multiple times)
 `,
+			wantPath: "app.jsonnet",
 		},
 		"config": {
 			args: []string{"-n", "-c", "./testdata/config.json", "show-config"},
@@ -96,6 +101,7 @@ Flags:
   "Show": {
     "Message": "Hello World"
   }`,
+			wantPath: filepath.Join(wd, "testdata/config.json"),
 		},
 		"world": {
 			args: []string{"-n", "-c", "./testdata/config.json", "hello", "world"},
@@ -164,6 +170,10 @@ Build Date: %s`, date),
 			assert.HasErr(t, err, tc.err)
 
 			out := logger.ReadStd()
+
+			if tc.wantPath != "" {
+				assert.Equal(t, a.Config.CLI.ConfigPath, tc.wantPath)
+			}
 
 			if tc.run {
 				assert.Equal(t, run, tc.run)

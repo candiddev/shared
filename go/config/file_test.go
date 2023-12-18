@@ -3,6 +3,7 @@ package config
 import (
 	"context"
 	"os"
+	"path/filepath"
 	"testing"
 
 	"github.com/candiddev/shared/go/assert"
@@ -63,4 +64,24 @@ func TestGetFile(t *testing.T) {
 
 	os.Stdin = stdin
 	os.Remove("../good.jsonnet")
+}
+
+func TestFindPathAscending(t *testing.T) {
+	ctx := context.Background()
+
+	wd, _ := os.Getwd()
+
+	tests := map[string]string{
+		"args.go":              filepath.Join(wd, "args.go"),
+		"README.md":            filepath.Join(filepath.Dir(filepath.Join(wd, "..")), "README.md"),
+		"./config.go":          filepath.Join(wd, "config.go"),
+		"./testdata/good.json": filepath.Join(wd, "testdata/good.json"),
+		"test.json":            "",
+	}
+
+	for name, tc := range tests {
+		t.Run(name, func(t *testing.T) {
+			assert.Equal(t, FindPathAscending(ctx, name), tc)
+		})
+	}
 }

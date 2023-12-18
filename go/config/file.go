@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/candiddev/shared/go/errs"
 	"github.com/candiddev/shared/go/jsonnet"
@@ -15,12 +16,9 @@ func GetFile(ctx context.Context, config any, path string) errs.Err {
 	if path != "" {
 		r := jsonnet.NewRender(ctx, config)
 
-		if filepath.Base(path) == path {
-			path = FindFilenameAscending(ctx, path)
-
-			if path == "" {
-				return nil
-			}
+		path = FindPathAscending(ctx, path)
+		if path == "" {
+			return nil
 		}
 
 		i, err := r.GetPath(ctx, path)
@@ -38,17 +36,25 @@ func GetFile(ctx context.Context, config any, path string) errs.Err {
 	return logger.Error(ctx, nil)
 }
 
-// FindFilenameAscending looks for a filename in every parent directory.
-func FindFilenameAscending(ctx context.Context, filename string) (path string) {
+// FindPathAscending looks for a filename in every parent directory.
+func FindPathAscending(ctx context.Context, path string) string {
+	if !strings.HasPrefix(path, "./") && filepath.Dir(path) != "." {
+		return path
+	}
+
 	wd, e := os.Getwd()
 	if e != nil {
-		logger.Debug(ctx, fmt.Sprintf("error retreiving current directory: %s", e))
+		logger.Debug(ctx, fmt.Sprintf("error retrieving current directory: %s", e))
 
 		return ""
 	}
 
+	if strings.HasPrefix(path, "./") {
+		return filepath.Join(wd, path)
+	}
+
 	for {
-		path := filepath.Join(wd, filename)
+		path := filepath.Join(wd, path)
 
 		_, e = os.ReadFile(path)
 		if e == nil {
@@ -62,7 +68,7 @@ func FindFilenameAscending(ctx context.Context, filename string) (path string) {
 		wd = filepath.Dir(wd)
 	}
 
-	logger.Debug(ctx, "No files found with name "+filename)
+	logger.Debug(ctx, "No files found with name "+path)
 
 	return ""
 }
