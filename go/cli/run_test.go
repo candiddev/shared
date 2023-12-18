@@ -17,6 +17,7 @@ func TestRun(t *testing.T) {
 	logger.UseTestLogger(t)
 
 	ctx := context.Background()
+	ctx = logger.SetNoColor(ctx, true)
 	c := Config{}
 	c.RunMock()
 	c.RunMockErrors([]error{fmt.Errorf("hello"), nil})
@@ -32,12 +33,14 @@ func TestRun(t *testing.T) {
 		group      string
 		mock       bool
 		name       string
+		streamLogs bool
 		user       string
 		wantErr    bool
 		wantOutput CmdOutput
 	}{
 		{
 			name:       "real",
+			streamLogs: true,
 			wantOutput: "config.json\n",
 		},
 		{
@@ -77,20 +80,27 @@ func TestRun(t *testing.T) {
 
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
+			logger.SetStd()
 			c.runMockEnable = tc.mock
 
 			o, err := c.Run(ctx, RunOpts{
 				Args: []string{
 					"testdata",
 				},
-				Command: "ls",
-				Group:   tc.group,
-				User:    tc.user,
-				WorkDir: "./",
+				Command:    "ls",
+				Group:      tc.group,
+				StreamLogs: tc.streamLogs,
+				User:       tc.user,
+				WorkDir:    "./",
 			})
 
 			assert.Equal(t, err != nil, tc.wantErr)
-			assert.Equal(t, o, tc.wantOutput)
+
+			if tc.streamLogs {
+				assert.Equal(t, logger.ReadStd(), string(tc.wantOutput))
+			} else {
+				assert.Equal(t, o, tc.wantOutput)
+			}
 		})
 	}
 

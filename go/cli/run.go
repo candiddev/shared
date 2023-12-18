@@ -75,8 +75,9 @@ type RunOpts struct {
 	EnvironmentInherit  bool
 	Group               string
 	NoErrorLog          bool
-	User                string
 	Stdin               string
+	StreamLogs          bool
+	User                string
 	WorkDir             string
 }
 
@@ -263,7 +264,14 @@ func (c *Config) Run(ctx context.Context, opts RunOpts) (out CmdOutput, err errs
 		}
 
 		cmd.Env = append(cmd.Env, opts.Environment...)
-		o, e = cmd.CombinedOutput()
+
+		if opts.StreamLogs {
+			cmd.Stdout = logger.Stdout
+			cmd.Stderr = logger.Stderr
+			e = cmd.Run()
+		} else {
+			o, e = cmd.CombinedOutput()
+		}
 	}
 
 	out = CmdOutput(o)
