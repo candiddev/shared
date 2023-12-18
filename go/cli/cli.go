@@ -143,7 +143,7 @@ Commands:
 	c := ConfigArgs{}
 
 	if !a.NoParse {
-		a.Config.CLIConfig().ConfigPath = strings.ToLower(a.Name) + ".jsonnet"
+		a.Config.CLIConfig().ConfigPath = config.FindFilenameAscending(ctx, strings.ToLower(a.Name)+".jsonnet")
 
 		flag.StringVar(&a.Config.CLIConfig().ConfigPath, "c", a.Config.CLIConfig().ConfigPath, "Path to JSON/Jsonnet configuration files separated by a comma")
 
