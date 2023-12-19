@@ -1,15 +1,15 @@
 import "./FormItemSelectNested.css";
 
+import { Color } from "@lib/types/Color";
 import m from "mithril";
 
-import { Color, ColorEnum } from "../types/Color";
 import { StringToID } from "../utilities/StringToID";
 import type { IconName } from "./Icon";
 import { Icon } from "./Icon";
 
 export interface FormItemSelectNestedSelector {
 	/** Color for the selector. */
-	color?: ColorEnum,
+	color?: string,
 
 	/** Icon to display with the selector. */
 	icon?: IconName,
@@ -71,9 +71,9 @@ export function FormItemSelectNested (): m.Component<FormItemSelectNestedAttrs> 
 							m(Icon, {
 								icon: option.icon,
 								style: {
-									color: `var(--color_${Color.values[option.color === undefined ?
-										ColorEnum.Default :
-										option.color].toLowerCase()})`,
+									color: option.color === undefined ?
+										undefined :
+										Color.toHex(option.color),
 								},
 							}),
 						option.name,

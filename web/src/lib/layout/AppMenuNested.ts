@@ -1,7 +1,6 @@
 import type { IconName } from "@lib/components/Icon";
 import { Icon } from "@lib/components/Icon";
 import { AppState } from "@lib/states/App";
-import type { ColorEnum } from "@lib/types/Color";
 import { Color } from "@lib/types/Color";
 import { DisplayEnum } from "@lib/types/Display";
 import { Icons } from "@lib/types/Icons";
@@ -13,7 +12,7 @@ export interface AppMenuNestedData {
 	children?: AppMenuNestedData[],
 
 	/** Color for the icon. */
-	color?: ColorEnum,
+	color?: string,
 
 	/** Replacement icon for the default. */
 	icon?: IconName,
@@ -77,7 +76,7 @@ function AppMenuNestedEntry (): m.Component<AppMenuNestedEntryAttrs> {
 							style: vnode.attrs.data.color === undefined ?
 								undefined :
 								{
-									color: Color.toString(vnode.attrs.data.color),
+									color: Color.toHex(vnode.attrs.data.color),
 								},
 						}),
 						m("span.AppMenu__entry--text", vnode.attrs.data.name),

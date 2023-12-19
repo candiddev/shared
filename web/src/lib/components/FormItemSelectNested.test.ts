@@ -1,4 +1,5 @@
-import { ColorEnum } from "../types/Color";
+import { Color } from "@lib/types/Color";
+
 import type { FormItemSelectNestedAttrs } from "./FormItemSelectNested";
 import { FormItemSelectNested } from "./FormItemSelectNested";
 
@@ -17,7 +18,7 @@ test("FormItemSelectNested", async () => {
 				name: "None",
 			},
 			{
-				color: ColorEnum.Gray,
+				color: "gray",
 				icon: "add",
 				id: "1",
 				level: 0,
@@ -35,7 +36,7 @@ test("FormItemSelectNested", async () => {
 	testing.hasClass(options[0], "FormItemSelectNested__option--selected");
 	testing.text(options[0], "None");
 	testing.text(options[1], "adda");
-	testing.hasStyle(".FormItemSelectNested__option:nth-child(2) > i", "color: var(--color_gray)");
+	testing.hasStyle(".FormItemSelectNested__option:nth-child(2) > i", `color: ${Color.toHex("gray", false)}`);
 	testing.click(options[1]);
 	testing.hasClass(options[1], "FormItemSelectNested__option");
 	expect(selected)

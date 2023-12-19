@@ -1,5 +1,7 @@
 import "./ChartCanvas.css";
 
+import { AppState } from "@lib/states/App";
+import { Color } from "@lib/types/Color";
 import type { ChartConfiguration, ChartData, ChartItem, ChartTypeRegistry } from "chart.js";
 import { ArcElement, BarController, BarElement, CategoryScale, Chart, DoughnutController, LinearScale, LineController, LineElement, PointElement, Tooltip } from "chart.js";
 import ChartDataLabels from "chartjs-plugin-datalabels";
@@ -65,57 +67,23 @@ export function ChartCanvas (): m.Component<ChartCanvasAttrs> {
 
 			if (app !== null) {
 				backgroundColors = [
-					`${window.getComputedStyle(app)
-						.getPropertyValue("--color_red")}`,
-					`${window.getComputedStyle(app)
-						.getPropertyValue("--color_pink")}`,
-					`${window.getComputedStyle(app)
-						.getPropertyValue("--color_orange")}`,
-					`${window.getComputedStyle(app)
-						.getPropertyValue("--color_yellow")}`,
-					`${window.getComputedStyle(app)
-						.getPropertyValue("--color_green")}`,
-					`${window.getComputedStyle(app)
-						.getPropertyValue("--color_teal")}`,
-					`${window.getComputedStyle(app)
-						.getPropertyValue("--color_blue")}`,
-					`${window.getComputedStyle(app)
-						.getPropertyValue("--color_purple")}`,
-					`${window.getComputedStyle(app)
-						.getPropertyValue("--color_brown")}`,
-					`${window.getComputedStyle(app)
-						.getPropertyValue("--color_black")}`,
-					`${window.getComputedStyle(app)
-						.getPropertyValue("--color_gray")}`,
-					`${window.getComputedStyle(app)
-						.getPropertyValue("--color_white")}`,
+					Color.toHex("red", AppState.preferences().darkMode),
+					Color.toHex("pink", AppState.preferences().darkMode),
+					Color.toHex("orange", AppState.preferences().darkMode),
+					Color.toHex("yellow", AppState.preferences().darkMode),
+					Color.toHex("green", AppState.preferences().darkMode),
+					Color.toHex("teal", AppState.preferences().darkMode),
+					Color.toHex("blue", AppState.preferences().darkMode),
+					Color.toHex("indigo", AppState.preferences().darkMode),
+					Color.toHex("purple", AppState.preferences().darkMode),
+					Color.toHex("brown", AppState.preferences().darkMode),
+					Color.toHex("black", AppState.preferences().darkMode),
+					Color.toHex("gray", AppState.preferences().darkMode),
+					Color.toHex("white", AppState.preferences().darkMode),
 				];
-				colors = [
-					`${window.getComputedStyle(app)
-						.getPropertyValue("--color_red-content")}`,
-					`${window.getComputedStyle(app)
-						.getPropertyValue("--color_pink-content")}`,
-					`${window.getComputedStyle(app)
-						.getPropertyValue("--color_orange-content")}`,
-					`${window.getComputedStyle(app)
-						.getPropertyValue("--color_yellow-content")}`,
-					`${window.getComputedStyle(app)
-						.getPropertyValue("--color_green-content")}`,
-					`${window.getComputedStyle(app)
-						.getPropertyValue("--color_teal-content")}`,
-					`${window.getComputedStyle(app)
-						.getPropertyValue("--color_blue-content")}`,
-					`${window.getComputedStyle(app)
-						.getPropertyValue("--color_purple-content")}`,
-					`${window.getComputedStyle(app)
-						.getPropertyValue("--color_brown-content")}`,
-					`${window.getComputedStyle(app)
-						.getPropertyValue("--color_black-content")}`,
-					`${window.getComputedStyle(app)
-						.getPropertyValue("--color_gray-content")}`,
-					`${window.getComputedStyle(app)
-						.getPropertyValue("--color_white-content")}`,
-				];
+				colors = backgroundColors.map((color) => {
+					return Color.contentColor(color);
+				});
 
 				Chart.defaults.datasets.line.backgroundColor = `${window.getComputedStyle(app)
 					.getPropertyValue("--color_secondary")}`;

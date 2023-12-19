@@ -243,6 +243,16 @@ translations:
     hi: भूरा
     nl: Bruin
     zh: 棕色的
+  ColorCustom:
+    ar: مخصص
+    context: Custom color
+    de: Brauch
+    en: Custom
+    es: Costumbre
+    fr: Coutume
+    hi: रिवाज़
+    nl: Aangepast
+    zh: 风俗
   ColorGray:
     ar: رمادي
     context: Gray color

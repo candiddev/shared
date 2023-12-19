@@ -196,12 +196,24 @@
 	display: flex;
 }
 
-.AppMenu__container > .AppMenu__entry:not(.AppMenu__entry--disabled):hover,
 .AppMenu__container > .AppMenu__entry--active {
 	background-color: var(--color_base-2);
 }
 
+.AppMenu__container > .AppMenu__entry:not(.AppMenu__entry--disabled):hover,
 .AppMenu__menu .AppMenu__entry--active,
-.AppMenu__menu .AppMenu__entry:not(.AppMenu__entry--disabled):hover {
-	background-color: var(--color_base-3);
+.AppMenu__menu .AppMenu__entry:not(.AppMenu__entry--disabled):hover,
+.AppMenu__container > a.AppMenu__entry:hover,
+.AppMenu__container > a.AppMenu__entry--active {
+	background-color: var(--color_secondary) !important;
+	box-shadow: var(--box-shadow);
+	border-bottom-left-radius: var(--border-radius) !important;
+	border-bottom-right-radius: var(--border-radius) !important;
+	color: var(--color_secondary-content) !important;
+}
+
+/* stylelint-disable-next-line no-descending-specificity */
+.AppMenu__entry--active:not(.AppMenu__component--menu) i,
+.AppMenu__entry:hover i {
+	color: var(--color_secondary-content) !important;
 }

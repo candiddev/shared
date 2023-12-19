@@ -8,7 +8,6 @@ import { Button } from "../components/Button";
 import { Markdown } from "../components/Markdown";
 import { Log } from "../services/Log";
 import { AppState } from "../states/App";
-import { DisplayEnum } from "../types/Display";
 import { Animate, Animation } from "../utilities/Animate";
 import { SetClass } from "../utilities/SetClass";
 import { AppAlerts } from "./AppAlerts";
@@ -103,59 +102,7 @@ export function App (): m.Component<AppAttrs> {
 				ondragover: (e: m.Event<DragEvent>) => {
 					Drag.setXY(e.clientX, e.clientY);
 				},
-				style: {
-					"--border": AppState.preferences().darkMode ?
-						"var(--border_dark)" :
-						"var(--border_light)",
-					"--border_invert": AppState.preferences().darkMode ?
-						"var(--border_light)" :
-						"var(--border_dark)",
-					"--color_accent": `var(--color${AppState.preferences().styleAccent}${AppState.preferences().styleMode})`,
-					"--color_accent-content": `var(--color${AppState.preferences().styleAccent}${AppState.preferences().styleMode}-content)`,
-					"--color_accent-invert": `var(--color${AppState.preferences().styleAccent}${AppState.preferences().styleModeInvert})`,
-					"--color_base-1": `var(--color_base${AppState.preferences().styleMode}-1)`,
-					"--color_base-2": `var(--color_base${AppState.preferences().styleMode}-2)`,
-					"--color_base-3": `var(--color_base${AppState.preferences().styleMode}-3)`,
-					"--color_black": `var(--color_black${AppState.preferences().styleMode})`,
-					"--color_black-content": `var(--color_black${AppState.preferences().styleMode}-content)`,
-					"--color_blue": `var(--color_blue${AppState.preferences().styleMode})`,
-					"--color_blue-content": `var(--color_blue${AppState.preferences().styleMode}-content)`,
-					"--color_brown": `var(--color_brown${AppState.preferences().styleMode})`,
-					"--color_brown-content": `var(--color_brown${AppState.preferences().styleMode}-content)`,
-					"--color_content": `var(--color_content${AppState.preferences().styleMode})`,
-					"--color_content-invert": `var(--color_content${AppState.preferences().styleModeInvert})`,
-					"--color_gray": `var(--color_gray${AppState.preferences().styleMode})`,
-					"--color_gray-content": `var(--color_gray${AppState.preferences().styleMode}-content)`,
-					"--color_green": `var(--color_green${AppState.preferences().styleMode})`,
-					"--color_green-content": `var(--color_green${AppState.preferences().styleMode}-content)`,
-					"--color_indigo": `var(--color_indigo${AppState.preferences().styleMode})`,
-					"--color_indigo-content": `var(--color_indigo${AppState.preferences().styleMode}-content)`,
-					"--color_negative": `var(--color${AppState.preferences().styleNegative}${AppState.preferences().styleMode})`,
-					"--color_orange": `var(--color_orange${AppState.preferences().styleMode})`,
-					"--color_orange-content": `var(--color_orange${AppState.preferences().styleMode}-content)`,
-					"--color_pink": `var(--color_pink${AppState.preferences().styleMode})`,
-					"--color_pink-content": `var(--color_pink${AppState.preferences().styleMode}-content)`,
-					"--color_positive": `var(--color${AppState.preferences().stylePositive}${AppState.preferences().styleMode})`,
-					"--color_primary": `var(--color${AppState.preferences().stylePrimary}${AppState.preferences().styleMode})`,
-					"--color_primary-content": `var(--color${AppState.preferences().stylePrimary}${AppState.preferences().styleMode}-content)`,
-					"--color_primary-invert": `var(--color${AppState.preferences().stylePrimary}${AppState.preferences().styleModeInvert})`,
-					"--color_purple": `var(--color_purple${AppState.preferences().styleMode})`,
-					"--color_purple-content": `var(--color_purple${AppState.preferences().styleMode}-content)`,
-					"--color_red": `var(--color_red${AppState.preferences().styleMode})`,
-					"--color_red-content": `var(--color_red${AppState.preferences().styleMode}-content)`,
-					"--color_secondary": `var(--color${AppState.preferences().styleSecondary}${AppState.preferences().styleMode})`,
-					"--color_secondary-content": `var(--color${AppState.preferences().styleSecondary}${AppState.preferences().styleMode}-content)`,
-					"--color_secondary-invert": `var(--color${AppState.preferences().styleSecondary}${AppState.preferences().styleModeInvert})`,
-					"--color_teal": `var(--color_teal${AppState.preferences().styleMode})`,
-					"--color_teal-content": `var(--color_teal${AppState.preferences().styleMode}-content)`,
-					"--color_white": `var(--color_white${AppState.preferences().styleMode})`,
-					"--color_white-content": `var(--color_white${AppState.preferences().styleMode}-content)`,
-					"--color_yellow": `var(--color_yellow${AppState.preferences().styleMode})`,
-					"--color_yellow-content": `var(--color_yellow${AppState.preferences().styleMode}-content)`,
-					"--width_Alerts": vnode.attrs.hideHeader !== true && AppState.isLayoutAppMenuOpen() && AppState.getSessionDisplay() >= DisplayEnum.XLarge ?
-						"calc(100% + var(--width_AppMenu))" :
-						"100%",
-				},
+				style: AppState.style,
 			}, [
 				vnode.attrs.hideHeader === true || ! AppState.isSessionAuthenticated() ?
 					[] :

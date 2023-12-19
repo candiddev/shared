@@ -17,20 +17,25 @@ func TestColorUnmarshal(t *testing.T) {
 		input string
 		want  color
 	}{
-		"less": {
+		"bad": {
 			err:   true,
-			input: `{"color":-1}`,
-			want:  color{},
+			input: `{"color": "random"}`,
+		},
+		"default": {
+			input: `{"color": ""}`,
+			want: color{
+				Color: ColorDefault,
+			},
 		},
 		"greater": {
 			err:   true,
-			input: `{"color":14}`,
+			input: `{"color": "#1z1111"}`,
 			want:  color{},
 		},
 		"good": {
-			input: `{"color":1}`,
+			input: `{"color": "#00001c"}`,
 			want: color{
-				Color: 1,
+				Color: "#00001c",
 			},
 		},
 	}

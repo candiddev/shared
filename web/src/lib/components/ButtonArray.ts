@@ -1,9 +1,8 @@
 import "./ButtonArray.css";
 
+import { Color } from "@lib/types/Color";
 import m from "mithril";
 
-import type { ColorEnum } from "../types/Color";
-import { Color } from "../types/Color";
 import { Animate, Animation } from "../utilities/Animate";
 import { SetClass } from "../utilities/SetClass";
 import { StringToID } from "../utilities/StringToID";
@@ -30,7 +29,7 @@ export interface ButtonArrayAttrs {
 	/** The values available to be selected. */
 	value: (string | {
 		/** Optional color for the value. */
-		color?: ColorEnum,
+		color?: string,
 
 		/** Icon for the value. */
 		icon?: IconName,
@@ -57,7 +56,7 @@ export function ButtonArray (): m.Component<ButtonArrayAttrs> {
 				}
 
 				const color = typeof item !== "string" && item.color !== undefined ?
-					Color.values[item.color].toLowerCase() :
+					item.color :
 					"";
 
 				const id = typeof item === "string" ?
@@ -100,14 +99,14 @@ export function ButtonArray (): m.Component<ButtonArrayAttrs> {
 					style: {
 						"background-color": color !== "" && vnode.attrs.selected !== undefined && vnode.attrs.selected() // eslint-disable-line camelcase
 							.includes(id) ?
-							`var(--color_${color})` :
+							Color.toHex(color) :
 							undefined,
 						"border-color": color === "" ?
 							undefined :
-							`var(--color_${color})`,
+							Color.toHex(color),
 						"color": color !== "" && vnode.attrs.selected !== undefined && vnode.attrs.selected() // eslint-disable-line camelcase
 							.includes(id) ?
-							`var(--color_${color}-content)` :
+							Color.contentColor(color) :
 							undefined,
 					},
 				}, [

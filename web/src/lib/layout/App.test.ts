@@ -101,16 +101,6 @@ describe("App", () => {
 		expect(AppState.getComponentsDropdownMenu())
 			.toBe("");
 
-		AppState.preferences({
-			...AppState.preferences(),
-			...{
-				styleAccent: "_red",
-				styleMode: "-dark",
-			},
-		});
-		testing.redraw();
-		testing.hasStyle(app, "--color_accent: var(--color_red-dark)");
-
 		testing.notFind("#app-header");
 		testing.notFind("#app-menu");
 		AppState.setSessionAuthenticated(true);

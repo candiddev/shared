@@ -87,7 +87,7 @@ export EXEC_SHELLCHECK=${BINDIR}/shellcheck
 export EXEC_SWAG=${BINDIR}/swag
 export EXEC_TERRAFORM=${BINDIR}/terraform
 export EXEC_VAULT=${BINDIR}/vault
-export EXEC_YAML8N="${CR} run --rm ${CR_USER} --pull always ${CR_VOLUME} ${CR_REGISTRY}/candiddev/yaml8n:latest"
+export EXEC_YAML8N="${BINDIR}/yaml8n"
 
 export GITHUB_PATH="/repos/candiddev/${APP_NAME}"
 export GITHUB_TOKEN=${GITHUB_TOKEN:-}
@@ -96,7 +96,7 @@ export GOCACHE=${DIR}/.cache/go
 export GOPATH=${BINDIR}/go/local
 export GOROOT=${CUSTOMGOROOT}
 
-export INSTALL_ALL=${INSTALL_ALL:-"install-go install-golangci-lint install-node install-shellcheck"}
+export INSTALL_ALL=${INSTALL_ALL:-"install-go install-golangci-lint install-node install-shellcheck install-yaml8n"}
 
 export RUN_GO_ARGS=${RUN_GO_ARGS:-}
 

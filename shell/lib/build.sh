@@ -38,7 +38,7 @@ cmd build-yaml8n-generate,byg Build YAML8n generate
 build-yaml8n-generate () {
 	for i in "${DIR}"/yaml8n/*; do
 		# shellcheck disable=SC2086
-		${CR} run -it --rm ${CR_USER} --pull always ${CR_VOLUME} "${CR_REGISTRY}/candiddev/yaml8n:latest" generate "/work/yaml8n/$(basename "${i}")"
+		${EXEC_YAML8N} generate "${DIR}/yaml8n/$(basename "${i}")"
 	done
 }
 byg () {
@@ -49,7 +49,7 @@ cmd build-yaml8n-translate,byt Build YAML8n translations
 build-yaml8n-translate () {
 	for i in "${DIR}"/yaml8n/*; do
 		# shellcheck disable=SC2086
-		${CR} run -it --rm ${CR_USER} -e "GOOGLE_APPLICATION_CREDENTIALS=/.gcp" -v "${DIR}/.gcp:/.gcp" --pull always ${CR_VOLUME} "${CR_REGISTRY}/candiddev/yaml8n:latest" translate "/work/yaml8n/$(basename "${i}")"
+		${EXEC_YAML8N} translate "${DIR}/yaml8n/$(basename "${i}")"
 	done
 }
 byt () {

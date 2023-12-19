@@ -1,5 +1,4 @@
 import { AppState } from "@lib/states/App";
-import { ColorEnum } from "@lib/types/Color";
 import Stream from "mithril/stream";
 
 import type { AppMenuComponentAttrs, AppMenuComponentView } from "./AppMenuComponent";
@@ -15,7 +14,7 @@ test("AppMenuComponent", async () => {
 					name: "b",
 				},
 			],
-			color: ColorEnum.Black,
+			color: "black",
 			icon: "icon1",
 			id: "1",
 			name: "a",

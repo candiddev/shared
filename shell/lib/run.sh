@@ -40,11 +40,21 @@ run-github-release-id () {
 
 cmd run-go,rg Run Go command
 run-go () {
+	ROT=""
+
+	if [[ -n ${ROT_privateKey+x} ]]; then
+		ROT="${EXEC_ROT} run"
+	fi
+
+	if [[ -n ${1+x} ]]; then
+		RUN_GO_ARGS=${1}
+	fi
+
 	# shellcheck disable=SC2086
-	"${DIR}/${BUILD_NAME}" ${RUN_GO_ARGS}
+	${ROT} "${DIR}/${BUILD_NAME}" ${RUN_GO_ARGS}
 }
 rg () {
-	run-go
+	run-go "${@}"
 }
 
 cmd run-hugo-start Start Hugo
@@ -120,13 +130,9 @@ cmd run-postgresql-clean Run PostgreSQL clean
 run-postgresql-clean () {
 	# quoting this causes the command to break
 	# shellcheck disable=SC2086
-	echo -e "DROP OWNED BY homechart;" | ${CR} exec ${CR_EXEC_POSTGRESQL} homechart
+	echo -e "DROP OWNED BY homechart; GRANT ALL PRIVILEGES ON DATABASE homechart TO homechart; GRANT ALL ON SCHEMA public TO homechart" | ${CR} exec ${CR_EXEC_POSTGRESQL} homechart
 	# shellcheck disable=SC2086
-	echo -e "DROP OWNED BY homechart;" | ${CR} exec ${CR_EXEC_POSTGRESQL} homechart_self_hosted
-	# shellcheck disable=SC2086
-	echo -e "GRANT ALL PRIVILEGES ON DATABASE homechart TO homechart" | ${CR} exec ${CR_EXEC_POSTGRESQL} homechart
-	# shellcheck disable=SC2086
-	echo -e "GRANT ALL PRIVILEGES ON DATABASE homechart_self_hosted TO homechart" | ${CR} exec ${CR_EXEC_POSTGRESQL} homechart_self_hosted
+	echo -e "DROP OWNED BY homechart; GRANT ALL PRIVILEGES ON DATABASE homechart_self_hosted TO homechart; GRANT ALL ON SCHEMA public TO homechart" | ${CR} exec ${CR_EXEC_POSTGRESQL} homechart_self_hosted
 }
 
 cmd run-postgresql-cli,rpc Run PostgreSQL CLI

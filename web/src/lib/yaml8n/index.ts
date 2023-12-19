@@ -283,6 +283,17 @@ export const ColorBrown: Translation = {
 	zh: `棕色的`,
 };
 
+export const ColorCustom: Translation = {
+	ar: `مخصص`,
+	de: `Brauch`,
+	en: `Custom`,
+	es: `Costumbre`,
+	fr: `Coutume`,
+	hi: `रिवाज़`,
+	nl: `Aangepast`,
+	zh: `风俗`,
+};
+
 export const ColorGray: Translation = {
 	ar: `رمادي`,
 	de: `Grau`,

@@ -1,71 +1,11 @@
 /* X-Small-Phones */
 :root {
-	--animation: 200ms;
+	--animation: 300ms;
 	--border_dark: 1px solid rgba(255, 255, 255, 0.2);
 	--border_light: 1px solid rgba(0, 0, 0, 0.2);
 	--border-radius: 8px;
-	--box-shadow: 0px 1px 2px rgba(16, 24, 40, 0.05);
-	--box-shadow-inset: inset 0 2px 4px 0 rgb(0 0 0 / 0.2);
-	--color_base-dark-1: #111827;
-	--color_base-dark-2: #1f2937;
-	--color_base-dark-3: #374151;
-	--color_base-light-1: #ffffff;
-	--color_base-light-2: #eceff1;
-	--color_base-light-3: #cfd8dc;
-	--color_black-dark: #c7c7c7;
-	--color_black-dark-content: var(--color_black-light);
-	--color_black-light: #101010;
-	--color_black-light-content: var(--color_white-dark);
-	--color_blue-dark: #448aff;
-	--color_blue-dark-content: var(--color_white-dark);
-	--color_blue-light: #2962ff;
-	--color_blue-light-content: var(--color_white-dark);
-	--color_brown-dark: #795548;
-	--color_brown-dark-content: var(--color_white-dark);
-	--color_brown-light: #5d4037;
-	--color_brown-light-content: var(--color_white-dark);
-	--color_content-dark: #ebecf0;
-	--color_content-light: #1f2937;
-	--color_gray-dark: #dfe6e9;
-	--color_gray-dark-content: var(--color_black-light);
-	--color_gray-light: #b2bec3;
-	--color_gray-light-content: var(--color_black-light);
-	--color_green-dark: #69f0ae;
-	--color_green-dark-content: var(--color_black-light);
-	--color_green-light: #00c853;
-	--color_green-light-content: var(--color_black-light);
-	--color_indigo-dark: #536dfe;
-	--color_indigo-dark-content: var(--color_black-light);
-	--color_indigo-light: #6366f1;
-	--color_indigo-light-content: var(--color_white-dark);
-	--color_orange-dark: #ffab40;
-	--color_orange-dark-content: var(--color_black-light);
-	--color_orange-light: #ff6d00;
-	--color_orange-light-content: var(--color_black-light);
-	--color_pink-dark: #ff4081;
-	--color_pink-dark-content: var(--color_black-light);
-	--color_pink-light: #f50057;
-	--color_pink-light-content: var(--color_white-dark);
-	--color_purple-dark: #7c4dff;
-	--color_purple-dark-content: var(--color_white-dark);
-	--color_purple-light: #6200ea;
-	--color_purple-light-content: var(--color_white-dark);
-	--color_red-dark: #ff5252;
-	--color_red-dark-content: var(--color_black-light);
-	--color_red-light: #d50000;
-	--color_red-light-content: var(--color_white-dark);
-	--color_teal-dark: #64ffda;
-	--color_teal-dark-content: var(--color_black-light);
-	--color_teal-light: #00bfa5;
-	--color_teal-light-content: var(--color_black-light);
-	--color_yellow-dark: #ffd740;
-	--color_yellow-dark-content: var(--color_black-light);
-	--color_yellow-light: #ffab00;
-	--color_yellow-light-content: var(--color_black-light);
-	--color_white-dark: #ffffff;
-	--color_white-dark-content: var(--color_black-light);
-	--color_white-light: #636363;
-	--color_white-light-content: var(--color_white-dark);
+	--box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.15);
+	--box-shadow-inset: inset 0 2px 4px 0 rgb(0, 0, 0, 0.2);
 	--display_AppHeaderAppLogo: flex;
 	--display_AppMenuAppLogo__toggles: none;
 	--display_CalendarDay__container--day: none;
@@ -162,12 +102,6 @@
 	:root {
 		--border: 1px solid rgba(0, 0, 0, 0.3);
 		--box-shadow: none;
-		--color_black-1: white;
-		--color_black-2: white;
-		--color_blue-light: black;
-		--color_blue-dark: black;
-		--color_white-1: white;
-		--color_white-2: white;
 		--grid-columns_Calendar: 7;
 	}
 
@@ -203,6 +137,8 @@
 
 	.App,
 	.App__children,
+	.App__section,
+	.Calendar__calendar,
 	.Table__container,
 	.Table {
 		overflow: visible !important;
