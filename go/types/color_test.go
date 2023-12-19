@@ -38,6 +38,18 @@ func TestColorUnmarshal(t *testing.T) {
 				Color: "#00001c",
 			},
 		},
+		"int": {
+			input: `{"color": 1}`,
+			want: color{
+				Color: "red",
+			},
+		},
+		"int-bad": {
+			input: `{"color": 20}`,
+			want: color{
+				Color: "",
+			},
+		},
 	}
 
 	for name, tc := range tests {

@@ -43,5 +43,38 @@ func (c *Color) UnmarshalJSON(data []byte) error {
 		}
 	}
 
+	if v, err := strconv.Atoi(string(data)); err == nil {
+		switch v {
+		case 1:
+			*c = ColorRed
+		case 2:
+			*c = ColorPink
+		case 3:
+			*c = ColorOrange
+		case 4:
+			*c = ColorYellow
+		case 5:
+			*c = ColorGreen
+		case 6:
+			*c = ColorTeal
+		case 7:
+			*c = ColorBlue
+		case 8:
+			*c = ColorIndigo
+		case 9:
+			*c = ColorPurple
+		case 10:
+			*c = ColorBrown
+		case 11:
+			*c = ColorBlack
+		case 12:
+			*c = ColorGray
+		case 13:
+			*c = ColorWhite
+		}
+
+		return nil
+	}
+
 	return errs.ErrSenderBadRequest.Set("Color must a valid name or a hex code").Wrap(fmt.Errorf("color has invalid value: %s", data))
 }

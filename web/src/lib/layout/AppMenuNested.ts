@@ -76,7 +76,7 @@ function AppMenuNestedEntry (): m.Component<AppMenuNestedEntryAttrs> {
 							style: vnode.attrs.data.color === undefined ?
 								undefined :
 								{
-									color: Color.toHex(vnode.attrs.data.color),
+									color: Color.toHex(vnode.attrs.data.color, AppState.preferences().darkMode),
 								},
 						}),
 						m("span.AppMenu__entry--text", vnode.attrs.data.name),
