@@ -1,5 +1,5 @@
 import { AppState } from "@lib/states/App";
-import { Color, ColorEnum } from "@lib/types/Color";
+import { Color } from "@lib/types/Color";
 import { DisplayEnum } from "@lib/types/Display";
 import Stream from "mithril/stream";
 
@@ -15,7 +15,7 @@ test("AppMenuNotes", async () => {
 					name: "b",
 				},
 			],
-			color: ColorEnum.Black,
+			color: "black",
 			icon: "icon1",
 			id: "1",
 			name: "a",
@@ -69,7 +69,7 @@ test("AppMenuNotes", async () => {
 	testing.redraw();
 	testing.notFind(".AppMenu__menu");
 
-	testing.hasStyle("i", `color: ${Color.toString(data()[0].color!)}`);
+	testing.hasStyle("i", `color: ${Color.toHex(data()[0].color!)}`);
 
 	// Test link
 	AppState.toggleLayoutAppMenuOpen(true);

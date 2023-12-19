@@ -144,3 +144,11 @@ unzip -o vault.zip -d ${BINDIR}
 rm vault.zip"
 	fi
 }
+
+cmd install-yaml8n, Install YAML8n
+install-yaml8n () {
+	if ! ${EXEC_YAML8N} version 2>&1 | grep "$(curl -sL https://github.com/candiddev/yaml8n/releases/latest/download/version)" > /dev/null; then
+		printf "Install YAML8n..."
+		try "curl -sL https://github.com/candiddev/yaml8n/releases/latest/download/yaml8n_${OSNAME}_${OSARCH}.tar.gz | tar -C .bin -xz yaml8n"
+	fi
+}

@@ -1,7 +1,6 @@
 import type { MarkdownParseOutput } from "@lib/components/Markdown";
 import type { TelemetryOptions } from "@lib/services/Telemetry";
 import { CivilDateOrderEnum, CivilDateSeparatorEnum } from "@lib/types/CivilDate";
-import { ColorEnum } from "@lib/types/Color";
 import Stream from "mithril/stream";
 
 import type { AppPreferences } from "./App";
@@ -51,11 +50,11 @@ describe("AppState", () => {
 					};
 				},
 			}, Stream({
-				colorAccent: ColorEnum.Red,
-				colorNegative: ColorEnum.Orange,
-				colorPositive: ColorEnum.Yellow,
-				colorPrimary: ColorEnum.Green,
-				colorSecondary: ColorEnum.Blue,
+				colorAccent: "red",
+				colorNegative: "orange",
+				colorPositive: "yellow",
+				colorPrimary: "green",
+				colorSecondary: "blue",
 				darkMode: true,
 				formatDateOrder: CivilDateOrderEnum.YMD,
 				formatDateSeparator: CivilDateSeparatorEnum.Comma,
@@ -73,8 +72,8 @@ describe("AppState", () => {
 		await AppState.oncreate();
 		expect(oncreate)
 			.toBeTruthy();
-		expect(AppState.preferences().styleAccent)
-			.toBe("_red");
+		expect(AppState.preferences().colorAccent)
+			.toBe("red");
 		expect(AppState.product)
 			.toBe("test");
 	});

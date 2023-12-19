@@ -13,8 +13,9 @@ import { Color, ColorEnum } from "@lib/types/Color";
 import { DisplayEnum } from "@lib/types/Display";
 import type { Timestamp } from "@lib/types/Timestamp";
 import { Clone } from "@lib/utilities/Clone";
+import { StringCapitalize } from "@lib/utilities/StringCapitalize";
 import type { ISO639Code } from "@lib/yaml8n";
-import { ActionAdd, ActionCancel, ActionClose, ActionConfirm, ActionDelete, ActionDeleteConfirm, ActionDeselectAll, ActionDismiss, ActionEdit, ActionImport, ActionKeepAwake, ActionNew, ActionNone, ActionPreview, ActionSearch, ActionShow, ActionUpdate, ActionView, AlertNewVersion, AppToolbarActionsOnThisPage, ColorBlack, ColorBlue, ColorBrown, ColorGray, ColorGreen, ColorIndigo, ColorOrange, ColorPink, ColorPurple, ColorRed, ColorTeal, ColorWhite, ColorYellow, Default, FormCreated, FormImageSelect, FormImportCSVField, FormImportCSVSelectCSV, FormImportCSVTooltip, FormItemDurationHour, FormItemDurationHours, FormItemDurationMinute, FormItemDurationMinutes, FormItemInputIconName, FormItemInputIconTooltip, FormItemNewPasswordPassword, FormItemNewPasswordTooltip, FormItemSelectColorName, FormItemSelectColorTooltip, FormItemSelectCurrencyFormat, FormItemSelectCurrencyFormatTooltip, FormItemTextAreaScanText, FormLastUpdated, FormRecurrenceDays, FormRecurrenceEnd, FormRecurrenceEndTooltip, FormRecurrenceFirst, FormRecurrenceFourth, FormRecurrenceFourthToLast, FormRecurrenceLabel, FormRecurrenceLast, FormRecurrenceMonths, FormRecurrenceNextDate, FormRecurrenceSecond, FormRecurrenceSecondToLast, FormRecurrenceSpecificDate, FormRecurrenceThird, FormRecurrenceThirdToLast, FormRecurrenceTooltip, FormRecurrenceWeeks, FormRecurrenceYears, Help, NoImage, Or, TableHeaderFilterTooltip, TableNothing, TableShowColumns, TooltipMarkdown, Translate,WeekdayFriday, WeekdayMonday, WeekdaySaturday, WeekdaySunday, WeekdayThursday, WeekdayTuesday, WeekdayWednesday } from "@lib/yaml8n";
+import { ActionAdd, ActionCancel, ActionClose, ActionConfirm, ActionDelete, ActionDeleteConfirm, ActionDeselectAll, ActionDismiss, ActionEdit, ActionImport, ActionKeepAwake, ActionNew, ActionNone, ActionPreview, ActionSearch, ActionShow, ActionUpdate, ActionView, AlertNewVersion, AppToolbarActionsOnThisPage, ColorCustom, FormCreated, FormImageSelect, FormImportCSVField, FormImportCSVSelectCSV, FormImportCSVTooltip, FormItemDurationHour, FormItemDurationHours, FormItemDurationMinute, FormItemDurationMinutes, FormItemInputIconName, FormItemInputIconTooltip, FormItemNewPasswordPassword, FormItemNewPasswordTooltip, FormItemSelectColorName, FormItemSelectColorTooltip, FormItemSelectCurrencyFormat, FormItemSelectCurrencyFormatTooltip, FormItemTextAreaScanText, FormLastUpdated, FormRecurrenceDays, FormRecurrenceEnd, FormRecurrenceEndTooltip, FormRecurrenceFirst, FormRecurrenceFourth, FormRecurrenceFourthToLast, FormRecurrenceLabel, FormRecurrenceLast, FormRecurrenceMonths, FormRecurrenceNextDate, FormRecurrenceSecond, FormRecurrenceSecondToLast, FormRecurrenceSpecificDate, FormRecurrenceThird, FormRecurrenceThirdToLast, FormRecurrenceTooltip, FormRecurrenceWeeks, FormRecurrenceYears, Help, NoImage, Or, TableHeaderFilterTooltip, TableNothing, TableShowColumns, TooltipMarkdown, Translate,WeekdayFriday, WeekdayMonday, WeekdaySaturday, WeekdaySunday, WeekdayThursday, WeekdayTuesday, WeekdayWednesday } from "@lib/yaml8n";
 import m from "mithril";
 import Stream from "mithril/stream";
 import nosleep from "nosleep.js";
@@ -108,6 +109,7 @@ export interface App {
 		actionUpdate: string,
 		alertNewVersion: string,
 		appToolbarActionsOnThisPage: string,
+		colorCustom: string,
 		formCreated: string,
 		formImageSelect: string,
 		formImportCSVField: string,
@@ -160,27 +162,25 @@ export interface App {
 }
 
 interface AppPreferencesTranslationsFormItemSelectColorValue {
-	color: number,
 	id: string,
 	name: string,
 }
 
-
 export interface AppPreferences {
 	/** Accent color. */
-	colorAccent: ColorEnum,
+	colorAccent: string,
 
 	/** Negative color. */
-	colorNegative: ColorEnum,
+	colorNegative: string,
 
 	/** Positive color. */
-	colorPositive: ColorEnum,
+	colorPositive: string,
 
 	/** Primary color. */
-	colorPrimary: ColorEnum,
+	colorPrimary: string,
 
 	/** Secondary color. */
-	colorSecondary: ColorEnum,
+	colorSecondary: string,
 
 	/** Dark mode. */
 	darkMode: boolean,
@@ -198,20 +198,27 @@ export interface AppPreferences {
 	iso639Code: string,
 }
 
-interface appPreferencesMap extends AppPreferences {
-	styleAccent: string,
-	styleMode: string,
-	styleModeInvert: string,
-	styleNegative: string,
-	stylePositive: string,
-	stylePrimary: string,
-	styleSecondary: string,
-}
-
 let noSleep: any; // eslint-disable-line @typescript-eslint/no-explicit-any
 
 if (typeof document !== "undefined") {
 	noSleep = new nosleep();
+}
+
+interface AppStyle {
+	"--border": string,
+	"--color_accent": string,
+	"--color_accent-content": string,
+	"--color_base-1": string,
+	"--color_base-2": string,
+	"--color_base-3": string,
+	"--color_content": string,
+	"--color_content-invert": string,
+	"--color_negative": string,
+	"--color_positive": string,
+	"--color_primary": string,
+	"--color_primary-content": string,
+	"--color_secondary": string,
+	"--color_secondary-content": string,
 }
 
 function New (): App {
@@ -260,6 +267,7 @@ function New (): App {
 			actionUpdate: "Update",
 			alertNewVersion: "",
 			appToolbarActionsOnThisPage: "On this page",
+			colorCustom: "Custom",
 			formCreated: "Created",
 			formImageSelect: "Select",
 			formImportCSVField: "",
@@ -275,14 +283,13 @@ function New (): App {
 			formItemNewPasswordTooltip: "",
 			formItemSelectColorName: "Color",
 			formItemSelectColorTooltip: "",
-			formItemSelectColorValues: Color.values.map((color, i) => {
-				return {
-					color: i,
-					id: `${i}`,
-					key: i,
-					name: color,
-				};
-			}),
+			formItemSelectColorValues: Object.keys(ColorEnum)
+				.map((color) => {
+					return {
+						id: color,
+						name: StringCapitalize(color),
+					};
+				}),
 			formItemSelectCurrencyFormat: "Currency Format",
 			formItemSelectCurrencyFormatTooltip: "",
 			formItemTextAreaScanText: "Scan Text From Picture",
@@ -432,31 +439,42 @@ export const AppState = {
 				AppState.setSessionISO639(preferences.iso639Code);
 			}
 
-			return {
-				...preferences,
-				...{
-					styleAccent: `_${Color.getValue(preferences.colorAccent)
-						.toLowerCase()}`,
-					styleMode: `-${preferences.darkMode ?
-						"dark" :
-						"light"}`,
-					styleModeInvert: `-${preferences.darkMode ?
-						"light" :
-						"dark"}`,
-					styleNegative: `_${preferences.colorNegative === 0 ?
-						"pink" :
-						Color.getValue(preferences.colorNegative)
-							.toLowerCase()}`,
-					stylePositive: `_${preferences.colorPositive === 0 ?
-						"teal" :
-						Color.getValue(preferences.colorPositive)
-							.toLowerCase()}`,
-					stylePrimary: `_${Color.getValue(preferences.colorPrimary)
-						.toLowerCase()}`,
-					styleSecondary: `_${Color.getValue(preferences.colorSecondary)
-						.toLowerCase()}`,
-				},
+			const colors = {
+				accent: Color.toHex(preferences.colorAccent, preferences.darkMode),
+				primary: Color.toHex(preferences.colorPrimary, preferences.darkMode),
+				secondary: Color.toHex(preferences.colorSecondary, preferences.darkMode),
 			};
+
+			AppState.style = {
+				"--border": preferences.darkMode ?
+					"var(--border_dark)" :
+					"var(--border_light)",
+				"--color_accent": colors.accent,
+				"--color_accent-content": Color.contentColor(colors.accent),
+				"--color_base-1": preferences.darkMode ?
+					"#111827" :
+					"#ffffff",
+				"--color_base-2": preferences.darkMode ?
+					"#1f2937" :
+					"#eceff1",
+				"--color_base-3": preferences.darkMode ?
+					"#374151" :
+					"#cfd8dc",
+				"--color_content": Color.toHex(preferences.darkMode ?
+					Color.content.white :
+					Color.content.black),
+				"--color_content-invert": Color.toHex(preferences.darkMode ?
+					Color.content.black :
+					Color.content.white),
+				"--color_negative": Color.toHex(preferences.colorNegative, preferences.darkMode),
+				"--color_positive": Color.toHex(preferences.colorPositive, preferences.darkMode),
+				"--color_primary": colors.primary,
+				"--color_primary-content": Color.contentColor(colors.primary),
+				"--color_secondary": colors.secondary,
+				"--color_secondary-content": Color.contentColor(colors.secondary),
+			};
+
+			return preferences;
 		});
 		AppState.product = product;
 		AppState.updateSize();
@@ -523,23 +541,16 @@ export const AppState = {
 		},
 	} as MarkdownParser,
 	preferences: Stream({
-		colorAccent: ColorEnum.Default,
-		colorNegative: ColorEnum.Default,
-		colorPositive: ColorEnum.Default,
-		colorPrimary: ColorEnum.Default,
-		colorSecondary: ColorEnum.Default,
+		colorAccent: "",
+		colorNegative: "",
+		colorPositive: "",
+		colorPrimary: "",
+		colorSecondary: "",
 		darkMode: false,
 		formatDateOrder: CivilDateOrderEnum.MDY,
 		formatDateSeparator: CivilDateSeparatorEnum.ForwardSlash,
 		formatTime24: false,
-		styleAccent: "",
-		styleMode: "",
-		styleModeInvert: "",
-		styleNegative: "",
-		stylePositive: "",
-		stylePrimary: "",
-		styleSecondary: "",
-	} as appPreferencesMap) ,
+	} as AppPreferences),
 	product: "",
 	redirect: (): void => {
 		const redirects = AppState.data.sessionRedirects;
@@ -663,8 +674,8 @@ export const AppState = {
 					AppState.clearLayoutAppAlert(alert.message);
 				},
 				process.env.NODE_ENV === "test"
-					? 500
-					: 3000,
+					? 300
+					: 1500,
 			);
 		}
 
@@ -747,6 +758,7 @@ export const AppState = {
 				actionUpdate: Translate(code, ActionUpdate),
 				alertNewVersion: Translate(code, AlertNewVersion),
 				appToolbarActionsOnThisPage: Translate(code, AppToolbarActionsOnThisPage),
+				colorCustom: Translate(code, ColorCustom),
 				formCreated: Translate(code, FormCreated),
 				formImageSelect: Translate(code, FormImageSelect),
 				formImportCSVField: Translate(code, FormImportCSVField),
@@ -762,61 +774,13 @@ export const AppState = {
 				formItemNewPasswordTooltip: Translate(code, FormItemNewPasswordTooltip),
 				formItemSelectColorName: Translate(code, FormItemSelectColorName),
 				formItemSelectColorTooltip: Translate(code, FormItemSelectColorTooltip),
-				formItemSelectColorValues: Color.values.map((_color, i) => {
-					let c = "";
-
-					switch (i) {
-					case ColorEnum.Black:
-						c = Translate(code, ColorBlack);
-						break;
-					case ColorEnum.Blue:
-						c = Translate(code, ColorBlue);
-						break;
-					case ColorEnum.Brown:
-						c = Translate(code, ColorBrown);
-						break;
-					case ColorEnum.Default:
-						c = Translate(code, Default);
-						break;
-					case ColorEnum.Gray:
-						c = Translate(code, ColorGray);
-						break;
-					case ColorEnum.Green:
-						c = Translate(code, ColorGreen);
-						break;
-					case ColorEnum.Indigo:
-						c = Translate(code, ColorIndigo);
-						break;
-					case ColorEnum.Orange:
-						c = Translate(code, ColorOrange);
-						break;
-					case ColorEnum.Pink:
-						c = Translate(code, ColorPink);
-						break;
-					case ColorEnum.Purple:
-						c = Translate(code, ColorPurple);
-						break;
-					case ColorEnum.Red:
-						c = Translate(code, ColorRed);
-						break;
-					case ColorEnum.Teal:
-						c = Translate(code, ColorTeal);
-						break;
-					case ColorEnum.White:
-						c = Translate(code, ColorWhite);
-						break;
-					case ColorEnum.Yellow:
-						c = Translate(code, ColorYellow);
-						break;
-					}
-
-					return {
-						color: i,
-						id: `${i}`,
-						key: i,
-						name: c,
-					};
-				}),
+				formItemSelectColorValues: Object.keys(ColorEnum)
+					.map((key) => {
+						return {
+							id: key,
+							name: Translate(code, ColorEnum[key].translation),
+						};
+					}),
 				formItemSelectCurrencyFormat: Translate(code, FormItemSelectCurrencyFormat),
 				formItemSelectCurrencyFormatTooltip: Translate(code, FormItemSelectCurrencyFormatTooltip),
 				formItemTextAreaScanText: Translate(code, FormItemTextAreaScanText),
@@ -909,6 +873,22 @@ export const AppState = {
 			sessionServiceWorkerRegistration: r,
 		});
 	},
+	style: {
+		"--border": "",
+		"--color_accent": "",
+		"--color_accent-content": "",
+		"--color_base-1": "",
+		"--color_base-2": "",
+		"--color_base-3": "",
+		"--color_content": "",
+		"--color_content-invert": "",
+		"--color_negative": "",
+		"--color_positive": "",
+		"--color_primary": "",
+		"--color_primary-content": "",
+		"--color_secondary": "",
+		"--color_secondary-content": "",
+	} as AppStyle,
 	toggleLayoutAppHelpOpen: (open?: boolean): void => {
 		if (open === true || open === false) {
 			AppState.set({

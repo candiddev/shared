@@ -155,7 +155,7 @@ export function Table (): m.Component<TableAttrs> {
 											data.id :
 											vnode.attrs.getKey(data), true);
 
-										return m(`tr.${Animate.class(Animation.Fade)}`, {
+										return m("tr", {
 											class: vnode.attrs.editOnclick !== undefined && AppState.isSessionOnline() ?
 												"Table__edit" :
 												undefined,
@@ -187,7 +187,6 @@ export function Table (): m.Component<TableAttrs> {
 														linkFormatter: column.linkFormatter,
 														linkRequireOnline: column.linkRequireOnline,
 														name: column.name,
-														onbeforeremove: Animate.onbeforeremove(Animation.Fade),
 														onclick: column.onclick,
 														ondragend: column.ondragend,
 														permitted: () => {

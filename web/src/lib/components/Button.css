@@ -74,21 +74,18 @@
 
 .Button--accent {
 	background-color: var(--color_accent);
-	border-color: var(--color_accent);
 	color: var(--color_accent-content);
 	filter: none;
 }
 
 .Button--primary {
 	background-color: var(--color_primary);
-	border-color: var(--color_primary);
 	color: var(--color_primary-content);
 	filter: none;
 }
 
 .Button--secondary {
 	background-color: var(--color_secondary);
-	border-color: var(--color_secondary);
 	color: var(--color_secondary-content);
 	filter: none;
 }

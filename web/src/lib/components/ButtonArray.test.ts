@@ -1,5 +1,3 @@
-import { ColorEnum } from "@lib/types/Color";
-
 import { Icons } from "../types/Icons";
 import { ButtonArray } from "./ButtonArray";
 
@@ -20,7 +18,7 @@ describe("ButtonArray", () => {
 			},
 			value: [
 				{
-					color: ColorEnum.Black,
+					color: "black",
 					id: "a",
 					name: "a",
 				},

@@ -77,6 +77,18 @@ func TestParseRecurrenceFromICS(t *testing.T) {
 				Weekday:    Monday,
 			},
 		},
+		"gmail": {
+			input: "FREQ=MONTHLY;UNTIL=20101110;BYMONTHDAY=11",
+			wantCivilDate: &CivilDate{
+				Day:   10,
+				Month: 11,
+				Year:  2010,
+			},
+			wantRecurrence: Recurrence{
+				Day:        11,
+				Separation: 1,
+			},
+		},
 	}
 
 	for name, tc := range tests {

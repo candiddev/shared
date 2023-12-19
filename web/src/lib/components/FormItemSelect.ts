@@ -3,12 +3,10 @@ import "./FormItem.css";
 import { AppState } from "@lib/states/App";
 import m from "mithril";
 
-import type { ColorEnum } from "../types/Color";
-import { Color } from "../types/Color";
 import { StringToID } from "../utilities/StringToID";
 
 interface OptionObject {
-	color?: ColorEnum,
+	color?: string,
 	id?: NullUUID,
 	name?: string,
 	selected?: boolean,
@@ -66,9 +64,7 @@ export function FormItemSelect (): m.Component<FormItemSelectAttrs> {
 							style: {
 								color: option.color === undefined ?
 									undefined :
-									`var(--color_${Color.values[option.color].toLowerCase()}-${AppState.preferences().darkMode ?
-										"dark" :
-										"light"})`,
+									option.color,
 							},
 							value: option.id === undefined ?
 								option.name :

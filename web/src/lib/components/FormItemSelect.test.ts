@@ -1,4 +1,3 @@
-import { ColorEnum } from "../types/Color";
 import type { FormItemSelectAttrs } from "./FormItemSelect";
 import { FormItemSelect } from "./FormItemSelect";
 
@@ -13,7 +12,7 @@ describe("FormItemSelect", () => {
 			},
 			options: [
 				{
-					color: ColorEnum.Red,
+					color: "red",
 					id: "1",
 					name: "a",
 				},

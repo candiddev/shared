@@ -9,7 +9,6 @@ import { Currency, CurrencyEnum } from "../types/Currency";
 import { Duration } from "../types/Duration";
 import { Icons } from "../types/Icons";
 import { Timestamp } from "../types/Timestamp";
-import { Animate, Animation } from "../utilities/Animate";
 import { SetClass } from "../utilities/SetClass";
 import { Sort } from "../utilities/Sort";
 import { StringToID } from "../utilities/StringToID";
@@ -115,7 +114,7 @@ export function TableData (): m.Component<TableColumnAttrs> {
 			if (typeof data === "object") {
 				if (Array.isArray(data) && data.length !== 0) {
 					Sort(data);
-					return m(`td.TableData.${Animate.class(Animation.Fade)}`, m("div.TableData__array", {
+					return m("td.TableData", m("div.TableData__array", {
 						id: id,
 					}, data.map((item: string): m.Children => {
 						return m(m.route.Link, {
@@ -130,12 +129,11 @@ export function TableData (): m.Component<TableColumnAttrs> {
 					})));
 				}
 
-				return m(`td.TableData.${Animate.class(Animation.Fade)}`, "");
+				return m("td.TableData", "");
 			}
 
 			const c = SetClass({
 				"TableData": true,
-				[Animate.class(Animation.Fade)]: true,
 				"TableData--negative": vnode.attrs.positive !== undefined && vnode.attrs.positive(vnode.attrs.data) === false,
 				"TableData--positive": vnode.attrs.positive !== undefined && vnode.attrs.positive(vnode.attrs.data) === true,
 				"TableData--right": vnode.attrs.rightAlign === true,

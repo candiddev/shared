@@ -121,7 +121,7 @@ var icsTrigger = regexp.MustCompile(`^TRIGGER:-P(?P<week>(\d+)W)?(?P<day>(\d+)D)
 var icsUID = regexp.MustCompile(`^UID:(?P<value>.*)`)
 
 func icsParseDate(line, timezone, value string, date bool) (time.Time, error) {
-	if date {
+	if date || len(value) == 8 {
 		t, err := time.Parse("20060102", value)
 		if err != nil {
 			return time.Time{}, fmt.Errorf("error parsing %s: %v", line, err)

@@ -1,9 +1,10 @@
-import { Color } from "../types/Color";
+import { ColorEnum } from "../types/Color";
 import type { FormItemSelectColorAttrs } from "./FormItemSelectColor";
 import { FormItemSelectColor } from "./FormItemSelectColor";
 
 test("FormItemSelectColor", async () => {
-	let value = 0;
+	let value = "";
+
 	const attrs: FormItemSelectColorAttrs = {
 		name: "test",
 		oninput: (e): void => {
@@ -13,9 +14,9 @@ test("FormItemSelectColor", async () => {
 	};
 	testing.mount(FormItemSelectColor, attrs);
 	const select = testing.find("#form-item-select-test");
-	testing.findAll("#form-item-select-test > option", Color.values.length);
-	testing.input(select, `${Color.values.indexOf("Blue")}`);
+	testing.findAll("#form-item-select-test > option", Object.keys(ColorEnum).length + 1);
+	testing.input(select, "blue");
 	expect(value)
-		.toBe(Color.values.indexOf("Blue"));
+		.toBe("blue");
 });
 

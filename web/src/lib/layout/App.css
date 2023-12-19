@@ -65,6 +65,7 @@
 	background-color: var(--color_primary);
 	border-bottom-left-radius: var(--border-radius);
 	border-bottom-right-radius: var(--border-radius);
+	box-shadow: var(--box-shadow);
 	color: var(--color_primary-content);
 	display: flex;
 	font-size: var(--font-size_2);

@@ -138,13 +138,12 @@ export function TableHeader (): m.Component<TableLayoutAttrs> {
 					vnode.attrs.tableColumns.map((column: TableColumnAttrs): m.Children => {
 						return Object.keys(vnode.attrs.tableColumnsNameEnabled())
 							.includes(column.property) ?
-							m(`th.TableHeader.${Animate.class(Animation.Fade)}`, {
+							m("th.TableHeader", {
 								class: SetClass({
 									"TableHeader--center": column.type === TableDataType.Checkbox || column.type === TableDataType.Drag || column.type === TableDataType.Image,
 									"TableHeader--right": column.rightAlign === true || column.type === TableDataType.Currency,
 								}),
 								id: `table-header${StringToID(column.property)}`,
-								onbeforeremove: Animate.onbeforeremove(Animation.Fade),
 								onclick: () => {
 									if (vnode.attrs.sort !== undefined) {
 										const sort = vnode.attrs.sort();

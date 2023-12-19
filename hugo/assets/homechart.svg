@@ -1,17 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg width="512" height="512" version="1.1" viewBox="0 0 135.47 135.47" xmlns="http://www.w3.org/2000/svg" xmlns:cc="http://creativecommons.org/ns#" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+<svg width="512" height="512" version="1.1" viewBox="0 0 135.47 135.47" xmlns="http://www.w3.org/2000/svg" xmlns:cc="http://creativecommons.org/ns#" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:osb="http://www.openswatchbook.org/uri/2009/osb" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
  <metadata>
   <rdf:RDF>
    <cc:Work rdf:about="">
     <dc:format>image/svg+xml</dc:format>
     <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
+    <dc:title/>
    </cc:Work>
   </rdf:RDF>
  </metadata>
  <g transform="translate(-79.343 -5.6451)">
   <rect x="79.343" y="5.6451" width="135.47" height="135.47" fill="#ffab00" stroke-width=".33867"/>
   <rect x="203.37" y="-2.323" width="1.4001" height=".73081" rx="1.3229" ry=".73081" fill="#fafafa" opacity=".99" stroke-width=".26458"/>
-  <g transform="matrix(.46475 0 0 .48597 -201.49 -231.92)" fill="#fff" opacity=".999">
+  <g transform="matrix(.46475 0 0 .48597 -201.49 -231.92)" fill="#1f2937" opacity=".999">
    <path d="m853.61 659.31c-10.37 0-18.78 8.4-18.78 18.78v48.41c0 10.37 8.4 18.78 18.78 18.78s18.78-8.4 18.78-18.78v-48.41c0-10.38-8.41-18.78-18.78-18.78z"/>
    <path d="m782.7 624.3c-9.76 0.86-16.93 8.95-16.93 18.02v22.98c0 6.22-5.45 11.26-12.18 11.26h-7.16c-6.73 0-12.18-5.04-12.18-11.26v-22c0-9.07-7.17-17.16-16.93-18.02-11.2-0.99-20.62 7.13-20.62 17.27v84.62c0 9.07 7.17 17.16 16.93 18.02 11.2 0.99 20.62-7.13 20.62-17.27v-26.22c0-6.22 5.45-11.26 12.18-11.26h7.16c6.73 0 12.18 5.04 12.18 11.26v25.47c0 9.07 7.17 17.16 16.93 18.02 11.2 0.99 20.62-7.13 20.62-17.27v-86.34c0-10.16-9.42-18.27-20.62-17.28z"/>
    <path d="m646.39 693.62c-10.37 0-18.78 8.4-18.78 18.78v14.1c0 10.37 8.4 18.78 18.78 18.78 10.37 0 18.78-8.4 18.78-18.78v-14.1c-0.01-10.38-8.41-18.78-18.78-18.78z"/>
