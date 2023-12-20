@@ -145,7 +145,7 @@ func (e ECP256PrivateKey) PrivateKey() (*ecdsa.PrivateKey, error) {
 func (e ECP256PrivateKey) PrivateKeyECDH() (*ecdh.PrivateKey, error) {
 	p, err := e.PrivateKey()
 	if err != nil {
-		return nil, fmt.Errorf("%w: %w", ErrParsingPrivateKey, err)
+		return nil, err
 	}
 
 	pe, err := p.ECDH()
@@ -154,6 +154,20 @@ func (e ECP256PrivateKey) PrivateKeyECDH() (*ecdh.PrivateKey, error) {
 	}
 
 	return pe, nil
+}
+
+func (e ECP256PrivateKey) Public() (KeyProviderPublic, error) {
+	p, err := e.PrivateKey()
+	if err != nil {
+		return nil, fmt.Errorf("%w: %w", ErrParsingPrivateKey, err)
+	}
+
+	x509Public, err := x509.MarshalPKIXPublicKey(&p.PublicKey)
+	if err != nil {
+		return nil, fmt.Errorf("%w: %w", ErrMarshalingPublicKey, err)
+	}
+
+	return ECP256PublicKey(base64.StdEncoding.EncodeToString(x509Public)), nil
 }
 
 func (e ECP256PrivateKey) Sign(message []byte, hash crypto.Hash) (signature []byte, err error) {

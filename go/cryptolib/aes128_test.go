@@ -11,7 +11,7 @@ import (
 func TestAES128(t *testing.T) {
 	key, err := NewAES128Key(rand.Reader)
 	assert.Equal(t, err, nil)
-	assert.Equal(t, len(key), int(math.Ceil(float64(16)/3)*4))
+	assert.Equal(t, len(key), 24)
 
 	input := []byte("testing")
 

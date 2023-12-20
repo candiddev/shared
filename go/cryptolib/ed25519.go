@@ -98,7 +98,7 @@ func (Ed25519PrivateKey) KDF() KDF {
 func (e Ed25519PrivateKey) PrivateKeyECDH() ([]byte, error) {
 	p, err := e.PrivateKey()
 	if err != nil {
-		return nil, fmt.Errorf("%w: %w", ErrParsingPrivateKey, err)
+		return nil, err
 	}
 
 	h := sha512.New()
@@ -146,6 +146,20 @@ func (e Ed25519PrivateKey) PrivateKey() (ed25519.PrivateKey, error) {
 	}
 
 	return p, nil
+}
+
+func (e Ed25519PrivateKey) Public() (KeyProviderPublic, error) {
+	p, err := e.PrivateKey()
+	if err != nil {
+		return nil, fmt.Errorf("%w: %w", ErrParsingPrivateKey, err)
+	}
+
+	x509Public, err := x509.MarshalPKIXPublicKey(p.Public())
+	if err != nil {
+		return nil, fmt.Errorf("%w: %w", ErrMarshalingPublicKey, err)
+	}
+
+	return Ed25519PublicKey(base64.StdEncoding.EncodeToString(x509Public)), nil
 }
 
 func (Ed25519PrivateKey) Provides(Encryption) bool {

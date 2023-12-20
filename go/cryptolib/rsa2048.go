@@ -126,6 +126,20 @@ func (RSA2048PrivateKey) Provides(e Encryption) bool {
 	return e == EncryptionRSA2048OAEPSHA256
 }
 
+func (r RSA2048PrivateKey) Public() (KeyProviderPublic, error) {
+	p, err := r.PrivateKey()
+	if err != nil {
+		return nil, fmt.Errorf("%w: %w", ErrParsingPrivateKey, err)
+	}
+
+	x509Public, err := x509.MarshalPKIXPublicKey(p.Public())
+	if err != nil {
+		return nil, fmt.Errorf("%w: %w", ErrMarshalingPublicKey, err)
+	}
+
+	return RSA2048PublicKey(base64.StdEncoding.EncodeToString(x509Public)), nil
+}
+
 func (r RSA2048PrivateKey) Sign(message []byte, hash crypto.Hash) (signature []byte, err error) {
 	k, err := r.PrivateKey()
 	if err != nil {

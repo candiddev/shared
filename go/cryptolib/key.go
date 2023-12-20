@@ -32,6 +32,7 @@ func newID() string {
 
 func init() { //nolint:gochecknoinits
 	gob.Register(AES128Key(""))
+	gob.Register(AES256Key(""))
 	gob.Register(ECP256PrivateKey(""))
 	gob.Register(ECP256PublicKey(""))
 	gob.Register(Ed25519PrivateKey(""))
@@ -77,6 +78,7 @@ type KeyProviderKDFSet interface {
 type KeyProviderPrivate interface {
 	DecryptAsymmetric(input EncryptedValue) (output []byte, err error)
 	Sign(message []byte, hash crypto.Hash) (signature []byte, err error)
+	Public() (KeyProviderPublic, error)
 	KeyProvider
 }
 
@@ -147,6 +149,8 @@ func ParseKey[T KeyProvider](s string) (Key[T], error) {
 		switch Algorithm(r[0]) { //nolint:exhaustive
 		case AlgorithmAES128:
 			kp = AES128Key(r[1])
+		case AlgorithmAES256:
+			kp = AES256Key(r[1])
 		case AlgorithmChaCha20:
 			kp = ChaCha20Key(r[1])
 		case AlgorithmECP256Private:
@@ -234,6 +238,10 @@ func NewKeySymmetric[T Algorithm | Encryption](t T) (Key[KeyProviderSymmetric], 
 		fallthrough
 	case string(EncryptionAES128GCM):
 		k, err = NewAES128Key(rand.Reader)
+	case string(AlgorithmAES256):
+		fallthrough
+	case string(EncryptionAES256GCM):
+		k, err = NewAES256Key(rand.Reader)
 	case string(AlgorithmBest):
 		fallthrough
 	case string(AlgorithmChaCha20):
@@ -245,6 +253,8 @@ func NewKeySymmetric[T Algorithm | Encryption](t T) (Key[KeyProviderSymmetric], 
 			string(AlgorithmBest),
 			string(AlgorithmAES128),
 			string(EncryptionAES128GCM),
+			string(AlgorithmAES256),
+			string(EncryptionAES256GCM),
 			string(AlgorithmChaCha20),
 			string(EncryptionChaCha20Poly1305),
 		}, ", "))
@@ -313,6 +323,17 @@ func (k Keys[T]) SliceString() types.SliceString {
 	}
 
 	return s
+}
+
+// Keys returns a slice of KeyProviders for use with Decrypt.
+func (k Keys[T]) Keys() []KeyProvider {
+	out := make([]KeyProvider, len(k))
+
+	for i := range k {
+		out[i] = k[i].Key
+	}
+
+	return out
 }
 
 func (k Keys[T]) MarshalJSON() ([]byte, error) {

@@ -13,6 +13,10 @@ func TestRSA2048(t *testing.T) {
 	prv, pub, err := NewRSA2048()
 	assert.Equal(t, err, nil)
 
+	pub2, err := prv.Public()
+	assert.HasErr(t, err, nil)
+	assert.Equal(t, pub, pub2.(RSA2048PublicKey))
+
 	v := []byte("testing")
 
 	got, err := pub.EncryptAsymmetric(v, "123", EncryptionNone)

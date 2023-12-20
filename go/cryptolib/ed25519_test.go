@@ -10,6 +10,11 @@ import (
 
 func TestEd25519(t *testing.T) {
 	prvStr, pubStr, err := NewEd25519()
+	assert.HasErr(t, err, nil)
+
+	pubStr2, err := prvStr.Public()
+	assert.HasErr(t, err, nil)
+	assert.Equal(t, pubStr, pubStr2.(Ed25519PublicKey))
 
 	assert.Equal(t, err, nil)
 	assert.Equal(t, len(prvStr), 64)

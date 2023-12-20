@@ -27,6 +27,7 @@ var (
 	EncryptionSymmetric = []string{ //nolint:gochecknoglobals
 		string(EncryptionBest),
 		string(EncryptionAES128GCM),
+		string(EncryptionAES256GCM),
 		string(EncryptionChaCha20Poly1305),
 	}
 )
@@ -74,6 +75,8 @@ func ParseEncryptedValue(s string) (EncryptedValue, error) {
 			v.Encryption = EncryptionNone
 		case EncryptionAES128GCM:
 			v.Encryption = EncryptionAES128GCM
+		case EncryptionAES256GCM:
+			v.Encryption = EncryptionAES256GCM
 		case EncryptionChaCha20Poly1305:
 			v.Encryption = EncryptionChaCha20Poly1305
 		case EncryptionRSA2048OAEPSHA256:

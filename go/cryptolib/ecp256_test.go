@@ -10,6 +10,11 @@ import (
 
 func TestECP256(t *testing.T) {
 	prvStr, pubStr, err := NewECP256()
+	assert.HasErr(t, err, nil)
+
+	pubStr2, err := prvStr.Public()
+	assert.HasErr(t, err, nil)
+	assert.Equal(t, pubStr, pubStr2.(ECP256PublicKey))
 
 	assert.Equal(t, err, nil)
 

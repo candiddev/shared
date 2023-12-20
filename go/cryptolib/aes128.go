@@ -17,7 +17,7 @@ const (
 	EncryptionAES128GCM Encryption = Encryption(AlgorithmAES128) + "gcm"
 )
 
-var aesKeys = struct { //nolint: gochecknoglobals
+var aes128Keys = struct { //nolint: gochecknoglobals
 	keys  map[AES128Key]cipher.AEAD
 	mutex sync.Mutex
 }{
@@ -81,15 +81,15 @@ func (k AES128Key) EncryptGCM(value []byte) ([]byte, error) {
 }
 
 func (k AES128Key) Key() (cipher.AEAD, error) {
-	aesKeys.mutex.Lock()
+	aes128Keys.mutex.Lock()
 
-	defer aesKeys.mutex.Unlock()
+	defer aes128Keys.mutex.Unlock()
 
 	var ok bool
 
 	var b cipher.AEAD
 
-	if b, ok = aesKeys.keys[k]; !ok {
+	if b, ok = aes128Keys.keys[k]; !ok {
 		bytesKey, err := base64.StdEncoding.DecodeString(string(k))
 		if err != nil {
 			return nil, fmt.Errorf("%w: %w", ErrDecodingKey, err)
@@ -105,7 +105,7 @@ func (k AES128Key) Key() (cipher.AEAD, error) {
 			return nil, fmt.Errorf("%w: %w", ErrGeneratingGCM, err)
 		}
 
-		aesKeys.keys[k] = b
+		aes128Keys.keys[k] = b
 	}
 
 	return b, nil
