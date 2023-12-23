@@ -13,7 +13,7 @@ import (
 )
 
 // Prompt prompts the user for input.
-func Prompt(prompt string, eol string, noEcho bool) ([][]byte, error) {
+func Prompt(prompt string, eol string, noEcho bool) ([]byte, error) {
 	if eol == "" {
 		eol = "\n"
 	}
@@ -26,7 +26,15 @@ func Prompt(prompt string, eol string, noEcho bool) ([][]byte, error) {
 	if f, err := os.Stdin.Stat(); err == nil && f.Mode()&os.ModeNamedPipe != 0 {
 		out, err := io.ReadAll(os.Stdin)
 		if err == nil {
-			return bytes.Split(out, []byte(eol)), nil
+			b := bytes.Split(out, []byte(eol))
+
+			if len(b) > 1 {
+				SetStdin(string(bytes.Join(b[1:], []byte(eol))))
+			} else if len(b) == 0 {
+				return nil, nil
+			}
+
+			return b[0], nil
 		}
 	}
 
@@ -52,7 +60,7 @@ func Prompt(prompt string, eol string, noEcho bool) ([][]byte, error) {
 		return nil, fmt.Errorf("error reading value: %w", err)
 	}
 
-	return [][]byte{out}, nil
+	return out, nil
 }
 
 // ReadStdin returns the current value of os.Stdin.
