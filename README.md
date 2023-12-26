@@ -4,6 +4,12 @@
 
 Once upon a time, Candid Development used a monorepo and life was easy.  When we split our monorepo into product specific repos, this shared repository is the junk drawer equivalent of the leftover code.  Other Candid repositories heavily use this via submodule and symlinks.
 
+## Containers
+
+Container specific documentation:
+
+- [qemu](./containers/qemu/README.md)
+
 ## License
 
 The code in this repository is licensed under the [GNU AGPL](https://www.gnu.org/licenses/agpl-3.0.en.html).  Please [contact us](mailto:info@candid.dev) for licensing exceptions.

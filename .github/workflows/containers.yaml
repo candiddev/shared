@@ -1,0 +1,37 @@
+name: Containers
+
+concurrency:
+  group: containers
+  cancel-in-progress: true
+
+env:
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  VAULT_ADDR: ${{ secrets.VAULT_ADDR }}
+
+on:
+  schedule:
+    - cron: '0 0 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write # This is required for actions/checkout and releases
+  id-token: write # This is required for requesting the JWT
+  pull-requests: read # This is required for paths-filter
+
+jobs:
+  containers:
+    name: Containers
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          submodules: true
+      - name: Setup
+        id: setup
+        uses: ./github/setup
+        with:
+          vault_address: ${{ secrets.VAULT_ADDR }}
+          vault_role: shared_containers
+      - name: Release containers
+        run: ./m release-containers
