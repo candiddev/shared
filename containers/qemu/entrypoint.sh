@@ -54,6 +54,11 @@ case ${ARCH} in
 	;;
 esac
 
+if [[ -n "${BIOS}" ]]; then
+	qemu_efi_code=""
+	qemu_efi_vars=""
+fi
+
 if [[ -n ${qemu_tpm} ]]; then
 	qemu_tpm="-device ${qemu_tpm},tpmdev=tpm0 -tpmdev emulator,id=tpm0,chardev=tpm"
 fi

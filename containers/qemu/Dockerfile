@@ -21,6 +21,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 COPY --chmod=755 entrypoint.sh /entrypoint.sh
 
 ENV ARCH=amd64
+ENV BIOS=""
 ENV DNSMASQARGS=""
 ENV QEMUARGS=""
 ENV WEBDIR=/cloudinit
