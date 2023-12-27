@@ -6,6 +6,7 @@ import (
 	"errors"
 	"flag"
 	"fmt"
+	"io"
 	"os"
 	"os/exec"
 	"os/user"
@@ -76,7 +77,8 @@ type RunOpts struct {
 	Group               string
 	NoErrorLog          bool
 	Stdin               string
-	StreamLogs          bool
+	Stderr              io.Writer
+	Stdout              io.Writer
 	User                string
 	WorkDir             string
 }
@@ -265,9 +267,9 @@ func (c *Config) Run(ctx context.Context, opts RunOpts) (out CmdOutput, err errs
 
 		cmd.Env = append(cmd.Env, opts.Environment...)
 
-		if opts.StreamLogs {
-			cmd.Stdout = logger.Stdout
-			cmd.Stderr = logger.Stderr
+		if opts.Stderr != nil && opts.Stdout != nil {
+			cmd.Stdout = opts.Stdout
+			cmd.Stderr = opts.Stderr
 			e = cmd.Run()
 		} else {
 			o, e = cmd.CombinedOutput()

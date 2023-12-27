@@ -33,14 +33,14 @@ func TestRun(t *testing.T) {
 		group      string
 		mock       bool
 		name       string
-		streamLogs bool
+		stdout     bool
 		user       string
 		wantErr    bool
 		wantOutput CmdOutput
 	}{
 		{
 			name:       "real",
-			streamLogs: true,
+			stdout:     true,
 			wantOutput: "config.json\n",
 		},
 		{
@@ -82,21 +82,26 @@ func TestRun(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			logger.SetStd()
 			c.runMockEnable = tc.mock
-
-			o, err := c.Run(ctx, RunOpts{
+			opts := RunOpts{
 				Args: []string{
 					"testdata",
 				},
-				Command:    "ls",
-				Group:      tc.group,
-				StreamLogs: tc.streamLogs,
-				User:       tc.user,
-				WorkDir:    "./",
-			})
+				Command: "ls",
+				Group:   tc.group,
+				User:    tc.user,
+				WorkDir: "./",
+			}
+
+			if tc.stdout {
+				opts.Stderr = logger.Stderr
+				opts.Stdout = logger.Stdout
+			}
+
+			o, err := c.Run(ctx, opts)
 
 			assert.Equal(t, err != nil, tc.wantErr)
 
-			if tc.streamLogs {
+			if tc.stdout {
 				assert.Equal(t, logger.ReadStd(), string(tc.wantOutput))
 			} else {
 				assert.Equal(t, o, tc.wantOutput)
