@@ -38,9 +38,8 @@ runs:
       with:
         key: ${{ runner.os }}-${{ hashFiles('shell/**', 'web/package-lock.json') }}
         path: |
-          .bin
+          ~/.local/bin
           .cache
-          shared/.bin
           shared/.cache
           web/node_modules
         restore-keys: |

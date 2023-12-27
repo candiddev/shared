@@ -25,7 +25,7 @@ cmd install-etcha Install Etcha
 install-etcha () {
 	if ! ${EXEC_ETCHA} version 2>&1 | grep "$(curl -sL https://github.com/candiddev/etcha/releases/latest/download/version)" > /dev/null; then
 		printf "Install Etcha..."
-		try "curl -sL https://github.com/candiddev/etcha/releases/latest/download/etcha_${OSNAME}_${OSARCH}.tar.gz | tar -C .bin -xz etcha"
+		try "curl -sL https://github.com/candiddev/etcha/releases/latest/download/etcha_${OSNAME}_${OSARCH}.tar.gz | tar -C ${BINDIR} -xz etcha"
 	fi
 }
 
@@ -33,12 +33,14 @@ cmd install-go Install Go
 install-go () {
 	if ! ${EXEC_GO} version 2>&1 | grep "${VERSION_GO}" > /dev/null || ! command -v "${EXEC_GOVULNCHECK}" > /dev/null; then 
 		printf "Installing Go..."
-		try "rm -rf ${BINDIR}/go/lib
-mkdir -p ${BINDIR}/go/lib
-curl -s -L https://dl.google.com/go/go${VERSION_GO}.${OSNAME}-${OSARCH}.tar.gz | tar --no-same-owner -C ${BINDIR}/go/lib --strip-components=1 -xz
+		try "rm -rf ${LOCALDIR}/go
+mkdir -p ${LOCALDIR}/go/lib
+curl -s -L https://dl.google.com/go/go${VERSION_GO}.${OSNAME}-${OSARCH}.tar.gz | tar --no-same-owner -C ${LOCALDIR}/go/lib --strip-components=1 -xz
+ln -sf ${LOCALDIR}/go/lib/bin/* ${BINDIR}/
 ${EXEC_GO} install golang.org/x/tools/gopls@latest
 ${EXEC_GO} install golang.org/x/vuln/cmd/govulncheck@latest
-${EXEC_GO} clean -modcache"
+${EXEC_GO} clean -modcache
+ln -sf ${LOCALDIR}/go/local/bin/* ${BINDIR}/"
 		fi
 }
 
@@ -70,17 +72,18 @@ cmd install-node Install Node.js
 install-node () {
 	if ! ${EXEC_NODE} --version 2>&1 | grep "${VERSION_NODE}" > /dev/null; then
 		printf "Installing Node..."
-		try "rm -rf ${BINDIR}/node
-mkdir -p ${BINDIR}/node
-curl -s -L https://nodejs.org/dist/v${VERSION_NODE}/node-v${VERSION_NODE}-${OSNAME}-x64.tar.xz | tar --no-same-owner -C ${BINDIR}/node --strip-components=1 -xJ
-chmod 0755 ${BINDIR}/node/bin/*"
+		try "rm -rf ${LOCALDIR}/node
+mkdir -p ${LOCALDIR}/node
+curl -s -L https://nodejs.org/dist/v${VERSION_NODE}/node-v${VERSION_NODE}-${OSNAME}-x64.tar.xz | tar --no-same-owner -C ${LOCALDIR}/node --strip-components=1 -xJ
+ln -sf ${LOCALDIR}/node/bin/* ${BINDIR}/
+"
 	fi
 
 	NPM_INSTALL=${EXEC_NPM}
 
 	printf "Refreshing node_modules..."
 	if [[ -d ${DIR}/shared ]]; then
-		NPM_INSTALL="${BINDIR}/node/bin/npm --prefix ${DIR}/shared/web"
+		NPM_INSTALL="${EXEC_NPM} --prefix ${DIR}/shared/web"
 	fi
 
 	try "${NPM_INSTALL} install"
@@ -100,7 +103,7 @@ cmd install-rot, Install Rot
 install-rot () {
 	if ! ${EXEC_ROT} version 2>&1 | grep "$(curl -sL https://github.com/candiddev/rot/releases/latest/download/version)" > /dev/null; then
 		printf "Install Rot..."
-		try "curl -sL https://github.com/candiddev/rot/releases/latest/download/rot_${OSNAME}_${OSARCH}.tar.gz | tar -C .bin -xz rot"
+		try "curl -sL https://github.com/candiddev/rot/releases/latest/download/rot_${OSNAME}_${OSARCH}.tar.gz | tar -C ${BINDIR} -xz rot"
 	fi
 }
 
@@ -149,6 +152,6 @@ cmd install-yaml8n, Install YAML8n
 install-yaml8n () {
 	if ! ${EXEC_YAML8N} version 2>&1 | grep "$(curl -sL https://github.com/candiddev/yaml8n/releases/latest/download/version)" > /dev/null; then
 		printf "Install YAML8n..."
-		try "curl -sL https://github.com/candiddev/yaml8n/releases/latest/download/yaml8n_${OSNAME}_${OSARCH}.tar.gz | tar -C .bin -xz yaml8n"
+		try "curl -sL https://github.com/candiddev/yaml8n/releases/latest/download/yaml8n_${OSNAME}_${OSARCH}.tar.gz | tar -C ${BINDIR} -xz yaml8n"
 	fi
 }
