@@ -104,7 +104,7 @@ func (t testLogger) Print(v ...any) {
 	t.Log(fmt.Sprint(v...))
 }
 
-func writeLog(ctx context.Context, level Level, err errs.Err, message string) { //nolint:gocognit
+func writeLog(ctx context.Context, level Level, err errs.Err, message string) { //nolint:gocognit,gocyclo
 	span := trace.SpanFromContext(ctx)
 	f, line := getFunc(3)
 	f = fmt.Sprintf("%s:%d", f, line)
@@ -117,7 +117,7 @@ func writeLog(ctx context.Context, level Level, err errs.Err, message string) { 
 
 		e = err.Error()
 
-		if err.Logged() {
+		if err.Logged() && format != FormatKV {
 			level = LevelDebug
 		}
 	}

@@ -1,6 +1,9 @@
 package types
 
-import "sync"
+import (
+	"sort"
+	"sync"
+)
 
 // MapLock is a standard Map/Mutex struct.
 type MapLock[T any] struct {
@@ -23,6 +26,24 @@ func (m *MapLock[T]) Get(key string) *T {
 	o := m.m[key]
 
 	return &o
+}
+
+// Keys returns all the keys from a map, taking care of any locks.
+func (m *MapLock[T]) Keys() []string {
+	m.mutex.RLock()
+	defer m.mutex.RUnlock()
+
+	out := make([]string, len(m.m))
+	i := 0
+
+	for k := range m.m {
+		out[i] = k
+		i++
+	}
+
+	sort.Strings(out)
+
+	return out
 }
 
 // Set sets a Key in a map, taking care of any locks.
