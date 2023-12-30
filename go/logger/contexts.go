@@ -3,6 +3,7 @@ package logger
 import (
 	"context"
 	"fmt"
+	"sort"
 
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/trace"
@@ -11,35 +12,48 @@ import (
 type ctxKey string
 
 // GetAttribute gets a logging attributes.
-func GetAttribute(ctx context.Context, attr string) string {
-	s, ok := ctx.Value(ctxKey(attr)).(string)
+func GetAttribute[T any](ctx context.Context, attr string) (out T) {
+	s, ok := ctx.Value(ctxKey(attr)).(T)
 	if !ok {
-		return ""
+		return out
 	}
 
 	return s
 }
 
 // GetAttributes gets all logging attributes.
-func GetAttributes(ctx context.Context) string {
-	s, ok := ctx.Value(ctxKey("attributes")).(string)
+func GetAttributes(ctx context.Context) []string {
+	s, ok := ctx.Value(ctxKey("attributes")).([]string)
 	if !ok {
-		return ""
+		return []string{}
 	}
 
 	return s
 }
 
-// SetAttribute sets a value for a key.
+// SetAttribute sets a string value for a key.
 func SetAttribute(ctx context.Context, key string, value any) context.Context {
 	a := GetAttributes(ctx)
 	span := trace.SpanFromContext(ctx)
 
-	if a != "" {
-		a += " "
+	if a == nil {
+		a = []string{}
 	}
 
-	a += fmt.Sprintf("%s=%#v", key, value)
+	m := false
+
+	for i := range a {
+		if a[i] == key {
+			m = true
+
+			continue
+		}
+	}
+
+	if !m {
+		a = append(a, key)
+		sort.Strings(a)
+	}
 
 	var v attribute.Value
 

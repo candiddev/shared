@@ -167,15 +167,18 @@ func writeLog(ctx context.Context, level Level, err errs.Err, message string) { 
 		}
 	case FormatKV:
 		out = fmt.Sprintf("level=%#v function=%#v status=%#v success=%#v", strings.ToUpper(string(level)), f, status, status == 200)
-		if e != "" {
-			out += fmt.Sprintf(` error="%s"`, e)
-		}
 
 		if span.SpanContext().HasTraceID() {
 			out += fmt.Sprintf(" traceID=%#v", span.SpanContext().TraceID().String())
 		}
 
-		out += " " + GetAttributes(ctx)
+		for _, key := range GetAttributes(ctx) {
+			out += fmt.Sprintf(" %s=%#v", key, GetAttribute[any](ctx, key))
+		}
+
+		if e != "" {
+			out += fmt.Sprintf(` error="%s"`, e)
+		}
 
 		if msg != "" {
 			out += fmt.Sprintf(` message="%s"`, msg)

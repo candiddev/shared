@@ -10,12 +10,15 @@ import (
 func TestAttributes(t *testing.T) {
 	ctx := SetAttribute(context.Background(), "key", "value")
 
-	assert.Equal(t, `key="value"`, GetAttributes(ctx))
+	assert.Equal(t, GetAttributes(ctx), []string{"key"})
 
+	ctx = SetAttribute(ctx, "bool", false)
 	ctx = SetAttribute(ctx, "bool", true)
 	ctx = SetAttribute(ctx, "int", 1)
 
-	assert.Equal(t, `key="value" bool=true int=1`, GetAttributes(ctx))
-	assert.Equal(t, `value`, GetAttribute(ctx, "key"))
-	assert.Equal(t, ``, GetAttribute(ctx, "eh"))
+	assert.Equal(t, GetAttributes(ctx), []string{"bool", "int", "key"})
+	assert.Equal(t, GetAttribute[string](ctx, "key"), "value")
+	assert.Equal(t, GetAttribute[bool](ctx, "bool"), true)
+	assert.Equal(t, GetAttribute[int](ctx, "int"), 1)
+	assert.Equal(t, GetAttribute[string](ctx, "eh"), "")
 }
