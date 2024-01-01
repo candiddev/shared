@@ -16,8 +16,7 @@ install-air () {
 
 	if ! ${EXEC_AIR} -v > /dev/null 2>&1; then
 		printf "Installing Air..."
-		try "${EXEC_GO} install github.com/cosmtrek/air@v${VERSION_AIR}
-${EXEC_GO} clean -modcache"
+		try "${EXEC_GO} install github.com/cosmtrek/air@v${VERSION_AIR}"
 	fi
 }
 
@@ -33,14 +32,12 @@ cmd install-go Install Go
 install-go () {
 	if ! ${EXEC_GO} version 2>&1 | grep "${VERSION_GO}" > /dev/null || ! command -v "${EXEC_GOVULNCHECK}" > /dev/null; then 
 		printf "Installing Go..."
-		try "rm -rf ${LOCALDIR}/go
-mkdir -p ${LOCALDIR}/go/lib
-curl -s -L https://dl.google.com/go/go${VERSION_GO}.${OSNAME}-${OSARCH}.tar.gz | tar --no-same-owner -C ${LOCALDIR}/go/lib --strip-components=1 -xz
-ln -sf ${LOCALDIR}/go/lib/bin/* ${BINDIR}/
+		try "mkdir -p ${GOROOT}
+curl -s -L https://dl.google.com/go/go${VERSION_GO}.${OSNAME}-${OSARCH}.tar.gz | tar --no-same-owner -C ${GOROOT} --strip-components=1 -xz
+ln -sf ${GOROOT}/bin/* ${BINDIR}/
 ${EXEC_GO} install golang.org/x/tools/gopls@latest
 ${EXEC_GO} install golang.org/x/vuln/cmd/govulncheck@latest
-${EXEC_GO} clean -modcache
-ln -sf ${LOCALDIR}/go/local/bin/* ${BINDIR}/"
+ln -sf ${GOPATH}/bin/* ${BINDIR}/"
 		fi
 }
 
@@ -72,10 +69,10 @@ cmd install-node Install Node.js
 install-node () {
 	if ! ${EXEC_NODE} --version 2>&1 | grep "${VERSION_NODE}" > /dev/null; then
 		printf "Installing Node..."
-		try "rm -rf ${LOCALDIR}/node
-mkdir -p ${LOCALDIR}/node
-curl -s -L https://nodejs.org/dist/v${VERSION_NODE}/node-v${VERSION_NODE}-${OSNAME}-x64.tar.xz | tar --no-same-owner -C ${LOCALDIR}/node --strip-components=1 -xJ
-ln -sf ${LOCALDIR}/node/bin/* ${BINDIR}/
+		try "rm -rf ${LOCALDIR}/lib/node
+mkdir -p ${LOCALDIR}/lib/node
+curl -s -L https://nodejs.org/dist/v${VERSION_NODE}/node-v${VERSION_NODE}-${OSNAME}-x64.tar.xz | tar --no-same-owner -C ${LOCALDIR}/lib/node --strip-components=1 -xJ
+ln -sf ${LOCALDIR}/lib/node/bin/* ${BINDIR}/
 "
 	fi
 
