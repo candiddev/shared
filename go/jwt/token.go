@@ -232,11 +232,12 @@ func (t *Token) ParsePayload(claims CustomClaims, audRegex string, jidRegex stri
 
 	now := time.Now()
 
-	if time.Unix(r.NotBefore, 0).After(now) {
+	// Allow up to 30 seconds clock skew for nbf and eat claims
+	if time.Unix(r.NotBefore, 0).After(now.Add(time.Second * 30)) {
 		return fmt.Errorf("%w: token is not valid yet", ErrTokenParsePayloadValidation)
 	}
 
-	if r.ExpiresAt != 0 && now.After(time.Unix(r.ExpiresAt, 0)) {
+	if r.ExpiresAt != 0 && now.Add(time.Second*-30).After(time.Unix(r.ExpiresAt, 0)) {
 		return fmt.Errorf("%w: token has expired", ErrTokenParsePayloadValidation)
 	}
 
