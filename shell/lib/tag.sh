@@ -2,7 +2,7 @@
 
 cmd tag Tag a new release
 tag () {
-	TAG="v$(date +%Y.%m.%d)"
+	TAG="v$(TZ=America/Chicago date +%Y.%m.%d)"
 	if [[ ${BUILD_TAG} == "main" ]]; then
 		TAG=main
 	fi

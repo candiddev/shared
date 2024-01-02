@@ -21,7 +21,7 @@ esac
 export APP_NAME=${APP_NAME:-}
 
 export BUILD_COMMIT=${BUILD_COMMIT:-$(git rev-parse --short HEAD 2>/dev/null)}
-export BUILD_DATE=${BUILD_DATE:-$(date "+%Y-%m-%d")}
+export BUILD_DATE=${BUILD_DATE:-$(TZ=America/Chicago date "+%Y-%m-%d")}
 export BUILD_ENV=${BUILD_ENV:-dev}
 export BUILD_GO_DIR=${BUILD_GO_DIR:-}
 export BUILD_GO_TAGS=${BUILD_GO_TAGS:-develop}
