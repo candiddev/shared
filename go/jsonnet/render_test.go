@@ -31,6 +31,7 @@ func TestImportRender(t *testing.T) {
 
 	tests := map[string]struct {
 		config       any
+		env          *[]string
 		imports      *Imports
 		wantErr      error
 		wantOut      testdata
@@ -106,6 +107,28 @@ n.getConfig().Vars`,
 			},
 			wantOut: testdata{
 				String: "world",
+			},
+		},
+		"good getEnvStatic": {
+			config: c,
+			env: &[]string{
+				"hell=filtered",
+				"hello1=filtered",
+				"hello=filtered",
+			},
+			imports: &Imports{
+				Entrypoint: "e.jsonnet",
+				Files: map[string]string{
+					"native.libsonnet": Native,
+					"e.jsonnet": `local n = import 'native.libsonnet';
+{
+	String: n.getEnv('hello')
+}
+`,
+				},
+			},
+			wantOut: testdata{
+				String: "filtered",
 			},
 		},
 		"good getEnvFallback": {
@@ -342,6 +365,7 @@ rendered
 			logger.SetStd()
 			r := NewRender(ctx, tc.config)
 			r.path = "/etc/main.jsonnet"
+			r.SetEnv(tc.env)
 			r.Import(tc.imports)
 			assert.HasErr(t, r.Render(ctx, &data), tc.wantErr)
 			assert.Equal(t, data, tc.wantOut)

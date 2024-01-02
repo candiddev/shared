@@ -25,6 +25,7 @@ var ErrRender = errors.New("error rendering jsonnet")
 
 // Render is a jsonnet renderer.
 type Render struct {
+	env     *[]string
 	imports *Imports
 	path    string
 	vm      *jsonnet.VM
@@ -56,16 +57,35 @@ func NewRender(ctx context.Context, config any) *Render { //nolint:gocognit,gocy
 	})
 	r.vm.NativeFunction(&jsonnet.NativeFunction{
 		Func: func(params []any) (any, error) {
-			if key, ok := params[0].(string); ok {
-				key := os.Getenv(key)
-				if key == "" && len(params) == 2 && params[1] != nil {
-					return params[1], nil
+			var key string
+
+			var ok bool
+
+			v := ""
+
+			if key, ok = params[0].(string); ok {
+				if r.env == nil {
+					v = os.Getenv(key)
+				} else {
+					for _, e := range *r.env {
+						if s := strings.Split(e, "="); len(s) == 2 && s[0] == key {
+							v = s[1]
+
+							break
+						}
+					}
 				}
 
-				return key, nil
+				if v != "" {
+					return v, nil
+				}
 			}
 
-			return nil, logger.Error(ctx, errs.ErrReceiver.Wrap(errors.New("no key provided")))
+			if v == "" && len(params) == 2 && params[1] != nil {
+				return params[1], nil
+			}
+
+			return nil, logger.Error(ctx, errs.ErrReceiver.Wrap(fmt.Errorf("no value found for %s and no fallback provided", key)))
 		},
 		Name:   "getEnv",
 		Params: ast.Identifiers{"key", "fallback"},
@@ -242,6 +262,11 @@ func NewRender(ctx context.Context, config any) *Render { //nolint:gocognit,gocy
 	r.vm.SetTraceOut(logger.Stderr)
 
 	return r
+}
+
+// SetEnv sets a custom Env list for getEnv.
+func (r *Render) SetEnv(env *[]string) {
+	r.env = env
 }
 
 // Render evaluates the main.jsonnet file onto a dest.
