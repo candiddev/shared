@@ -193,6 +193,11 @@ Commands:
 		}
 	}
 
+	// Refresh ctx for new config values.
+	ctx = logger.SetFormat(ctx, a.Config.CLIConfig().LogFormat)
+	ctx = logger.SetLevel(ctx, a.Config.CLIConfig().LogLevel)
+	ctx = logger.SetNoColor(ctx, a.Config.CLIConfig().NoColor)
+
 	args := flag.Args()
 	if len(args) < 1 {
 		flag.Usage()
