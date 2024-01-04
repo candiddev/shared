@@ -1,7 +1,6 @@
 package cli
 
 import (
-	"bytes"
 	"context"
 	"errors"
 	"flag"
@@ -76,7 +75,7 @@ type RunOpts struct {
 	EnvironmentInherit  bool
 	Group               string
 	NoErrorLog          bool
-	Stdin               string
+	Stdin               io.Reader
 	Stderr              io.Writer
 	Stdout              io.Writer
 	User                string
@@ -211,9 +210,8 @@ func (c *Config) Run(ctx context.Context, opts RunOpts) (out CmdOutput, err errs
 
 	cmd.Dir = opts.WorkDir
 
-	if opts.Stdin != "" {
-		b := bytes.NewBufferString(opts.Stdin)
-		cmd.Stdin = b
+	if opts.Stdin != nil {
+		cmd.Stdin = opts.Stdin
 	}
 
 	logger.Debug(ctx, "Running commands:\n"+cmd.String())
