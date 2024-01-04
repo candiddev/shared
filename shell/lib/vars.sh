@@ -18,6 +18,7 @@ case $(uname -m) in
 		;;
 esac
 
+export APP_BLOG=${APP_BLOG:-}
 export APP_NAME=${APP_NAME:-}
 
 export BUILD_COMMIT=${BUILD_COMMIT:-$(git rev-parse --short HEAD 2>/dev/null)}

@@ -27,7 +27,12 @@ tag-github-release () {
 	if [[ ${BUILD_TAG} == "main" ]]; then
 		#shellcheck disable=SC2034
 		prerelease=true
+	elif [[ -n "${APP_URL}" ]]; then
+		v=${BUILD_TAG#v}
+		v=${v%.*}
+		v=${v/./}
+		export body="${APP_URL}/blog/whats-new-${v}"
 	fi
 
-	run-github "${path}" "${m}" "$(jq -cn '{body: "\($ENV.APP_NAME) \($ENV.BUILD_TAG)", prerelease: $ENV.prerelease | test("true"), tag_name: $ENV.BUILD_TAG}')"
+	run-github "${path}" "${m}" "$(jq -cn '{body: $ENV.body, prerelease: $ENV.prerelease | test("true"), tag_name: $ENV.BUILD_TAG}')"
 }
