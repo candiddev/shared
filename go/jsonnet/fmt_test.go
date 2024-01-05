@@ -5,6 +5,7 @@ import (
 
 	"github.com/candiddev/shared/go/assert"
 	"github.com/candiddev/shared/go/logger"
+	"github.com/candiddev/shared/go/types"
 )
 
 func TestFmt(t *testing.T) {
@@ -12,10 +13,19 @@ func TestFmt(t *testing.T) {
 	ctx = logger.SetFormat(ctx, logger.FormatHuman)
 
 	tests := map[string]struct {
-		imports    *Imports
-		wantOutput string
-		wantErr    error
+		imports *Imports
+		wantErr error
+		wantRes types.Results
 	}{
+		"bad can't parse": {
+			imports: &Imports{
+				Files: map[string]string{
+					"main.jsonnet": `THIS IS NONSENSE
+				`,
+				},
+			},
+			wantErr: ErrFmt,
+		},
 		"bad": {
 			imports: &Imports{
 				Files: map[string]string{
@@ -26,8 +36,8 @@ func TestFmt(t *testing.T) {
 				`,
 				},
 			},
-			wantOutput: `ERROR files not formatted properly
-diff have main.jsonnet want main.jsonnet
+			wantRes: types.Results{
+				"main.jsonnet": []string{`diff have main.jsonnet want main.jsonnet
 --- have main.jsonnet
 +++ want main.jsonnet
 @@ -1,5 +1,3 @@
@@ -39,7 +49,8 @@ diff have main.jsonnet want main.jsonnet
 -				
 \ No newline at end of file
 `,
-			wantErr: ErrFmt,
+				},
+			},
 		},
 		"good": {
 			imports: &Imports{
@@ -50,6 +61,7 @@ diff have main.jsonnet want main.jsonnet
 `,
 				},
 			},
+			wantRes: types.Results{},
 		},
 	}
 
@@ -58,8 +70,9 @@ diff have main.jsonnet want main.jsonnet
 			logger.SetStd()
 			r := NewRender(ctx, nil)
 			r.Import(tc.imports)
-			assert.HasErr(t, r.Fmt(ctx), tc.wantErr)
-			assert.Equal(t, logger.ReadStd(), tc.wantOutput)
+			res, err := r.Fmt(ctx)
+			assert.HasErr(t, err, tc.wantErr)
+			assert.Equal(t, res, tc.wantRes)
 		})
 	}
 }

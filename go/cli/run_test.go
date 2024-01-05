@@ -159,6 +159,7 @@ func TestRun(t *testing.T) {
 		},
 		Command:             "hello",
 		ContainerImage:      "example",
+		ContainerNetwork:    "test",
 		ContainerPrivileged: true,
 		ContainerVolumes: []string{
 			"/a:/a",
@@ -170,7 +171,7 @@ func TestRun(t *testing.T) {
 
 	cri, _ := getContainerRuntime()
 
-	assert.Equal(t, regexp.MustCompile(fmt.Sprintf(`^/usr/bin/%s run -i --rm --name etcha_\S+ --privileged -v /a:/a -v /b:/b -w /test1 example hello world$`, cri)).MatchString(c.runMock.inputs[0].Exec), true)
+	assert.Equal(t, regexp.MustCompile(fmt.Sprintf(`^/usr/bin/%s run -i --rm --name etcha_\S+ --network test --privileged -v /a:/a -v /b:/b -w /test1 example hello world$`, cri)).MatchString(c.runMock.inputs[0].Exec), true)
 	assert.Equal(t, c.runMock.inputs[0].WorkDir, "/test2")
 
 	c.runMockEnable = false

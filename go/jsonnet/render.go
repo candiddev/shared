@@ -277,11 +277,11 @@ func (r *Render) Render(ctx context.Context, dest any) errs.Err {
 
 	s, err := r.vm.EvaluateFile(r.imports.Entrypoint)
 	if err != nil {
-		return logger.Error(ctx, errs.ErrReceiver.Wrap(ErrRender), err.Error())
+		return logger.Error(ctx, errs.ErrReceiver.Wrap(ErrRender, err))
 	}
 
 	if err := json.Unmarshal([]byte(s), dest); err != nil {
-		return logger.Error(ctx, errs.ErrReceiver.Wrap(ErrRender), err.Error())
+		return logger.Error(ctx, errs.ErrReceiver.Wrap(ErrRender, err))
 	}
 
 	return nil

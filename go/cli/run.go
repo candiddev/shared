@@ -66,6 +66,7 @@ type RunOpts struct {
 	Command             string
 	ContainerEntrypoint string
 	ContainerImage      string
+	ContainerNetwork    string
 	ContainerPull       string
 	ContainerPrivileged bool
 	ContainerUser       string
@@ -114,6 +115,10 @@ func (r *RunOpts) getCmd(ctx context.Context) (*exec.Cmd, errs.Err) {
 
 			if r.ContainerEntrypoint != "" {
 				args = append(args, "--entrypoint", r.ContainerEntrypoint)
+			}
+
+			if r.ContainerNetwork != "" {
+				args = append(args, "--network", r.ContainerNetwork)
 			}
 
 			if r.ContainerPrivileged {
