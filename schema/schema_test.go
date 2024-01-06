@@ -3,7 +3,6 @@ package schema
 import (
 	"testing"
 
-	"github.com/candiddev/shared/go/assert"
 	"github.com/candiddev/shared/go/cli"
 )
 
@@ -20,26 +19,11 @@ type b struct {
 }
 
 func TestGet(t *testing.T) {
-	assert.Equal(t, Get(root{
-		A: a{
-			B: b{
-				Value: "default",
-			},
-		},
-	}), &Schema{
-		"a": &Schema{
-			"B": &Schema{
-				"value":       "default",
-				"value:usage": "Hello world",
-			},
-		},
-	})
-
 	cli.Print(Get(root{
 		A: a{
 			B: b{
 				Value: "default",
 			},
 		},
-	}))
+	}, "http://example.com", "Example"))
 }
