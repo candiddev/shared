@@ -62,7 +62,7 @@ func Lint(ctx context.Context, config any, path string, checkFormat bool, exclud
 						}
 
 						if !match {
-							l[r.path] = append(l[path], err.Error())
+							l[path] = append(l[path], err.Error())
 						}
 					}
 

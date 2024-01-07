@@ -1,3 +1,4 @@
+// Package schema is a PoC for generating JSON schema files.
 package schema
 
 import (
@@ -6,59 +7,65 @@ import (
 	"strings"
 )
 
+// Schema is a JSON schema.
 type Schema struct {
 	ID     string `json:"$id"`
 	Schema string `json:"$schema"`
 	Title  string `json:"title"`
-	SchemaProperty
+	Property
 }
 
-type SchemaProperties map[string]SchemaProperty
+// Properties are properties for a schema.
+type Properties map[string]Property
 
-type SchemaProperty struct {
-	Default     any              `json:"default,omitempty"`
-	Description string           `json:"description,omitempty"`
-	Enum        []string         `json:"enum,omitempty"`
-	Items       *SchemaProperty  `json:"items,omitempty"`
-	Maximum     int              `json:"maximum,omitempty"`
-	Minimum     int              `json:"minimum,omitempty"`
-	Properties  SchemaProperties `json:"properties,omitempty"`
-	Ref         string           `json:"$ref,omitempty"`
-	Required    []string         `json:"required,omitempty"`
-	Type        SchemaType       `json:"type,omitempty"`
+// Property is a property in a schema.
+type Property struct {
+	Default     any        `json:"default,omitempty"`
+	Description string     `json:"description,omitempty"`
+	Enum        []string   `json:"enum,omitempty"`
+	Items       *Property  `json:"items,omitempty"`
+	Maximum     int        `json:"maximum,omitempty"`
+	Minimum     int        `json:"minimum,omitempty"`
+	Properties  Properties `json:"properties,omitempty"`
+	Ref         string     `json:"$ref,omitempty"`
+	Required    []string   `json:"required,omitempty"`
+	Type        Type       `json:"type,omitempty"`
 
 	isRequired bool
 }
 
-type SchemaType string
+// Type is the underlying type of the field.
+type Type string
 
+// Types for properties.
 const (
-	SchemaTypeArray   SchemaType = "array"
-	SchemaTypeBoolean SchemaType = "boolean"
-	SchemaTypeNumber  SchemaType = "number"
-	SchemaTypeObject  SchemaType = "object"
-	SchemaTypeString  SchemaType = "string"
+	TypeArray   Type = "array"
+	TypeBoolean Type = "boolean"
+	TypeNumber  Type = "number"
+	TypeObject  Type = "object"
+	TypeString  Type = "string"
 )
 
-func getType(t string) SchemaType {
-	switch SchemaType(t) {
-	case SchemaTypeArray:
-		return SchemaTypeArray
-	case SchemaTypeBoolean:
-		return SchemaTypeBoolean
-	case SchemaTypeNumber:
-		return SchemaTypeNumber
-	case SchemaTypeObject:
-		return SchemaTypeObject
-	case SchemaTypeString:
-		return SchemaTypeString
+func getType(t string) Type {
+	switch Type(t) {
+	case TypeArray:
+		return TypeArray
+	case TypeBoolean:
+		return TypeBoolean
+	case TypeNumber:
+		return TypeNumber
+	case TypeObject:
+		return TypeObject
+	case TypeString:
+		return TypeString
 	}
 
 	return ""
 }
 
-func getProperty(v reflect.Value, f reflect.StructField) (string, SchemaProperty) {
-	s := SchemaProperty{}
+func getProperty(v reflect.Value, f reflect.StructField) (string, Property) {
+	s := Property{}
+
 	n := f.Tag.Get("json")
 	if n == "" {
 		n = f.Name
@@ -92,10 +99,11 @@ func getProperty(v reflect.Value, f reflect.StructField) (string, SchemaProperty
 		s.isRequired = true
 	}
 
+	//nolint:exhaustive
 	switch f.Type.Kind() {
 	case reflect.Array:
 		ar := ""
-		at := SchemaType("")
+		at := Type("")
 
 		if t := f.Tag.Get("items_type"); t != "" {
 			at = getType(t)
@@ -103,40 +111,40 @@ func getProperty(v reflect.Value, f reflect.StructField) (string, SchemaProperty
 			ar = t
 		}
 
-		s.Type = SchemaTypeArray
-		s.Items = &SchemaProperty{
+		s.Type = TypeArray
+		s.Items = &Property{
 			Ref:  ar,
 			Type: at,
 		}
 	case reflect.Bool:
 		s.Default = v.Interface()
-		s.Type = SchemaTypeBoolean
+		s.Type = TypeBoolean
 	case reflect.Int:
 		fallthrough
 	case reflect.Uint:
 		s.Default = v.Interface()
-		s.Type = SchemaTypeNumber
+		s.Type = TypeNumber
 	case reflect.Map:
-		s.Type = SchemaTypeObject
+		s.Type = TypeObject
 	case reflect.String:
 		s.Default = v.Interface()
-		s.Type = SchemaTypeString
+		s.Type = TypeString
 	case reflect.Struct:
-		s.Type = SchemaTypeObject
+		s.Type = TypeObject
 		s.Properties, s.Required = getProperties(v.Interface())
 	}
 
 	return n, s
 }
 
-func getProperties(c any) (SchemaProperties, []string) {
+func getProperties(c any) (Properties, []string) {
 	v := reflect.ValueOf(c)
 
 	if v.Kind() != reflect.Struct {
 		return nil, nil
 	}
 
-	p := SchemaProperties{}
+	p := Properties{}
 	r := []string{}
 
 	for i := 0; i < v.NumField(); i++ {
@@ -151,12 +159,14 @@ func getProperties(c any) (SchemaProperties, []string) {
 	return p, r
 }
 
+// Get renders a Schema.
 func Get(c any, id string, title string) *Schema {
 	p, r := getProperties(c)
+
 	return &Schema{
 		ID:     id,
 		Schema: "https://json-schema.org/draft/2020-12/schema",
-		SchemaProperty: SchemaProperty{
+		Property: Property{
 			Properties: p,
 			Required:   r,
 		},
