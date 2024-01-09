@@ -9,6 +9,7 @@ import (
 	"net"
 	"os"
 	"regexp"
+	"runtime"
 	"sort"
 	"strings"
 	"time"
@@ -38,6 +39,12 @@ func NewRender(ctx context.Context, config any) *Render { //nolint:gocognit,gocy
 		vm: jsonnet.MakeVM(),
 	}
 
+	r.vm.NativeFunction(&jsonnet.NativeFunction{
+		Func: func([]any) (any, error) {
+			return runtime.GOARCH, nil
+		},
+		Name: "getArch",
+	})
 	r.vm.NativeFunction(&jsonnet.NativeFunction{
 		Func: func(params []any) (any, error) {
 			out, err := json.Marshal(config)
@@ -119,6 +126,13 @@ func NewRender(ctx context.Context, config any) *Render { //nolint:gocognit,gocy
 		},
 		Name:   "getFile",
 		Params: ast.Identifiers{"path", "fallback"},
+	})
+
+	r.vm.NativeFunction(&jsonnet.NativeFunction{
+		Func: func([]any) (any, error) {
+			return runtime.GOOS, nil
+		},
+		Name: "getOS",
 	})
 	r.vm.NativeFunction(&jsonnet.NativeFunction{
 		Func: func(params []any) (any, error) {

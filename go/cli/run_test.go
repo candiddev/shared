@@ -155,7 +155,7 @@ func TestRun(t *testing.T) {
 	c.RunMock()
 	c.Run(ctx, RunOpts{
 		Args: []string{
-			"world",
+			"${world}",
 		},
 		Command:             "hello",
 		ContainerImage:      "example",
@@ -171,7 +171,7 @@ func TestRun(t *testing.T) {
 
 	cri, _ := getContainerRuntime()
 
-	assert.Equal(t, regexp.MustCompile(fmt.Sprintf(`^/usr/bin/%s run -i --rm --name etcha_\S+ --network test --privileged -v /a:/a -v /b:/b -w /test1 example hello world$`, cri)).MatchString(c.runMock.inputs[0].Exec), true)
+	assert.Equal(t, regexp.MustCompile(fmt.Sprintf(`^/usr/bin/%s run -i --rm --name etcha_\S+ --network test --privileged -v /a:/a -v /b:/b -w /test1 example hello \${world}$`, cri)).MatchString(c.runMock.inputs[0].Exec), true)
 	assert.Equal(t, c.runMock.inputs[0].WorkDir, "/test2")
 
 	c.runMockEnable = false
@@ -182,4 +182,21 @@ func TestRun(t *testing.T) {
 	})
 	assert.Equal(t, out, "hello")
 	assert.HasErr(t, err, nil)
+
+	// Test environment evaluate
+	t.Setenv("hello", "world")
+	out, err = c.Run(ctx, RunOpts{
+		Args: []string{
+			"${arg}",
+		},
+		Command: "cat",
+		Environment: []string{
+			"arg=-b",
+		},
+		EnvironmentEvaluate: true,
+		EnvironmentInherit:  true,
+		Stdin:               bytes.NewBufferString("what in the ${hello}"),
+	})
+	assert.HasErr(t, err, nil)
+	assert.Equal(t, out, "     1	what in the world")
 }

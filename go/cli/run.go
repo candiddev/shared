@@ -73,6 +73,7 @@ type RunOpts struct {
 	ContainerVolumes    []string
 	ContainerWorkDir    string
 	Environment         []string
+	EnvironmentEvaluate bool
 	EnvironmentInherit  bool
 	Group               string
 	NoErrorLog          bool
@@ -83,7 +84,7 @@ type RunOpts struct {
 	WorkDir             string
 }
 
-func (r *RunOpts) getCmd(ctx context.Context) (*exec.Cmd, errs.Err) {
+func (r *RunOpts) getCmd(ctx context.Context) (*exec.Cmd, []string, errs.Err) {
 	var args []string
 
 	var cmd string
@@ -94,7 +95,7 @@ func (r *RunOpts) getCmd(ctx context.Context) (*exec.Cmd, errs.Err) {
 	} else {
 		cri, err := getContainerRuntime()
 		if err != nil {
-			return nil, errs.ErrReceiver.Wrap(err)
+			return nil, nil, errs.ErrReceiver.Wrap(err)
 		}
 
 		if cri != "" {
@@ -151,15 +152,35 @@ func (r *RunOpts) getCmd(ctx context.Context) (*exec.Cmd, errs.Err) {
 		}
 	}
 
-	return exec.CommandContext(ctx, cmd, args...), nil
+	env := []string{}
+
+	if r.EnvironmentInherit {
+		env = os.Environ()
+	}
+
+	env = append(env, r.Environment...)
+
+	if r.EnvironmentEvaluate {
+		for i := range args {
+			args[i] = types.EnvEvaluate(env, args[i])
+		}
+	}
+
+	return exec.CommandContext(ctx, cmd, args...), env, nil
 }
 
 // Run uses RunOpts to run CLI commands.
 func (c *Config) Run(ctx context.Context, opts RunOpts) (out CmdOutput, err errs.Err) { //nolint:gocognit
-	cmd, err := opts.getCmd(ctx)
+	cmd, env, err := opts.getCmd(ctx)
 	if err != nil {
 		return "", logger.Error(ctx, errs.ErrReceiver.Wrap(err))
 	}
+
+	if opts.EnvironmentEvaluate && opts.Stdin != nil {
+		opts.Stdin = types.NewEnvFilter(env, opts.Stdin)
+	}
+
+	cmd.Env = env
 
 	var e error
 
@@ -264,12 +285,6 @@ func (c *Config) Run(ctx context.Context, opts RunOpts) (out CmdOutput, err errs
 
 		c.runMock.mutex.Unlock()
 	} else {
-		if opts.EnvironmentInherit {
-			cmd.Env = os.Environ()
-		}
-
-		cmd.Env = append(cmd.Env, opts.Environment...)
-
 		if opts.Stderr != nil && opts.Stdout != nil {
 			cmd.Stdout = opts.Stdout
 			cmd.Stderr = opts.Stderr

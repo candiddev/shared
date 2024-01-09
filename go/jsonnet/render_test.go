@@ -60,6 +60,23 @@ n.getConfig().Vars`,
 			},
 			wantErr: errs.ErrReceiver,
 		},
+		"good arch": {
+			config: &c,
+			imports: &Imports{
+				Entrypoint: "c.jsonnet",
+				Files: map[string]string{
+					"native.libsonnet": Native,
+					"c.jsonnet": `local n = import 'native.libsonnet';
+
+{
+	String: n.getArch(),
+}`,
+				},
+			},
+			wantOut: testdata{
+				String: "amd64",
+			},
+		},
 		"good config": {
 			config: &c,
 			imports: &Imports{
@@ -210,6 +227,23 @@ n.getConfig().Vars`,
 			},
 			wantOut: testdata{
 				String: "hello",
+			},
+		},
+		"good OS": {
+			config: &c,
+			imports: &Imports{
+				Entrypoint: "c.jsonnet",
+				Files: map[string]string{
+					"native.libsonnet": Native,
+					"c.jsonnet": `local n = import 'native.libsonnet';
+
+{
+	String: n.getOS(),
+}`,
+				},
+			},
+			wantOut: testdata{
+				String: "linux",
 			},
 		},
 		"getPath": {

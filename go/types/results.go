@@ -24,12 +24,12 @@ func (l Results) Show() []string {
 	sort.Strings(keys)
 
 	for i := range keys {
-		s := ""
+		s := []string{}
 		for j := range l[keys[i]] {
-			s = strings.Join(strings.Split(l[keys[i]][j], "\n"), "\n\t")
+			s = append(s, strings.Join(strings.Split(l[keys[i]][j], "\n"), "\n\t"))
 		}
 
-		out = append(out, fmt.Sprintf("%s:\n\t%s", keys[i], s))
+		out = append(out, fmt.Sprintf("%s:\n\t%s", keys[i], strings.Join(s, "\n\t")))
 	}
 
 	return out
