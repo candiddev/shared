@@ -11,9 +11,12 @@ This container comes with everything you need to run virtual machines using QEMU
 - QEMU, for running aarch64, arm, and x86 VMs
 - TPM, for emulating TPMs
 
+The container is currently hosted on GitHub: https://github.com/candiddev/shared/pkgs/container/qemu.
+
 ## Environment Variables
 
 - `ARCH` The QEMU arch to emulate.  Valid values are `amd64`, `arm`, and `arm64`.  Default: `amd64`
+- `BIOS` If set to a value, will enable BIOS boot.  Default: UEFI boot.
 - `DNSMASQARGS` Arguments to pass to DNSMASQ.  Default: `""`
 - `QEMUARGS` Arguments to pass to QEMU.  Default: `""`
 - `WEBDIR` The path to a webdir to expose via python HTTP.  Default: `/cloudinit`
@@ -31,7 +34,7 @@ docker run $(if [[ -e /dev/kvm ]]; then echo "--device /dev/kvm"; fi) \
   -p 23 \
   -v /work:/work \
   -v /cloudinit:/cloudinit \
-  etchaos-qemu
+  ghcr.io/candiddev/qemu:latest
 ```
 
 This example will:
