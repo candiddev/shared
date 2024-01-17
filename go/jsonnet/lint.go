@@ -6,6 +6,7 @@ import (
 	"io/fs"
 	"os"
 	"path/filepath"
+	"regexp"
 
 	"github.com/candiddev/shared/go/errs"
 	"github.com/candiddev/shared/go/logger"
@@ -16,7 +17,7 @@ import (
 type LintImports map[string]*Imports
 
 // Lint checks a path for Jsonnet errors and optionally format errors.
-func Lint(ctx context.Context, config any, path string, checkFormat bool) (types.Results, LintImports, errs.Err) { //nolint:gocognit
+func Lint(ctx context.Context, config any, path string, checkFormat bool, exclude regexp.Regexp) (types.Results, LintImports, errs.Err) { //nolint:gocognit
 	i := LintImports{}
 	l := types.Results{}
 
@@ -25,10 +26,13 @@ func Lint(ctx context.Context, config any, path string, checkFormat bool) (types
 		return nil, nil, logger.Error(ctx, errs.ErrReceiver.Wrap(errors.New("error opening path"), e))
 	}
 
+	lvl := logger.GetLevel(ctx)
+	ctx = logger.SetLevel(ctx, logger.LevelNone)
+
 	if f.IsDir() {
 		if err := filepath.WalkDir(path, func(path string, d fs.DirEntry, err error) error {
 			if err == nil && !d.Type().IsDir() {
-				if p := filepath.Ext(path); p != ".jsonnet" && p != ".libsonnet" {
+				if p := filepath.Ext(path); p != ".jsonnet" && p != ".libsonnet" && (exclude.String() == "" || !exclude.MatchString(path)) {
 					return nil
 				}
 
@@ -41,11 +45,29 @@ func Lint(ctx context.Context, config any, path string, checkFormat bool) (types
 				}
 
 				r.Import(ii)
-				i[path] = ii
+				i[filepath.Join(r.path, r.imports.Entrypoint)] = ii
 
 				if checkFormat {
-					if err := r.Fmt(ctx); err != nil {
-						l[path] = append(l[path], err.Error())
+					res, err := r.Fmt(ctx)
+					if err != nil {
+						e := err.Error()
+						match := false
+
+						for i := range l[path] { // Iterate over error messages to avoid duplicates
+							if l[path][i] == e {
+								match = true
+
+								break
+							}
+						}
+
+						if !match {
+							l[path] = append(l[path], err.Error())
+						}
+					}
+
+					for k, v := range res {
+						l[k] = append(l[k], v...)
 					}
 				}
 
@@ -56,24 +78,27 @@ func Lint(ctx context.Context, config any, path string, checkFormat bool) (types
 		}); err != nil {
 			return l, i, logger.Error(ctx, errs.ErrReceiver.Wrap(err))
 		}
-	} else {
+	} else if exclude.String() == "" || !exclude.MatchString(path) {
 		r := NewRender(ctx, config)
 		ii, err := r.GetPath(ctx, path)
-		if err != nil {
-			l[path] = append(l[path], err.Error())
+		if err == nil {
+			r.Import(ii)
+			i[filepath.Join(r.path, r.imports.Entrypoint)] = ii
 
-			return l, i, logger.Error(ctx, nil)
-		}
-
-		r.Import(ii)
-		i[path] = ii
-
-		if checkFormat {
-			if err := r.Fmt(ctx); err != nil {
-				l[path] = append(l[path], err.Error())
+			if checkFormat {
+				res, err := r.Fmt(ctx)
+				if err != nil {
+					l[path] = append(l[path], err.Error())
+				} else {
+					l = res
+				}
 			}
+		} else {
+			l[path] = append(l[path], err.Error())
 		}
 	}
+
+	ctx = logger.SetLevel(ctx, lvl)
 
 	return l, i, logger.Error(ctx, nil)
 }

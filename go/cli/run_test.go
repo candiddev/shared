@@ -5,7 +5,6 @@ import (
 	"context"
 	"fmt"
 	"os"
-	"regexp"
 	"strconv"
 	"strings"
 	"testing"
@@ -14,10 +13,76 @@ import (
 	"github.com/candiddev/shared/go/logger"
 )
 
+func TestParseArgs(t *testing.T) {
+	tests := map[string]struct {
+		input   []string
+		wantOut []string
+		wantErr bool
+	}{
+		"double": {
+			input: []string{
+				`"hello`,
+				`world"`,
+				"yes",
+			},
+			wantOut: []string{
+				"hello world",
+				"yes",
+			},
+		},
+		"single": {
+			input: []string{
+				"'hello",
+				"world'",
+				"yes",
+			},
+			wantOut: []string{
+				"hello world",
+				"yes",
+			},
+		},
+		"mixed": {
+			input: []string{
+				`"hello`,
+				`world"`,
+				"unquoted",
+				"'yes",
+				"this",
+				"works'",
+			},
+			wantOut: []string{
+				"hello world",
+				"unquoted",
+				"yes this works",
+			},
+		},
+		"missing": {
+			input: []string{
+				`"hello`,
+				"world",
+				"unquoted",
+				"'yes",
+				"this",
+				"works'",
+			},
+			wantErr: true,
+		},
+	}
+
+	for name, tc := range tests {
+		t.Run(name, func(t *testing.T) {
+			o, err := parseArgs(tc.input)
+			assert.Equal(t, err != nil, tc.wantErr)
+			assert.Equal(t, o, tc.wantOut)
+		})
+	}
+}
+
 func TestRun(t *testing.T) {
 	logger.UseTestLogger(t)
 
 	ctx := context.Background()
+	ctx = logger.SetFormat(ctx, logger.FormatKV)
 	ctx = logger.SetNoColor(ctx, true)
 	c := Config{}
 	c.RunMock()
@@ -102,8 +167,10 @@ func TestRun(t *testing.T) {
 
 			assert.Equal(t, err != nil, tc.wantErr)
 
+			s := CmdOutput(logger.ReadStd())
+
 			if tc.stdout {
-				assert.Equal(t, logger.ReadStd(), string(tc.wantOutput))
+				assert.Equal(t, s, tc.wantOutput)
 			} else {
 				assert.Equal(t, o, tc.wantOutput)
 			}
@@ -154,11 +221,10 @@ func TestRun(t *testing.T) {
 
 	c.RunMock()
 	c.Run(ctx, RunOpts{
-		Args: []string{
-			"world",
-		},
+		Args:                []string{"${world}"},
 		Command:             "hello",
 		ContainerImage:      "example",
+		ContainerNetwork:    "test",
 		ContainerPrivileged: true,
 		ContainerVolumes: []string{
 			"/a:/a",
@@ -168,9 +234,9 @@ func TestRun(t *testing.T) {
 		WorkDir:          "/test2",
 	})
 
-	cri, _ := getContainerRuntime()
+	cri, _ := GetContainerRuntime()
 
-	assert.Equal(t, regexp.MustCompile(fmt.Sprintf(`^/usr/bin/%s run -i --rm --name etcha_\S+ --privileged -v /a:/a -v /b:/b -w /test1 example hello world$`, cri)).MatchString(c.runMock.inputs[0].Exec), true)
+	assert.Equal(t, c.runMock.inputs[0].Exec, fmt.Sprintf("/usr/bin/%s run -i --rm --network test --privileged -v /a:/a -v /b:/b -w /test1 example hello ${world}", cri))
 	assert.Equal(t, c.runMock.inputs[0].WorkDir, "/test2")
 
 	c.runMockEnable = false
@@ -181,4 +247,19 @@ func TestRun(t *testing.T) {
 	})
 	assert.Equal(t, out, "hello")
 	assert.HasErr(t, err, nil)
+
+	// Test environment evaluate
+	t.Setenv("hello", "world")
+
+	out, err = c.Run(ctx, RunOpts{
+		Args:    []string{"${arg}"},
+		Command: "cat",
+		Environment: []string{
+			"arg=-b",
+		},
+		EnvironmentInherit: true,
+		Stdin:              bytes.NewBufferString("what in the ${hello}"),
+	})
+	assert.HasErr(t, err, nil)
+	assert.Equal(t, out, "     1	what in the world")
 }

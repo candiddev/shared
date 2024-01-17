@@ -5,13 +5,12 @@ import (
 	"encoding/hex"
 	"fmt"
 	"io"
-	"os"
 )
 
 const SignatureHashSHA256 SignatureHash = "sha256"
 
 // SHA256File accepts a file and returns the SHA or an error.
-func SHA256File(f *os.File) (string, error) {
+func SHA256File(f io.Reader) (string, error) {
 	s := sha256.New()
 	if _, err := io.Copy(s, f); err != nil {
 		return "", fmt.Errorf("error creating SHA: %w", err)

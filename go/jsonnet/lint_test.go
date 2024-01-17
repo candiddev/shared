@@ -1,6 +1,7 @@
 package jsonnet
 
 import (
+	"regexp"
 	"testing"
 
 	"github.com/candiddev/shared/go/assert"
@@ -16,6 +17,7 @@ func TestLint(t *testing.T) {
 
 	tests := map[string]struct {
 		checkFormat    bool
+		exclude        string
 		path           string
 		wantErr        error
 		wantImportsLen int
@@ -39,6 +41,11 @@ func TestLint(t *testing.T) {
 				"testdata/funcs.jsonnet": {"error importing jsonnet files: RUNTIME ERROR: couldn't open import \"../functions.libsonnet\": no match locally or in the Jsonnet library paths\n\ttestdata/funcs.jsonnet:1:14-45"},
 			},
 		},
+		"good_path_exclude": {
+			exclude:     "funcs.jsonnet",
+			path:        "testdata/funcs.jsonnet",
+			wantResults: types.Results{},
+		},
 		"native": {
 			checkFormat:    true,
 			path:           "native.libsonnet",
@@ -49,7 +56,7 @@ func TestLint(t *testing.T) {
 
 	for name, tc := range tests {
 		t.Run(name, func(t *testing.T) {
-			r, i, err := Lint(ctx, c, tc.path, tc.checkFormat)
+			r, i, err := Lint(ctx, c, tc.path, tc.checkFormat, *regexp.MustCompile(tc.exclude))
 			assert.HasErr(t, err, tc.wantErr)
 			assert.Equal(t, r, tc.wantResults)
 			assert.Equal(t, len(i), tc.wantImportsLen)

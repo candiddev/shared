@@ -14,6 +14,7 @@ import (
 	"github.com/candiddev/shared/go/config"
 	"github.com/candiddev/shared/go/errs"
 	"github.com/candiddev/shared/go/logger"
+	"golang.org/x/term"
 )
 
 // BuildDate is the application build date in YYYY-MM-DD, set with candid/lib/cli.Builddate build time variable.
@@ -82,6 +83,28 @@ type App[T AppConfig[any]] struct {
 	NoParse          bool
 }
 
+func wrapLines(l int, lines string, indent string) string {
+	s := strings.Fields(strings.TrimSpace(lines))
+	if len(s) == 0 {
+		return lines
+	}
+
+	o := s[0]
+	n := l - len(o)
+
+	for _, w := range s[1:] {
+		if len(w)+1 > n {
+			o += "\n" + indent + w
+			n = l - len(w)
+		} else {
+			o += " " + w
+			n -= 1 + len(w)
+		}
+	}
+
+	return o
+}
+
 // AppConfig is a configuration that can be used with CLI.
 type AppConfig[T any] interface {
 	CLIConfig() *Config
@@ -111,6 +134,12 @@ Commands:
 
 		sort.Strings(c)
 
+		w, _, _ := term.GetSize(0)
+
+		if w == 0 || w > 70 {
+			w = 70
+		}
+
 		for i := range c {
 			name := c[i]
 			if (a.Commands[c[i]]).Name != "" {
@@ -125,7 +154,7 @@ Commands:
 				name += fmt.Sprintf(" [%s]", arg)
 			}
 
-			fmt.Fprintf(logger.Stdout, "  %s\n    	%s\n", name, a.Commands[c[i]].Usage) //nolint:forbidigo
+			fmt.Fprintf(logger.Stdout, "  %s\n    	%s\n\n", wrapLines(w, name, ""), wrapLines(w, a.Commands[c[i]].Usage, "     	")) //nolint:forbidigo
 		}
 
 		//nolint: forbidigo
@@ -136,8 +165,12 @@ Commands:
 	}
 
 	a.Commands["jq"] = Command[T]{
+		ArgumentsOptional: []string{
+			"-r, render raw values",
+			"query string",
+		},
 		Run:   jq[T],
-		Usage: "Query JSON from stdin using jq.  Supports standard JQ queries, and the -r flag to render raw values",
+		Usage: "Query JSON from stdin using jq.  Supports standard JQ queries.",
 	}
 
 	c := ConfigArgs{}

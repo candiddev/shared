@@ -67,5 +67,5 @@ func TestPrompt(t *testing.T) {
 
 func TestStdin(t *testing.T) {
 	SetStdin("hello")
-	assert.Equal(t, ReadStdin(), "hello")
+	assert.Equal(t, ReadStdin(), []byte("hello"))
 }

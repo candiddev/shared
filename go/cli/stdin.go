@@ -63,14 +63,16 @@ func Prompt(prompt string, eol string, noEcho bool) ([]byte, error) {
 	return out, nil
 }
 
-// ReadStdin returns the current value of os.Stdin.
-func ReadStdin() string {
-	b, e := io.ReadAll(os.Stdin)
-	if e == nil {
-		return strings.TrimSpace(string(b))
+// ReadStdin returns the entire value of os.Stdin, if it has a value.
+func ReadStdin() []byte {
+	if f, err := os.Stdin.Stat(); err == nil && f.Mode()&os.ModeNamedPipe != 0 {
+		out, err := io.ReadAll(os.Stdin)
+		if err == nil {
+			return out
+		}
 	}
 
-	return ""
+	return nil
 }
 
 // SetStdin sets a value to be passed to stdin.

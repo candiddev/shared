@@ -73,14 +73,19 @@ Does things
 Commands:
   fail
     	Fails the thing
+
   hello world [arg1] [arg2]
     	Does the thing
-  jq
-    	Query JSON from stdin using jq.  Supports standard JQ queries, and the -r flag to render raw values
+
+  jq [-r, render raw values] [query string]
+    	Query JSON from stdin using jq. Supports standard JQ queries.
+
   show-config
     	Print the current configuration
+
   version
     	Print version information
+
 
 Flags:
   -c string
@@ -123,12 +128,16 @@ Does things
 Commands:
   fail
     	Fails the thing
+
   hello world [arg1] [arg2]
     	Does the thing
-  jq
-    	Query JSON from stdin using jq.  Supports standard JQ queries, and the -r flag to render raw values
+
+  jq [-r, render raw values] [query string]
+    	Query JSON from stdin using jq. Supports standard JQ queries.
+
   version
     	Print version information
+
 
 Flags:
   -f string

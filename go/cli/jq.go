@@ -38,7 +38,7 @@ func jq[T AppConfig[any]](ctx context.Context, args []string, _ T) errs.Err {
 
 	var v any
 
-	if err := json.Unmarshal([]byte(ReadStdin()), &v); err != nil {
+	if err := json.Unmarshal(ReadStdin(), &v); err != nil {
 		return logger.Error(ctx, errs.ErrReceiver.Wrap(errJQ, err))
 	}
 
