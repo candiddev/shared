@@ -17,6 +17,9 @@ outputs:
   change_go:
     description: Change - Go
     value: ${{ steps.changes.outputs.go }}
+  change_hugo:
+    description: Change - Hugo
+    value: ${{ steps.changes.outputs.hugo }}
   change_shell:
     description: Change - Shell
     value: ${{ steps.changes.outputs.shell }}
@@ -69,6 +72,9 @@ runs:
             - 'shell/**'
           go:
             - 'go/**'
+            - 'shell/**'
+          hugo:
+            - 'hugo/**'
             - 'shell/**'
           shell:
             - 'shell/**'

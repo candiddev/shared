@@ -49,17 +49,17 @@ func (c CmdOutput) String() string {
 
 // GetContainerRuntime returns the detected ContainerRuntime.
 func GetContainerRuntime() (ContainerRuntime, error) {
-	_, err := exec.LookPath("podman")
+	_, err := exec.LookPath("docker")
 	if err != nil {
-		_, err := exec.LookPath("docker")
+		_, err := exec.LookPath("podman")
 		if err != nil {
 			return ContainerRuntimeNone, errors.New("no container runtime found")
 		}
 
-		return ContainerRuntimeDocker, nil
+		return ContainerRuntimePodman, nil
 	}
 
-	return ContainerRuntimePodman, nil
+	return ContainerRuntimeDocker, nil
 }
 
 func parseArgs(args []string) ([]string, error) {

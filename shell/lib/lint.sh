@@ -11,10 +11,17 @@ lint-etcha () {
 cmd lint-go Lint Go Code
 lint-go () {
 	install-go
-	install-golangci-lint
 
 	printf "Linting Go..."
 	try "(${EXEC_GOLANGCILINT} --verbose --timeout=5m run && ${EXEC_GOVULNCHECK} ./...)"
+}
+
+cmd lint-hugo Lint Hugo code
+lint-hugo() {
+	install-hugo
+
+	printf "Linting Hugo..."
+	try "cd ${DIR}/hugo; ${EXEC_HUGO}"
 }
 
 cmd lint-shell Lint Shell code

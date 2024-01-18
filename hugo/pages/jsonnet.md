@@ -104,7 +104,17 @@ local something = if true then 'else' else 'other';
 
 Jsonnet can be extended with custom functions via Native Functions.  These functions are non-standard and are supported only within the current Jsonnet implementation.  We provide a few of these functions:
 
-### `getConfig() object`
+### `getArch() string` {#getArch}
+
+This function returns the current architecture based on GOARCH.
+
+{{< highlight jsonnet >}}
+local getArch() = std.native('getArch')();
+
+getArch()
+{{< /highlight >}}
+
+### `getConfig() object` {#getConfig}
 
 This function returns the current configuration for the application as a Jsonnet object.
 
@@ -114,7 +124,7 @@ local getConfig() = std.native('getConfig')();
 config()
 {{< /highlight >}}
 
-### `getEnv(key, fallback=null) string`
+### `getEnv(key, fallback=null) string` {#getEnv}
 
 This function returns the string value of the environment variable.  If the environment variable is not defined or does not exist, it returns an empty string or a fallback value if provided.
 
@@ -124,7 +134,7 @@ local getEnv(key) = std.native('getEnv')(key);
 getEnv('PWD')
 {{< /highlight >}}
 
-### `getFile(path, fallback=null) string`
+### `getFile(path, fallback=null) string`  {#getFile}
 
 This function returns the string value of a `path` (local or http/https via GET).  The results are cached for repeat lookups within the current render cycle.  For HTTP or HTTPS paths, you can set headers for your request using a `#`, the header as a `k:v`, and deliminiated by a newline `\r\n`, e.g. `getEnv('https://example.com/api#myHeader:myValue\r\nmyOtherHeader:myOtherValue'`.
 
@@ -136,7 +146,18 @@ local getFile(path, fallback=null) = std.native('getFile')(path, fallback);
 getFile('~/.bashrc', 'fallback')
 {{< /highlight >}}
 
-### `getPath() string`
+### `getOS () string` {#getArch}
+
+This function returns the current architecture based on GOOS.
+
+{{< highlight jsonnet >}}
+local getOS() = std.native('getOS')();
+
+getOS()
+{{< /highlight >}}
+
+
+### `getPath() string` {#getFile}
 
 This function returns the string value of the full directory path containing the target jsonnet file.  This value may be an empty string if the exact value cannot be determined.
 
@@ -146,7 +167,7 @@ local getPath() = std.native('getPath')();
 getPath()
 {{< /highlight >}}
 
-### `getRecord(type, name, fallback=null) []string`
+### `getRecord(type, name, fallback=null) []string` {#getRecord}
 
 This function returns a list of sorted string values of a DNS record with `type` and `name`.  The results are cached for repeat lookups within the current render cycle.  The currently supported values for  `type` are `a`, `aaaa`, `cname`, and `txt`.
 
@@ -156,7 +177,7 @@ local getRecord(type, name, fallback=null) = std.native('getRecord')(type, name,
 getRecord('a', 'candid.dev', 'fallback')
 {{< /highlight >}}
 
-### `randStr(length) string`
+### `randStr(length) string` {#randStr}
 
 This function returns a random string of length `length`.  Will panic if it cannot generate a cryptographically secure value.
 
@@ -166,7 +187,7 @@ local randStr(length) = std.native('randStr')(length);
 randStr(10)
 {{< /highlight >}}
 
-### `regexMatch(regex, string) bool`
+### `regexMatch(regex, string) bool` {#regexMatch}
 
 This function returns a bool if `string` matches `regex`.  Will throw an error if `regex` is invalid/doesn't compile.
 
@@ -176,7 +197,7 @@ local regexMatch(regex, string) = std.native('regexMatch')(regex, string);
 regexMatch('^hello world$', 'hello world')
 {{< /highlight >}}
 
-### `render(string) object`
+### `render(string) object` {#render}
 
 This function renders `string` using Jsonnet.
 

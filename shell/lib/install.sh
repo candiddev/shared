@@ -31,19 +31,20 @@ install-etcha () {
 
 cmd install-go Install Go
 install-go () {
-	if ! ${EXEC_GO} version 2>&1 | grep "${VERSION_GO}" > /dev/null || ! command -v "${EXEC_GOVULNCHECK}" > /dev/null; then 
+	if ! ${EXEC_GO} version 2>&1 | grep "${VERSION_GO}" > /dev/null; then 
 		printf "Installing Go..."
 		try "rm -rf ${BINDIR}/go/lib
 mkdir -p ${BINDIR}/go/lib
 curl -s -L https://dl.google.com/go/go${VERSION_GO}.${OSNAME}-${OSARCH}.tar.gz | tar --no-same-owner -C ${BINDIR}/go/lib --strip-components=1 -xz
 ${EXEC_GO} install golang.org/x/tools/gopls@latest
-${EXEC_GO} install golang.org/x/vuln/cmd/govulncheck@latest
-${EXEC_GO} clean -modcache"
+${EXEC_GO} install golang.org/x/vuln/cmd/govulncheck@latest"
 		fi
-}
 
-cmd install-golangci-lint Install Golangci-lint, a Go linting tool
-install-golangci-lint () {
+	if ! ${EXEC_GOVULNCHECK} -version | grep "${VERSION_GOVULNCHECK}" > /dev/null; then
+		printf "Installing Govulncheck..."
+		try "${EXEC_GO} install golang.org/x/vuln/cmd/govulncheck@v${VERSION_GOVULNCHECK}"
+	fi
+
 	if ! ${EXEC_GOLANGCILINT} version 2>&1 | grep "${VERSION_GOLANGCILINT}" > /dev/null; then
 		printf "Installing Golangci-lint..."
 		try "

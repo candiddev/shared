@@ -97,7 +97,7 @@ export GOCACHE=${DIR}/.cache/go
 export GOPATH=${BINDIR}/go/local
 export GOROOT=${CUSTOMGOROOT}
 
-export INSTALL_ALL=${INSTALL_ALL:-"install-go install-golangci-lint install-node install-shellcheck install-yaml8n"}
+export INSTALL_ALL=${INSTALL_ALL:-"install-go install-node install-shellcheck install-yaml8n"}
 
 export RUN_GO_ARGS=${RUN_GO_ARGS:-}
 
@@ -107,6 +107,7 @@ export VAULT_TOKEN=${VAULT_TOKEN:-$(vault token lookup &>/dev/null && cat ~/.vau
 export VERSION_AIR=1.49.0 # https://github.com/cosmtrek/air/releases
 export VERSION_GO=1.21.5 # https://golang.org/dl/
 export VERSION_GOLANGCILINT=1.55.2 # https://github.com/golangci/golangci-lint/releases
+export VERSION_GOVULNCHECK=1.0.1 # https://pkg.go.dev/golang.org/x/vuln
 export VERSION_HUGO=0.121.1 # https://github.com/gohugoio/hugo/releases
 export VERSION_NODE=20.10.0 # https://nodejs.org/en/download/
 export VERSION_POSTGRESQL=16 # https://hub.docker.com/_/postgres/tags
