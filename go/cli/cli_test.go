@@ -30,7 +30,7 @@ func TestAppRun(t *testing.T) {
 				ArgumentsRequired: []string{
 					"arg1",
 				},
-				Name: "hello world",
+				Name: "hello-world",
 				Run: func(ctx context.Context, args []string, config *C) errs.Err {
 					run = true
 
@@ -74,7 +74,7 @@ Commands:
   fail
     	Fails the thing
 
-  hello world [arg1] [arg2]
+  hello-world [arg1] [arg2]
     	Does the thing
 
   jq [-r, render raw values] [query string]
@@ -86,6 +86,26 @@ Commands:
   version
     	Print version information
 
+Flags:
+  -c string
+    	Path to JSON/Jsonnet configuration files separated by a comma (default "app.jsonnet")
+  -f string
+    	Set log format (human, kv, raw, default: human)
+  -l string
+    	Set minimum log level (none, debug, info, error, default: info)
+  -n	Disable colored logging
+  -x value
+    	Set config key=value (can be provided multiple times)
+`,
+			wantPath: "app.jsonnet",
+		},
+		"missing arg": {
+			args: []string{"hello-world"},
+			err:  ErrUnknownCommand,
+			output: logger.ColorRed + `ERROR missing arguments: [arg1]` + logger.ColorReset + `
+
+  hello-world [arg1] [arg2]
+    	Does the thing
 
 Flags:
   -c string
@@ -129,7 +149,7 @@ Commands:
   fail
     	Fails the thing
 
-  hello world [arg1] [arg2]
+  hello-world [arg1] [arg2]
     	Does the thing
 
   jq [-r, render raw values] [query string]
@@ -137,7 +157,6 @@ Commands:
 
   version
     	Print version information
-
 
 Flags:
   -f string

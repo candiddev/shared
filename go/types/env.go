@@ -3,7 +3,6 @@ package types
 import (
 	"errors"
 	"fmt"
-	"io"
 	"regexp"
 	"sort"
 	"strings"
@@ -63,30 +62,4 @@ func EnvEvaluate(env []string, s string) string {
 	s = r.ReplaceAllString(s, "${$1}")
 
 	return s
-}
-
-// EnvFilter is an io.Reader that parses env variables.
-type EnvFilter struct {
-	env    []string
-	reader io.Reader
-}
-
-// NewEnvFilter returns a new EnvFilter.
-func NewEnvFilter(env []string, reader io.Reader) *EnvFilter {
-	return &EnvFilter{
-		env:    env,
-		reader: reader,
-	}
-}
-
-// Read satisfies the io.Reader interface.
-func (e *EnvFilter) Read(p []byte) (n int, err error) {
-	n, err = e.reader.Read(p)
-	if err != nil {
-		return n, err
-	}
-
-	n = copy(p, []byte(EnvEvaluate(e.env, string(p[:n]))))
-
-	return n, err
 }

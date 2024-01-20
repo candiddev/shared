@@ -1,7 +1,6 @@
 package cli
 
 import (
-	"bytes"
 	"context"
 	"fmt"
 	"os"
@@ -243,7 +242,7 @@ func TestRun(t *testing.T) {
 
 	out, err := c.Run(ctx, RunOpts{
 		Command: "cat",
-		Stdin:   bytes.NewBufferString("hello"),
+		Stdin:   "hello",
 	})
 	assert.Equal(t, out, "hello")
 	assert.HasErr(t, err, nil)
@@ -258,7 +257,7 @@ func TestRun(t *testing.T) {
 			"arg=-b",
 		},
 		EnvironmentInherit: true,
-		Stdin:              bytes.NewBufferString("what in the ${hello}"),
+		Stdin:              "what in the ${hello}",
 	})
 	assert.HasErr(t, err, nil)
 	assert.Equal(t, out, "     1	what in the world")

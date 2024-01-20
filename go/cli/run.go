@@ -1,6 +1,7 @@
 package cli
 
 import (
+	"bytes"
 	"context"
 	"errors"
 	"flag"
@@ -115,7 +116,7 @@ type RunOpts struct {
 	EnvironmentInherit  bool
 	Group               string
 	NoErrorLog          bool
-	Stdin               io.Reader
+	Stdin               string
 	Stderr              io.Writer
 	Stdout              io.Writer
 	User                string
@@ -249,8 +250,10 @@ func (c *Config) Run(ctx context.Context, opts RunOpts) (out CmdOutput, err errs
 		return "", logger.Error(ctx, errs.ErrReceiver.Wrap(err))
 	}
 
-	if opts.Stdin != nil {
-		cmd.Stdin = types.NewEnvFilter(env, opts.Stdin)
+	if opts.Stdin == "" {
+		cmd.Stdin = os.Stdin
+	} else {
+		cmd.Stdin = bytes.NewBufferString(types.EnvEvaluate(env, opts.Stdin))
 	}
 
 	cmd.Env = env

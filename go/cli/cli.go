@@ -115,14 +115,19 @@ type AppConfig[T any] interface {
 func (a App[T]) Run() errs.Err { //nolint:gocognit
 	ctx := context.Background()
 
-	flag.Usage = func() {
-		//nolint:forbidigo
-		fmt.Fprintf(logger.Stdout, `Usage: %s [flags] [command]
+	usage := func(arg string) {
+		if arg == "" {
+			//nolint:forbidigo
+			fmt.Fprintf(logger.Stdout, `Usage: %s [flags] [command]
 
 %s
 
 Commands:
 `, a.Name, a.Description)
+		} else {
+			//nolint:forbidigo
+			fmt.Fprintln(logger.Stdout)
+		}
 
 		c := []string{}
 
@@ -146,6 +151,10 @@ Commands:
 				name = a.Commands[c[i]].Name
 			}
 
+			if arg != "" && arg != name {
+				continue
+			}
+
 			for _, arg := range a.Commands[c[i]].ArgumentsRequired {
 				name += fmt.Sprintf(" [%s]", arg)
 			}
@@ -158,7 +167,7 @@ Commands:
 		}
 
 		//nolint: forbidigo
-		fmt.Fprintf(logger.Stdout, "\nFlags:\n")
+		fmt.Fprintf(logger.Stdout, "Flags:\n")
 
 		flag.CommandLine.SetOutput(logger.Stdout)
 		flag.PrintDefaults()
@@ -233,7 +242,7 @@ Commands:
 
 	args := flag.Args()
 	if len(args) < 1 {
-		flag.Usage()
+		usage("")
 
 		return ErrUnknownCommand
 	}
@@ -243,7 +252,7 @@ Commands:
 			if len(v.ArgumentsRequired) != 0 && (len(args)-1) < len(v.ArgumentsRequired) {
 				logger.Error(ctx, errs.ErrReceiver.Wrap(errors.New("missing arguments: ["+strings.Join(v.ArgumentsRequired[0+len(args)-1:], "] [")+"]\n"))) //nolint:errcheck
 
-				flag.Usage()
+				usage(args[0])
 
 				return ErrUnknownCommand
 			}
@@ -252,7 +261,7 @@ Commands:
 		}
 	}
 
-	flag.Usage()
+	usage("")
 
 	return ErrUnknownCommand
 }
