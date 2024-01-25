@@ -35,6 +35,17 @@ lint-shell () {
 	done'
 }
 
+cmd lint-terraform Lint Terraform code
+lint-terraform () {
+	install-terraform
+
+	printf "Checking Terraform formatting..."
+	try "${EXEC_TERRAFORM} fmt -check -diff -recursive ${DIR}/terraform"
+
+	printf "Validating Terraform..."
+	try "find ${DIR}/terraform -type d -not -path '*/.terraform*'  | xargs -I{} terraform -chdir={} validate"
+}
+
 cmd lint-web Lint Web code
 lint-web () {
 	install-node

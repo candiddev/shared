@@ -3,37 +3,70 @@
 set -ue
 
 COMMANDS=""
-DIR=$(cd -- "$(dirname "$0")" >/dev/null 2>&1; pwd -P)
+DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 export DIR
-export BINDIR=${BINDIR:-${DIR}/.bin}
-export BUILD_SOURCE=${BUILD_SOURCE:-dev}
+export CACHEDIR=${CACHEDIR:-"${HOME}/.cache"}
+export LOCALDIR=${LOCALDIR:-"${HOME}/.local"}
+export BINDIR=${BINDIR:-"${LOCALDIR}/bin"}
+export PATH="${BINDIR}:${DIR}:${PATH}"
 
-if [[ -L "${BINDIR}" ]]; then
-	mkdir -p "${DIR}/shared/.bin"
-else
-	mkdir -p "${BINDIR}"
-fi
+cmd () {
+	if [ -n "${COMMANDS}" ]; then
+		COMMANDS="${COMMANDS}\n"
+	fi
 
-if [[ -L "${DIR}/.cache" ]]; then
-	mkdir -p "${DIR}/shared/.cache"
-else
-	mkdir -p "${DIR}/.cache"
-fi
+	COMMANDS="${COMMANDS}${1}_${*: 2}"
+}
 
-export PATH="${BINDIR}/go/lib/bin:${BINDIR}/go/local/bin:${BINDIR}/node/bin:${BINDIR}:${PATH}"
+not-running () {
+	! ${CR} inspect "${1}" &> /dev/null
+}
 
-source "${DIR}/shell/lib/helpers.sh"
+run () {
+	IFS=$'\n'
+	for cmd in $(declare -F | cut -d\  -f3); do
+		# shellcheck disable=SC2053
+		if [[ ${cmd} == ${1} ]]; then
+			${cmd}
+		fi
+	done
+	unset IFS
+}
+
+try () {
+	set +e
+	start=$(date +%s)
+	output=$(bash -xec "$@" 2>&1)
+	ec=${?}
+	runtime=$(($(date +%s)-start))
+
+	# shellcheck disable=SC2181
+	if [[ ${ec} == 0 ]]; then
+		printf " \033[0;32mOK\033[0m [%ss]\n" ${runtime}
+
+		if [[ -n "${DEBUG}" ]]; then
+			printf "%s\n" "${output}"
+		fi
+
+		set -e
+		return 0
+	fi
+
+	printf " \033[0;31mFAIL [%ss]\n\nError:\n" ${runtime}
+	printf "%s\n\033[0m" "${output}"
+	exit 1
+}
+
+for f in "${DIR}"/shell/lib/*; do
+		#shellcheck disable=SC1090
+	source "${f}"
+done
 
 for f in "${DIR}"/shell/*; do
 	if ! [[ ${f} == "${DIR}/shell/lib" ]]; then
 			#shellcheck disable=SC1090
 		source "${f}"
 	fi
-done
-
-for f in "${DIR}"/shell/lib/*; do
-		#shellcheck disable=SC1090
-	source "${f}"
 done
 
 set -ue
@@ -68,6 +101,9 @@ if [[ "${1:-""}" == "-d" ]] || [[ -n "${RUNNER_DEBUG+x}" ]]; then
 fi
 
 if [ "$0" == "${BASH_SOURCE[0]}" ]; then
+	mkdir -p "${BINDIR}"
+	mkdir -p "${CACHEDIR}"
+
 	# shellcheck disable=2086
 	if [ "$(type -t ${1:-not-a-command})" != function ]; then
 		if [[ -n "${1+x}" ]]; then

@@ -27,6 +27,7 @@ export BUILD_ENV=${BUILD_ENV:-dev}
 export BUILD_GO_DIR=${BUILD_GO_DIR:-}
 export BUILD_GO_TAGS=${BUILD_GO_TAGS:-develop}
 export BUILD_GO_VARS=${BUILD_GO_VARS:-}
+export BUILD_SOURCE=${BUILD_SOURCE:-dev}
 export BUILD_TAG=${BUILD_TAG:-dev}
 export BUILD_TARGETS_BINARY=${BUILD_TARGETS_BINARY:-darwin/amd64 darwin/arm64 linux/amd64 linux/arm64 linux/arm/v7}
 export BUILD_TARGETS_CONTAINER=${BUILD_TARGETS_CONTAINER:-linux/amd64 linux/arm64 linux/arm/v7}
@@ -68,33 +69,34 @@ export CR_REGISTRY=ghcr.io
 export CR_REPOSITORY=${CR_REPOSITORY:-}
 CR_USER="-u $(id -u):$(id -g)"
 export CR_USER
-export CR_VOLUME="-e HOME=/work -v ${DIR}:/work -w /work"
+export CR_VOLUME="-e HOME=/work -v ${CACHEDIR}:/work/.cache -v ${LOCALDIR}:/work/.local -v ${DIR}:/work -w /work"
 
-export CUSTOMGOROOT=${CUSTOMGOROOT:-${BINDIR}/go/lib}
+export CUSTOMGOROOT=${CUSTOMGOROOT:-${LOCALDIR}/lib/go}
 export DEBUG=${DEBUG:-}
 export DEPLOY_HOSTS=${DEPLOY_HOSTS:-}
 
-export EXEC_AIR=${BINDIR}/go/local/bin/air
+export EXEC_AIR=${BINDIR}/air
 export EXEC_ETCHA=${BINDIR}/etcha
-export EXEC_GO=${BINDIR}/go/lib/bin/go
+export EXEC_GO=${BINDIR}/go
 export EXEC_GOLANGCILINT="${BINDIR}/golangci-lint"
-export EXEC_GOVULNCHECK=${BINDIR}/go/local/bin/govulncheck
+export EXEC_GOVULNCHECK=${BINDIR}/govulncheck
 export EXEC_HUGO=${BINDIR}/hugo
-export EXEC_NPM=${NPM:-${BINDIR}/node/bin/npm --prefix ${DIR}/web}
-export EXEC_NODE=${BINDIR}/node/bin/node
+export EXEC_NPM=${NPM:-${BINDIR}/npm --prefix ${DIR}/web}
+export EXEC_NODE=${BINDIR}/node
 export EXEC_RCLONE=${BINDIR}/rclone
 export EXEC_ROT=${BINDIR}/rot
 export EXEC_SHELLCHECK=${BINDIR}/shellcheck
 export EXEC_SWAG=${BINDIR}/swag
 export EXEC_TERRAFORM=${BINDIR}/terraform
 export EXEC_VAULT=${BINDIR}/vault
-export EXEC_YAML8N="${BINDIR}/yaml8n"
+export EXEC_YAML8N=${BINDIR}/yaml8n
 
 export GITHUB_PATH="/repos/candiddev/${APP_NAME}"
 export GITHUB_TOKEN=${GITHUB_TOKEN:-}
 
-export GOCACHE=${DIR}/.cache/go
-export GOPATH=${BINDIR}/go/local
+export GOCACHE=${CACHEDIR}/go
+export GOPATH=${LOCALDIR}/go
+export GOPROXY=direct
 export GOROOT=${CUSTOMGOROOT}
 
 export INSTALL_ALL=${INSTALL_ALL:-"install-go install-node install-shellcheck install-yaml8n"}

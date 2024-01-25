@@ -49,10 +49,10 @@ const (
 )
 
 // Stderr is a the current stderr path.
-var Stderr *os.File = os.Stderr //nolint:gochecknoglobals
+var Stderr = os.Stderr //nolint:gochecknoglobals
 
 // Stdout is a the current stdout path.
-var Stdout *os.File = os.Stdout //nolint:gochecknoglobals
+var Stdout = os.Stdout //nolint:gochecknoglobals
 
 var loggerOut logger = log.New(Stdout, "", 0) //nolint:gochecknoglobals
 var loggerErr logger = log.New(Stderr, "", 0) //nolint:gochecknoglobals

@@ -41,10 +41,8 @@ runs:
       with:
         key: ${{ runner.os }}-${{ hashFiles('shell/**', 'web/package-lock.json') }}
         path: |
-          .bin
-          .cache
-          shared/.bin
-          shared/.cache
+          ~/.local
+          ~/.cache/go
           web/node_modules
         restore-keys: |
           ${{ runner.os }}-
