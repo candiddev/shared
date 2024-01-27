@@ -76,7 +76,7 @@ run-hugo-start () {
 			--restart always \
 			${CR_VOLUME} \
 			${CR_IMAGE} \
-			.bin/hugo server -b http://localhost:1313 --verbose --watch --bind 0.0.0.0 -s hugo"
+			${EXEC_HUGO} server -b http://localhost:1313 --verbose --watch --bind 0.0.0.0 -s hugo"
 	fi
 }
 

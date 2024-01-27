@@ -1,7 +1,3 @@
-.bin
-.cache
-.gcp
-
 go/coverage.out
 hugo/.hugo_build.lock
 hugo/resources

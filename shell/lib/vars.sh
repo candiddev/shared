@@ -69,7 +69,7 @@ export CR_REGISTRY=ghcr.io
 export CR_REPOSITORY=${CR_REPOSITORY:-}
 CR_USER="-u $(id -u):$(id -g)"
 export CR_USER
-export CR_VOLUME="-e HOME=/work -v ${CACHEDIR}:/work/.cache -v ${LOCALDIR}:/work/.local -v ${DIR}:/work -w /work"
+export CR_VOLUME="-e HOME=/work -v ${BINDIR}:${BINDIR} -v ${CACHEDIR}:/work/.cache -v ${LOCALDIR}:/work/.local -v ${DIR}:/work -w /work"
 
 export CUSTOMGOROOT=${CUSTOMGOROOT:-${LOCALDIR}/lib/go}
 export DEBUG=${DEBUG:-}
