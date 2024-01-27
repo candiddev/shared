@@ -115,6 +115,10 @@ type AppConfig[T any] interface {
 func (a App[T]) Run() errs.Err { //nolint:gocognit
 	ctx := context.Background()
 
+	f := flag.NewFlagSet("", flag.ContinueOnError)
+	f.Usage = func() {}
+	f.SetOutput(logger.Stdout)
+
 	usage := func(arg string) {
 		if arg == "" {
 			//nolint:forbidigo
@@ -168,9 +172,7 @@ Commands:
 
 		//nolint: forbidigo
 		fmt.Fprintf(logger.Stdout, "Flags:\n")
-
-		flag.CommandLine.SetOutput(logger.Stdout)
-		flag.PrintDefaults()
+		f.PrintDefaults()
 	}
 
 	a.Commands["jq"] = Command[T]{
@@ -187,7 +189,7 @@ Commands:
 	if !a.NoParse {
 		a.Config.CLIConfig().ConfigPath = strings.ToLower(a.Name) + ".jsonnet"
 
-		flag.StringVar(&a.Config.CLIConfig().ConfigPath, "c", a.Config.CLIConfig().ConfigPath, "Path to JSON/Jsonnet configuration files separated by a comma")
+		f.StringVar(&a.Config.CLIConfig().ConfigPath, "c", a.Config.CLIConfig().ConfigPath, "Path to JSON/Jsonnet configuration files separated by a comma")
 
 		a.Commands["show-config"] = Command[T]{
 			Run: func(ctx context.Context, args []string, config T) errs.Err {
@@ -196,7 +198,7 @@ Commands:
 			Usage: "Print the current configuration",
 		}
 
-		flag.Var(&c, "x", "Set config key=value (can be provided multiple times)")
+		f.Var(&c, "x", "Set config key=value (can be provided multiple times)")
 	}
 
 	a.Commands["version"] = Command[T]{
@@ -209,11 +211,15 @@ Commands:
 		Usage: "Print version information",
 	}
 
-	flag.StringVar((*string)(&a.Config.CLIConfig().LogFormat), "f", string(a.Config.CLIConfig().LogFormat), "Set log format (human, kv, raw, default: human)")
-	flag.StringVar((*string)(&a.Config.CLIConfig().LogLevel), "l", string(a.Config.CLIConfig().LogLevel), "Set minimum log level (none, debug, info, error, default: info)")
-	flag.BoolVar(&a.Config.CLIConfig().NoColor, "n", a.Config.CLIConfig().NoColor, "Disable colored logging")
+	f.StringVar((*string)(&a.Config.CLIConfig().LogFormat), "f", string(a.Config.CLIConfig().LogFormat), "Set log format (human, kv, raw, default: human)")
+	f.StringVar((*string)(&a.Config.CLIConfig().LogLevel), "l", string(a.Config.CLIConfig().LogLevel), "Set minimum log level (none, debug, info, error, default: info)")
+	f.BoolVar(&a.Config.CLIConfig().NoColor, "n", a.Config.CLIConfig().NoColor, "Disable colored logging")
 
-	flag.Parse()
+	if err := f.Parse(os.Args[1:]); err != nil {
+		usage("")
+
+		return ErrUnknownCommand
+	}
 
 	// Parse CLI environment early for logging options.
 	if err := config.ParseValues(ctx, a.Config, strings.ToUpper(a.Name)+"_cli_", os.Environ()); err != nil {
@@ -240,7 +246,7 @@ Commands:
 	ctx = logger.SetLevel(ctx, a.Config.CLIConfig().LogLevel)
 	ctx = logger.SetNoColor(ctx, a.Config.CLIConfig().NoColor)
 
-	args := flag.Args()
+	args := f.Args()
 	if len(args) < 1 {
 		usage("")
 

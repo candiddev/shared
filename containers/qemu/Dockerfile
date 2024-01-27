@@ -24,6 +24,8 @@ ENV ARCH=amd64
 ENV BIOS=""
 ENV DNSMASQARGS=""
 ENV QEMUARGS=""
+ENV MEMORY=""
+ENV SMP=""
 ENV WEBDIR=/cloudinit
 
 CMD ["/entrypoint.sh"]

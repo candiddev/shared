@@ -17,8 +17,10 @@ The container is currently hosted on GitHub: https://github.com/candiddev/shared
 
 - `ARCH` The QEMU arch to emulate.  Valid values are `amd64`, `arm`, and `arm64`.  Default: `amd64`
 - `BIOS` If set to a value, will enable BIOS boot.  Default: UEFI boot.
+- `MEMORY` The amount of memory to allocate to the VM.  Default: `2G`
 - `DNSMASQARGS` Arguments to pass to DNSMASQ.  Default: `""`
 - `QEMUARGS` Arguments to pass to QEMU.  Default: `""`
+- `SMP` The number of CPUs to assign to the VM.  Default: `2`
 - `WEBDIR` The path to a webdir to expose via python HTTP.  Default: `/cloudinit`
 
 ## Usage Examples

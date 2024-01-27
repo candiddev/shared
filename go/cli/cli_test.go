@@ -178,6 +178,36 @@ Flags:
 			output: fmt.Sprintf(`Build Version: 1.0
 Build Date: %s`, date),
 		},
+		"bad-flag": {
+			args:    []string{"--version"},
+			err:     ErrUnknownCommand,
+			noParse: true,
+			output: `flag provided but not defined: -version
+Usage: App [flags] [command]
+
+Does things
+
+Commands:
+  fail
+    	Fails the thing
+
+  hello-world [arg1] [arg2]
+    	Does the thing
+
+  jq [-r, render raw values] [query string]
+    	Query JSON from stdin using jq. Supports standard JQ queries.
+
+  version
+    	Print version information
+
+Flags:
+  -f string
+    	Set log format (human, kv, raw, default: human)
+  -l string
+    	Set minimum log level (none, debug, info, error, default: info)
+  -n	Disable colored logging
+`,
+		},
 	}
 
 	for name, tc := range tests {

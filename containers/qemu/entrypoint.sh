@@ -63,6 +63,9 @@ if [[ -n ${qemu_tpm} ]]; then
 	qemu_tpm="-device ${qemu_tpm},tpmdev=tpm0 -tpmdev emulator,id=tpm0,chardev=tpm"
 fi
 
+MEMORY=${MEMORY:-2G}
+SMP=${SMP:-2}
+
 echo Starting VM...
 
 # shellcheck disable=SC2086
@@ -72,13 +75,13 @@ ${qemu_binary} \
 	-device virtio-rng-pci,rng=rng0 \
 	${qemu_efi_code} \
 	${qemu_efi_vars} \
-	-m 2G \
+	-m ${MEMORY} \
 	-machine ${qemu_machine} \
 	-nodefaults \
 	-nographic \
 	-object rng-random,filename=/dev/urandom,id=rng0 \
 	-rtc base=utc,clock=host \
 	-serial tcp::23,server=on,wait=off \
-	-smp 2 \
+	-smp ${SMP} \
 	${qemu_tpm} \
 	${QEMUARGS}
