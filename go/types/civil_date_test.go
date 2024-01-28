@@ -157,6 +157,19 @@ func TestCivilDateAddMonths(t *testing.T) {
 				Year:  2010,
 			},
 		},
+		"add months 1": {
+			input: CivilDate{
+				Day:   1,
+				Month: 1,
+				Year:  2006,
+			},
+			months: 5,
+			want: CivilDate{
+				Day:   1,
+				Month: 6,
+				Year:  2006,
+			},
+		},
 		"subtract months 1": {
 			input: CivilDate{
 				Day:   2,

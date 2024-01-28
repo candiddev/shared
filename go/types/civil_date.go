@@ -193,7 +193,7 @@ func (c CivilDate) AddMonths(n int) CivilDate {
 
 	if c.Day > 28 && newMonth == 2 {
 		c.Day = 28 //nolint:revive
-	} else if c.Day > 30 && newMonth == 2 || newMonth == 4 || newMonth == 6 || newMonth == 9 || newMonth == 11 {
+	} else if c.Day > 30 && (newMonth == 2 || newMonth == 4 || newMonth == 6 || newMonth == 9 || newMonth == 11) {
 		c.Day = 30 //nolint:revive
 	}
 

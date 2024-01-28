@@ -14,10 +14,11 @@
   "files.eol": "\n",
   "files.insertFinalNewline": true,
   "go.alternateTools": {
-    "go": "${workspaceFolder}/.bin/go/lib/bin/go"
+    "go": "${env:HOME}/.local/lib/go/bin/go"
   },
   "go.formatTool": "goimports",
-  "go.gopath": "${workspaceFolder}/.bin/go/local",
+  "go.gopath": "${env:HOME}/.local/go",
+  "go.goroot": "${env:HOME}/.local/lib/go",
   "go.lintOnSave": "workspace",
   "go.lintTool": "golangci-lint",
   "go.showWelcome": false,

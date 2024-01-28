@@ -17,8 +17,13 @@ var iCalendarEventsTemplate = template.Must(template.New("iCalendarEvents").Func
 	"allDay": func(duration PositiveInt) bool {
 		return duration%24 == 0
 	},
-	"formatTime": func(t time.Time) string {
-		return t.Format(iCalendarTime + "Z")
+	"formatTime": func(t time.Time, timezone string) string {
+		f := t.Format(iCalendarTime + "Z")
+		if timezone != "" {
+			return fmt.Sprintf(";TZID=%s:%s", timezone, f)
+		}
+
+		return ":" + f
 	},
 	"replaceAll": strings.ReplaceAll,
 	"trim":       strings.Trim,
@@ -41,18 +46,18 @@ DTEND;VALUE=DATE:{{ .DateEnd.ICalendar }}
 DURATION:PT{{ .Duration }}M
 {{- end }}
 {{- if .Created }}
-DTSTAMP:{{ formatTime .Created }}
+DTSTAMP{{ formatTime .Created "" }}
 {{- end }}
 {{- if .DateStart }}
 DTSTART;VALUE=DATE:{{ .DateStart.ICalendar }}
 {{- else if .TimestampStart }}
-DTSTART:{{ formatTime .TimestampStart }}
+DTSTART{{ formatTime .TimestampStart .TimeZone }}
 {{- end }}
 {{- if .SkipDays }}
 EXDATE;VALUE=DATE:{{ range $i, $e := .SkipDays }}{{ if $i }},{{ end }}{{ replaceAll $e "-" "" }}{{ end }}
 {{- end }}
 {{- if .Updated }}
-LAST-MODIFIED:{{ formatTime .Updated }}
+LAST-MODIFIED{{ formatTime .Updated "" }}
 {{- end }}
 {{- if .Location }}
 LOCATION:{{ .Location }}

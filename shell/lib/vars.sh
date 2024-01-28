@@ -67,15 +67,20 @@ export CR_IMAGE=docker.io/debian:stable-slim
 export CR_LOGOPTS="--log-opt max-file=1 --log-opt max-size=100k"
 export CR_REGISTRY=ghcr.io
 export CR_REPOSITORY=${CR_REPOSITORY:-}
-CR_USER="-u $(id -u):$(id -g)"
+CR_USER="-u $(id -u):$(id -g) -e HOME=${HOME}"
 export CR_USER
-export CR_VOLUME="-e HOME=/work -v ${BINDIR}:${BINDIR} -v ${CACHEDIR}:/work/.cache -v ${LOCALDIR}:/work/.local -v ${DIR}:/work -w /work"
+export CR_VOLUME="-v /etc/ssl:/etc/ssl:ro -v ${CACHEDIR}:${CACHEDIR} -v ${LOCALDIR}:${LOCALDIR} -v ${DIR}:/work -w /work"
 
 export CUSTOMGOROOT=${CUSTOMGOROOT:-${LOCALDIR}/lib/go}
 export DEBUG=${DEBUG:-}
 export DEPLOY_HOSTS=${DEPLOY_HOSTS:-}
 
-export EXEC_AIR=${BINDIR}/air
+export GOCACHE=${CACHEDIR}/go
+export GOPATH=${LOCALDIR}/go
+export GOPROXY=direct
+export GOROOT=${CUSTOMGOROOT}
+
+export EXEC_AIR=${GOPATH}/bin/air
 export EXEC_ETCHA=${BINDIR}/etcha
 export EXEC_GO=${BINDIR}/go
 export EXEC_GOLANGCILINT="${BINDIR}/golangci-lint"
@@ -94,12 +99,9 @@ export EXEC_YAML8N=${BINDIR}/yaml8n
 export GITHUB_PATH="/repos/candiddev/${APP_NAME}"
 export GITHUB_TOKEN=${GITHUB_TOKEN:-}
 
-export GOCACHE=${CACHEDIR}/go
-export GOPATH=${LOCALDIR}/go
-export GOPROXY=direct
-export GOROOT=${CUSTOMGOROOT}
-
 export INSTALL_ALL=${INSTALL_ALL:-"install-go install-node install-shellcheck install-yaml8n"}
+
+export npm_config_cache=${CACHEDIR}/npm
 
 export RUN_GO_ARGS=${RUN_GO_ARGS:-}
 

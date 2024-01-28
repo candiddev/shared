@@ -69,6 +69,8 @@ for f in "${DIR}"/shell/*; do
 	fi
 done
 
+source "${DIR}/shell/lib/vars.sh"
+
 set -ue
 
 USAGE="Usage: m [flags] [command]

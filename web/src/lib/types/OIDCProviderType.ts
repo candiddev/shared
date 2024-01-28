@@ -3,7 +3,6 @@ export const OIDCProviderType = {
 		"None",
 		"Test",
 		"Google",
-		"Apple",
 	],
 };
 
@@ -11,5 +10,4 @@ export enum OIDCProviderTypeEnum {
 	None,
 	Test,
 	Google,
-	Apple,
 }

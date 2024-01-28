@@ -4,7 +4,7 @@ cmd run-air Run via Air
 run-air () {
 	install-air
 
-	${EXEC_AIR} -c "${DIR}/containers/air/air.toml"
+	${EXEC_AIR} -c "${DIR}/containers/air.toml"
 }
 
 cmd run-etcha,re Run Etcha

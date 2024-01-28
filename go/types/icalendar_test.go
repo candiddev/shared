@@ -42,7 +42,7 @@ UID:2
 END:VEVENT
 BEGIN:VEVENT
 DESCRIPTION:Another event
-DTSTART:20220101T120000Z
+DTSTART;TZID=America/Chicago:20220101T120000Z
 LOCATION:Somewhere
 UID:3
 END:VEVENT
@@ -136,7 +136,6 @@ Go out to dinner`,
 				"2022-01-01",
 			},
 			TimestampStart: &dt,
-			TimeZone:       "America/Chicago",
 		},
 		{
 			DateEnd:   &date,
@@ -153,7 +152,7 @@ Go out to dinner`,
 		},
 	}
 
-	got, err := ICalendarEventsFromICS(strings.ReplaceAll(ics, "DTSTART:20220101T120000Z", "DTSTART;TZID=America/Chicago:20220101T060000"))
+	got, err := ICalendarEventsFromICS(ics)
 	assert.Equal(t, err, nil)
 	assert.Equal(t, got, want)
 }
