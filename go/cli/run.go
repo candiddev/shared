@@ -17,7 +17,6 @@ import (
 
 	"github.com/candiddev/shared/go/errs"
 	"github.com/candiddev/shared/go/logger"
-	"github.com/candiddev/shared/go/types"
 )
 
 // ContainerRuntime is an enum for determining which runtime to use.
@@ -193,11 +192,6 @@ func (r *RunOpts) getCmd(ctx context.Context) (*exec.Cmd, []string, errs.Err) {
 
 	env = append(env, r.Environment...)
 
-	// Parse environment
-	for i := range args {
-		args[i] = types.EnvEvaluate(env, args[i])
-	}
-
 	// Parse quotes
 	a, err := parseArgs(args)
 	if err != nil {
@@ -253,7 +247,7 @@ func (c *Config) Run(ctx context.Context, opts RunOpts) (out CmdOutput, err errs
 	if opts.Stdin == "" {
 		cmd.Stdin = os.Stdin
 	} else {
-		cmd.Stdin = bytes.NewBufferString(types.EnvEvaluate(env, opts.Stdin))
+		cmd.Stdin = bytes.NewBufferString(opts.Stdin)
 	}
 
 	cmd.Env = env

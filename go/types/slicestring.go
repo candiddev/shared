@@ -1,32 +1,64 @@
 package types
 
 import (
+	"bytes"
 	"database/sql/driver"
+	"encoding/json"
 	"fmt"
+	"strconv"
 	"strings"
+
+	"github.com/candiddev/shared/go/errs"
 )
 
 // SliceString is a slice of strings.
 type SliceString []string
 
+var ErrSenderBadRequestSliceString = errs.ErrSenderBadRequest.Set("Unable to parse string array")
+
 // MarshalJSON converts a slice string to JSON array.
 func (s SliceString) MarshalJSON() ([]byte, error) {
-	json := "["
+	j := "["
 
 	for i, str := range s {
 		if str == `""` { // fix bug with some existing slicestrings having empty quotes
 			str = ""
 		}
 
-		json += fmt.Sprintf(`"%s"`, str)
+		j += fmt.Sprintf(`"%s"`, str)
 		if i != len(s)-1 {
-			json += ","
+			j += ","
 		}
 	}
 
-	json += "]"
+	j += "]"
 
-	return []byte(json), nil
+	return []byte(j), nil
+}
+
+func (s *SliceString) UnmarshalJSON(data []byte) error {
+	if bytes.HasPrefix(data, []byte(`"`)) {
+		str, err := strconv.Unquote(string(data))
+		if err != nil {
+			return ErrSenderBadRequestSliceString.Wrap(err)
+		}
+
+		if str != "" {
+			*s = SliceString{str}
+		}
+	} else {
+		type tmpS SliceString
+
+		var str tmpS
+
+		if err := json.Unmarshal(data, &str); err != nil {
+			return ErrSenderBadRequestSliceString.Wrap(err)
+		}
+
+		*s = SliceString(str)
+	}
+
+	return nil
 }
 
 // Value returns a JSON marshal of the slice string.

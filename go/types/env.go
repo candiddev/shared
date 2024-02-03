@@ -2,10 +2,8 @@ package types
 
 import (
 	"errors"
-	"fmt"
 	"regexp"
 	"sort"
-	"strings"
 )
 
 var (
@@ -46,20 +44,6 @@ func (e EnvVars) GetEnv() []string {
 	for i := range keys {
 		s[i] = keys[i] + "=" + e[keys[i]]
 	}
-
-	return s
-}
-
-// EnvEvaluate evaluates variables in a string.
-func EnvEvaluate(env []string, s string) string {
-	for i := range env {
-		e := strings.Split(env[i], "=")
-		r := regexp.MustCompile(fmt.Sprintf(`(^|[^\$])\${%s}`, e[0]))
-		s = r.ReplaceAllString(s, "${1}"+e[1])
-	}
-
-	r := regexp.MustCompile(`\$\${(\S+)}`)
-	s = r.ReplaceAllString(s, "${$1}")
 
 	return s
 }

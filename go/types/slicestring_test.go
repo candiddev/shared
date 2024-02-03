@@ -34,6 +34,40 @@ func TestSliceStringMarshalJSON(t *testing.T) {
 	}
 }
 
+func TestSliceStringUnmarshalJSON(t *testing.T) {
+	tests := map[string]struct {
+		input   string
+		want    SliceString
+		wantErr bool
+	}{
+		"string": {
+			input: `"test"`,
+			want:  SliceString{"test"},
+		},
+		"none": {
+			input: `""`,
+			want:  SliceString{},
+		},
+		"array": {
+			input: `["test1", "test2"]`,
+			want:  SliceString{"test1", "test2"},
+		},
+		"unknown": {
+			input:   "1",
+			want:    SliceString{},
+			wantErr: true,
+		},
+	}
+
+	for name, tc := range tests {
+		t.Run(name, func(t *testing.T) {
+			s := SliceString{}
+			assert.Equal(t, s.UnmarshalJSON([]byte(tc.input)) != nil, tc.wantErr)
+			assert.Equal(t, s, tc.want)
+		})
+	}
+}
+
 func TestSliceStringValue(t *testing.T) {
 	tests := map[string]struct {
 		input SliceString

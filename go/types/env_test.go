@@ -30,16 +30,3 @@ func TestEnvValidate(t *testing.T) {
 		})
 	}
 }
-
-func TestEnvEvaluate(t *testing.T) {
-	env := []string{
-		"hello=world",
-		"myvar=var",
-	}
-
-	s := `This is a really long$${hello} string ${hello}
-${myvar} is set to var ${var}`
-
-	assert.Equal(t, EnvEvaluate(env, s), `This is a really long${hello} string world
-var is set to var ${var}`)
-}

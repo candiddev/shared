@@ -246,19 +246,4 @@ func TestRun(t *testing.T) {
 	})
 	assert.Equal(t, out, "hello")
 	assert.HasErr(t, err, nil)
-
-	// Test environment evaluate
-	t.Setenv("hello", "world")
-
-	out, err = c.Run(ctx, RunOpts{
-		Args:    []string{"${arg}"},
-		Command: "cat",
-		Environment: []string{
-			"arg=-b",
-		},
-		EnvironmentInherit: true,
-		Stdin:              "what in the ${hello}",
-	})
-	assert.HasErr(t, err, nil)
-	assert.Equal(t, out, "     1	what in the world")
 }
