@@ -1,57 +1,57 @@
 .AppToolbar {
-	align-items: center;
-	background-color: var(--color_base-1);
-	display: flex;
-	justify-content: space-between;
-	max-height: 60px;
-	min-height: 60px;
-	position: sticky;
-	top: 0;
-	width: 100%;
-	z-index: var(--z-index_AppToolbar);
+  align-items: center;
+  background-color: var(--color_base-1);
+  display: flex;
+  justify-content: space-between;
+  max-height: 60px;
+  min-height: 60px;
+  position: sticky;
+  top: 0;
+  width: 100%;
+  z-index: var(--z-index_AppToolbar);
 }
 
 .AppToolbar__breadcrumbs {
-	align-items: center;
-	box-shadow: none;
-	color: var(--color_content);
-	display: flex;
-	flex-wrap: wrap;
-	font-weight: var(--font-weight_bold);
-	height: 100%;
-	padding-left: var(--padding);
-	white-space: pre;
-	width: 100%;
+  align-items: center;
+  box-shadow: none;
+  color: var(--color_content);
+  display: flex;
+  flex-wrap: wrap;
+  font-weight: var(--font-weight_bold);
+  height: 100%;
+  padding-left: var(--padding);
+  white-space: pre;
+  width: 100%;
 }
 
 .AppToolbar__breadcrumbs > * {
-	filter: var(--filter_light);
-	max-width: 200px;
-	padding-right: 0.5rem;
-	overflow: hidden;
-	text-overflow: ellipsis;
-	white-space: nowrap;
+  filter: var(--filter_light);
+  max-width: 200px;
+  padding-right: 0.5rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .AppToolbar__breadcrumbs > a {
-	color: var(--color_content);
+  color: var(--color_content);
 }
 
 .AppToolbar__breadcrumbs > i {
-	cursor: pointer;
-	font-weight: var(--font-weight_normal);
+  cursor: pointer;
+  font-weight: var(--font-weight_normal);
 }
 
 .AppToolbar__breadcrumbs > span:last-child {
-	filter: none;
+  filter: none;
 }
 
 .AppToolbar__buttons {
-	align-items: center;
-	display: flex;
-	height: 100%;
+  align-items: center;
+  display: flex;
+  height: 100%;
 }
 
 .AppToolbar__buttons .Button {
-	padding: 5px;
+  padding: 5px;
 }

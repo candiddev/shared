@@ -1,70 +1,72 @@
 .Tooltips {
-	align-items: center;
-	display: flex;
-	justify-content: flex-end;
-	padding-left: 10px;
+  align-items: center;
+  display: flex;
+  justify-content: flex-end;
+  padding-left: 10px;
 }
 
 .Tooltips__info {
-	color: var(--color_secondary);
-	font-size: 22px;
-	font-weight: var(--font-weight_normal);
-	vertical-align: middle;
+  color: var(--color_secondary);
+  font-size: 22px;
+  font-weight: var(--font-weight_normal);
+  vertical-align: middle;
 }
 
 .Tooltips__tooltip {
-	align-items: center;
-	cursor: pointer;
-	display: flex;
-	position: relative;
+  align-items: center;
+  cursor: pointer;
+  display: flex;
+  position: relative;
 }
 
 .Tooltips__tooltip--markdown {
-	align-items: center;
-	border-radius: var(--border-radius);
-	display: flex;
-	filter: var(--filter_light);
-	font-size: 15px;
-	letter-spacing: -2px;
-	margin-left: 10px;
-	padding-left: 3px;
-	padding-right: 3px;
+  align-items: center;
+  border-radius: var(--border-radius);
+  display: flex;
+  filter: var(--filter_light);
+  font-size: 15px;
+  letter-spacing: -2px;
+  margin-left: 10px;
+  padding-left: 3px;
+  padding-right: 3px;
 }
 
 .Tooltips__tooltip--markdown > i {
-	font-size: 15px;
-	opacity: 1 !important;
-	padding-right: 0 !important;
+  font-size: 15px;
+  opacity: 1 !important;
+  padding-right: 0 !important;
 }
 
 .Tooltips__text {
-	background-color: var(--color_content);
-	border: var(--border);
-	border-radius: var(--border-radius);
-	box-shadow: var(--box-shadow);
-	color: var(--color_content-invert);
-	font-size: 16px;
-	font-weight: var(--font-weight_normal);
-	letter-spacing: normal;
-	left: -80px;
-	opacity: 0;
-	padding: 5px;
-	padding-bottom: 5px;
-	position: absolute;
-	text-align: center;
-	transition: opacity var(--animation), visibility var(--animation) ease-in-out;
-	top: -20px;
-	visibility: hidden;
-	width: 200px;
-	z-index: var(--z-index_Tooltips__text);
+  background-color: var(--color_content);
+  border: var(--border);
+  border-radius: var(--border-radius);
+  box-shadow: var(--box-shadow);
+  color: var(--color_content-invert);
+  font-size: 16px;
+  font-weight: var(--font-weight_normal);
+  letter-spacing: normal;
+  left: -80px;
+  opacity: 0;
+  padding: 5px;
+  padding-bottom: 5px;
+  position: absolute;
+  text-align: center;
+  transition:
+    opacity var(--animation),
+    visibility var(--animation) ease-in-out;
+  top: -20px;
+  visibility: hidden;
+  width: 200px;
+  z-index: var(--z-index_Tooltips__text);
 }
 
 .Tooltips__text > .Markdown {
-	margin: 0 !important;
-	padding: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
 }
 
 .Tooltips__tooltip:hover .Tooltips__text {
-	opacity: 1;
-	visibility: visible;
+  opacity: 1;
+  visibility: visible;
 }

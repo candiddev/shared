@@ -1,76 +1,101 @@
-*, *:before, *:after {
-	box-sizing: inherit;
+*,
+*:before,
+*:after {
+  box-sizing: inherit;
 }
 
 /* Style placeholder text for inputs */
 ::placeholder {
-	opacity: 0.8;
+  opacity: 0.8;
 }
 
 :any-link {
-	color: inherit;
-	text-decoration-line: none; /* stylelint-disable-line */
+  color: inherit;
+  text-decoration-line: none; /* stylelint-disable-line */
 }
 
 body {
-	overscroll-behavior: contain
+  overscroll-behavior: contain;
 }
 
 button {
-	background-color: inherit; /* Don't have a default background color */
-	border: 0;
+  background-color: inherit; /* Don't have a default background color */
+  border: 0;
 }
 
 html {
-	box-sizing: border-box;
-	font-size: 16px;
-	line-height: 1.2;
+  box-sizing: border-box;
+  font-size: 16px;
+  line-height: 1.2;
 }
 
 /* Style icons */
 i {
-	/* stylelint-disable-next-line font-family-no-missing-generic-family-keyword */
-	font-family: "Material Icons Outlined"; 
-	font-size: var(--font-size_3);
-	font-style: normal;
-	line-height: 1;
+  /* stylelint-disable-next-line font-family-no-missing-generic-family-keyword */
+  font-family: "Material Icons Outlined";
+  font-size: var(--font-size_3);
+  font-style: normal;
+  line-height: 1;
 }
 
 input,
 select {
-	color: inherit;
-	height: 100%;
+  color: inherit;
+  height: 100%;
 }
 
-input[type=file] {
-	display: none;
+input[type="file"] {
+  display: none;
 }
 
 input[type="color" i] {
-	margin-top: var(--padding);
-	padding: 5px;
+  margin-top: var(--padding);
+  padding: 5px;
 }
 
 /* No default margins, padding, or font-weight */
-body, button, h1, h2, h3, h4, h5, h6, input, ol, p, select, textarea, ul {
-	margin: 0;
-	padding: 0;
+body,
+button,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+input,
+ol,
+p,
+select,
+textarea,
+ul {
+  margin: 0;
+  padding: 0;
 }
 
 /* Remove default borders and background colors */
-input, select, textarea, input:disabled, select:disabled, textarea:disabled {
-	appearance: none;
-	background-color: inherit;
-	border: 0;
+input,
+select,
+textarea,
+input:disabled,
+select:disabled,
+textarea:disabled {
+  appearance: none;
+  background-color: inherit;
+  border: 0;
 }
 
 /* Remove outline from buttons */
-button:focus, input:focus, select:focus, textarea:focus {
-	outline: none;
+button:focus,
+input:focus,
+select:focus,
+textarea:focus {
+  outline: none;
 }
 
 /* Don't use a default list style */
-ol, ul, li {
-	list-style: none;
-	list-style-type: none;
+ol,
+ul,
+li {
+  list-style: none;
+  list-style-type: none;
 }

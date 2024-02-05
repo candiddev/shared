@@ -1,176 +1,167 @@
 /* X-Small-Phones */
 :root {
-	--animation: 300ms;
-	--border_dark: 1px solid rgba(255, 255, 255, 0.2);
-	--border_light: 1px solid rgba(0, 0, 0, 0.2);
-	--border-radius: 8px;
-	--box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.15);
-	--box-shadow-inset: inset 0 2px 4px 0 rgb(0, 0, 0, 0.2);
-	--display_AppHeaderAppLogo: flex;
-	--display_AppMenuAppLogo__toggles: none;
-	--display_CalendarDay__container--day: none;
-	--filter_focus: brightness(0.85);
-	--filter_light: opacity(0.6);
-	--font-family_icon: "Material Icons Outlined";
-	--font-size_1: 1rem;
-	--font-size_2: 1.25rem;
-	--font-size_3: 1.5rem;
-	--font-size_4: 2.25rem;
-	--font-weight_bold: 600;
-	--font-weight_normal: 400;
-	--grid-columns_Calendar: 2;
-	--grid-template-areas_App:
-		"header"
-		"section";
-	--grid-template-areas_Table__container:
-		"title"
-		"subtitle"
-		"toolbar"
-		"search"
-		"table";
-	--grid-template-columns_Table__container: 1fr;
-	--grid-template-rows_Table__container: auto auto auto auto 1fr;
-	--height_AppHeader: 60px;
-	--padding: 15px;
-	--padding_App__children: 0;
-	--position_AppMenu: absolute;
-	--width_AppMenu: 100%;
-	--width_Form: 100%;
-	--width_input: 350px;
-	--z-index_Alerts: 10;
-	--z-index_AppHeader: 5;
-	--z-index_AppMenu: 5;
-	--z-index_AppMenu--open: 5;
-	--z-index_AppToolbar: 4;
-	--z-index_CalendarDay__date--day: 2;
-	--z-index_DropdownMenu__menu: 10;
-	--z-index_Form--overlay: 5;
-	--z-index_FormItem__autocomplete: 10;
-	--z-index_Loading: 3;
-	--z-index_Table-thead: 1;
-	--z-index_Title: 2;
-	--z-index_Tooltips__text: 10;
+  --animation: 300ms;
+  --border_dark: 1px solid rgba(255, 255, 255, 0.2);
+  --border_light: 1px solid rgba(0, 0, 0, 0.2);
+  --border-radius: 8px;
+  --box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.15);
+  --box-shadow-inset: inset 0 2px 4px 0 rgb(0, 0, 0, 0.2);
+  --display_AppHeaderAppLogo: flex;
+  --display_AppMenuAppLogo__toggles: none;
+  --display_CalendarDay__container--day: none;
+  --filter_focus: brightness(0.85);
+  --filter_light: opacity(0.6);
+  --font-family_icon: "Material Icons Outlined";
+  --font-size_1: 1rem;
+  --font-size_2: 1.25rem;
+  --font-size_3: 1.5rem;
+  --font-size_4: 2.25rem;
+  --font-weight_bold: 600;
+  --font-weight_normal: 400;
+  --grid-columns_Calendar: 2;
+  --grid-template-areas_App: "header" "section";
+  --grid-template-areas_Table__container: "title" "subtitle" "toolbar" "search"
+    "table";
+  --grid-template-columns_Table__container: 1fr;
+  --grid-template-rows_Table__container: auto auto auto auto 1fr;
+  --height_AppHeader: 60px;
+  --padding: 15px;
+  --padding_App__children: 0;
+  --position_AppMenu: absolute;
+  --width_AppMenu: 100%;
+  --width_Form: 100%;
+  --width_input: 350px;
+  --z-index_Alerts: 10;
+  --z-index_AppHeader: 5;
+  --z-index_AppMenu: 5;
+  --z-index_AppMenu--open: 5;
+  --z-index_AppToolbar: 4;
+  --z-index_CalendarDay__date--day: 2;
+  --z-index_DropdownMenu__menu: 10;
+  --z-index_Form--overlay: 5;
+  --z-index_FormItem__autocomplete: 10;
+  --z-index_Loading: 3;
+  --z-index_Table-thead: 1;
+  --z-index_Title: 2;
+  --z-index_Tooltips__text: 10;
 }
 
 /* Small-Big Phones */
 @media (min-width: 640px) {
-	:root {
-		--grid-columns_calendar: 2;
-	}
+  :root {
+    --grid-columns_calendar: 2;
+  }
 }
 
-/* Medium-Tablets */ 
+/* Medium-Tablets */
 @media (min-width: 768px) {
-	:root {
-		--grid-columns_Calendar: 3;
-		--width_input: 400px;
-	}
+  :root {
+    --grid-columns_Calendar: 3;
+    --width_input: 400px;
+  }
 }
 
 /* Large-Desktops */
 @media (min-width: 1024px) {
-	:root {
-		--grid-template-areas_Table__container:
-			"title title"
-			"subtitle toolbar"
-			"search search"
-			"table table";
-		--grid-template-columns_Table__container: min-content 1fr;
-		--grid-template-rows_Table__container: auto auto auto 1fr;
-		--grid-columns_Calendar: 5;
-		--padding_App__children: 20px;
-		--width_Form: 800px;
-	}
+  :root {
+    --grid-template-areas_Table__container: "title title" "subtitle toolbar"
+      "search search" "table table";
+    --grid-template-columns_Table__container: min-content 1fr;
+    --grid-template-rows_Table__container: auto auto auto 1fr;
+    --grid-columns_Calendar: 5;
+    --padding_App__children: 20px;
+    --width_Form: 800px;
+  }
 }
 
 /* X-Large-Big Desktops */
 @media (min-width: 1280px) {
-	:root {
-		--display_AppHeaderAppLogo: none;
-		--display_AppMenuAppLogo__toggles: flex;
-		--display_CalendarDay__container--day: flex;
-		--grid-columns_Calendar: 7;
-		--height_AppHeader: 0px;
-		--position_AppMenu: sticky;
-		--width_AppMenu: 400px;
-		--z-index_AppMenu--open: 4;
-	}
+  :root {
+    --display_AppHeaderAppLogo: none;
+    --display_AppMenuAppLogo__toggles: flex;
+    --display_CalendarDay__container--day: flex;
+    --grid-columns_Calendar: 7;
+    --height_AppHeader: 0px;
+    --position_AppMenu: sticky;
+    --width_AppMenu: 400px;
+    --z-index_AppMenu--open: 4;
+  }
 }
 
 /* Print view */
 @media print {
-	:root {
-		--border: 1px solid rgba(0, 0, 0, 0.3);
-		--box-shadow: none;
-		--grid-columns_Calendar: 7;
-	}
+  :root {
+    --border: 1px solid rgba(0, 0, 0, 0.3);
+    --box-shadow: none;
+    --grid-columns_Calendar: 7;
+  }
 
-	main {
-		--color_accent: black !important;
-		--color_accent-content: white !important;
-		--color_primary: black !important;
-		--color_primary-content: white !important;
-		--color_secondary: black !important;
-		--color_secondary-content: white !important;
-	}
+  main {
+    --color_accent: black !important;
+    --color_accent-content: white !important;
+    --color_primary: black !important;
+    --color_primary-content: white !important;
+    --color_secondary: black !important;
+    --color_secondary-content: white !important;
+  }
 
-	footer,
-	header,
-	nav,
-	.App__buttons,
-	.Alerts,
-	.Button,
-	.Calendar__picker,
-	.CalendarEventsDay__details,
-	.CalendarEventsDay__event > *:not(:last-child),
-	.PlanTasks__actions,
-	.PlanTasks__button--drag,
-	.Table-search,
-	.Title__tabs {
-		display: none !important;
-	}
+  footer,
+  header,
+  nav,
+  .App__buttons,
+  .Alerts,
+  .Button,
+  .Calendar__picker,
+  .CalendarEventsDay__details,
+  .CalendarEventsDay__event > *:not(:last-child),
+  .PlanTasks__actions,
+  .PlanTasks__button--drag,
+  .Table-search,
+  .Title__tabs {
+    display: none !important;
+  }
 
-	.App,
-	.App__children {
-		max-height: none;
-	}
+  .App,
+  .App__children {
+    max-height: none;
+  }
 
-	.App,
-	.App__children,
-	.App__section,
-	.Calendar__calendar,
-	.Table__container,
-	.Table {
-		overflow: visible !important;
-		overflow-x: visible !important;
-		overflow-y: visible !important;
-	}
+  .App,
+  .App__children,
+  .App__section,
+  .Calendar__calendar,
+  .Table__container,
+  .Table {
+    overflow: visible !important;
+    overflow-x: visible !important;
+    overflow-y: visible !important;
+  }
 
-	.PlanTasks__label,
-	.PlanTasks__button {
-		color: black !important;
-	}
+  .PlanTasks__label,
+  .PlanTasks__button {
+    color: black !important;
+  }
 
-	.CalendarEventsDay__event,
-	.FormItem__array > a,
-	.Title {
-		background-color: white !important;
-		box-shadow: none !important;
-		color: black !important;
-	}
+  .CalendarEventsDay__event,
+  .FormItem__array > a,
+  .Title {
+    background-color: white !important;
+    box-shadow: none !important;
+    color: black !important;
+  }
 
-	.Calendar__calendar {
-		grid-gap: 0 !important;
-	}
+  .Calendar__calendar {
+    grid-gap: 0 !important;
+  }
 
-	.CalendarEventsDay__item {
-		border-left: 0 !important;
-		border-right: 0 !important;
-		box-shadow: none !important;
-	}
+  .CalendarEventsDay__item {
+    border-left: 0 !important;
+    border-right: 0 !important;
+    box-shadow: none !important;
+  }
 
-	.CalendarDay__items,
-	.CalendarEventsDay__time {
-		padding: 0 !important;
-	}
+  .CalendarDay__items,
+  .CalendarEventsDay__time {
+    padding: 0 !important;
+  }
 }

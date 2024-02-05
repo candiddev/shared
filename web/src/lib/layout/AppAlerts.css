@@ -1,47 +1,47 @@
 .AppAlerts {
-	align-items: flex-end;
-	bottom: 20px;
-	display: flex;
-	flex-direction: column;
-	pointer-events: none;
-	position: fixed;
-	right: 20px;
-	width: 100%;
-	z-index: var(--z-index_Alerts);
+  align-items: flex-end;
+  bottom: 20px;
+  display: flex;
+  flex-direction: column;
+  pointer-events: none;
+  position: fixed;
+  right: 20px;
+  width: 100%;
+  z-index: var(--z-index_Alerts);
 }
 
 .AppAlerts__alert {
-	align-items: center;
-	background-color: var(--color_base-3);
-	border: var(--border);
-	border-radius: var(--border-radius);
-	box-shadow: var(--box-shadow);
-	color: var(--color_content);
-	display: flex;
-	flex-direction: column;
-	font-weight: var(--font-weight_bold);
-	justify-content: space-between;
-	margin: 5px;
-	margin-bottom: 5px;
-	max-width: 300px;
-	min-height: 24px;
-	min-width: 200px;
-	padding: 10px;
-	padding-left: 20px;
-	padding-right: 20px;
-	pointer-events: all;
-	text-align: center;
-	will-change: transform;
+  align-items: center;
+  background-color: var(--color_base-3);
+  border: var(--border);
+  border-radius: var(--border-radius);
+  box-shadow: var(--box-shadow);
+  color: var(--color_content);
+  display: flex;
+  flex-direction: column;
+  font-weight: var(--font-weight_bold);
+  justify-content: space-between;
+  margin: 5px;
+  margin-bottom: 5px;
+  max-width: 300px;
+  min-height: 24px;
+  min-width: 200px;
+  padding: 10px;
+  padding-left: 20px;
+  padding-right: 20px;
+  pointer-events: all;
+  text-align: center;
+  will-change: transform;
 }
 
 .AppAlerts__actions {
-	align-items: center;
-	display: flex;
-	justify-content: space-around;
-	padding-top: 10px;
-	width: 100%;
+  align-items: center;
+  display: flex;
+  justify-content: space-around;
+  padding-top: 10px;
+  width: 100%;
 }
 
 .AppAlerts__actions > .Button {
-	padding: 4px;
+  padding: 4px;
 }

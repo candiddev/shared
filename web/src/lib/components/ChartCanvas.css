@@ -1,6 +1,6 @@
 .ChartCanvas__chart {
-	display: block;
-	height: var(--width_input);
-	padding-top: var(--padding);
-	width: var(--width_input);
+  display: block;
+  height: var(--width_input);
+  padding-top: var(--padding);
+  width: var(--width_input);
 }

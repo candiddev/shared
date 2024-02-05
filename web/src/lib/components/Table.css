@@ -1,174 +1,176 @@
 .Table {
-	border-spacing: 0;
-	empty-cells: show;
-	height: min-content;
-	min-width: 100%;
-	width: 100%;
+  border-spacing: 0;
+  empty-cells: show;
+  height: min-content;
+  min-width: 100%;
+  width: 100%;
 }
 
 .Table > tbody {
-	contain-intrinsic-size: calc(100vh - calc(60px + env(safe-area-inset-top, 0)));
-	content-visibility: auto;
+  contain-intrinsic-size: calc(
+    100vh - calc(60px + env(safe-area-inset-top, 0))
+  );
+  content-visibility: auto;
 }
 
 .Table > * > tr {
-	display: flex;
-	width: 100%;
+  display: flex;
+  width: 100%;
 }
 
 .Table > * > tr > * {
-	align-items: center;
-	display: flex;
-	flex-basis: 100%;
-	flex-grow: 2;
-	justify-content: flex-start;
-	padding: 10px;
+  align-items: center;
+  display: flex;
+  flex-basis: 100%;
+  flex-grow: 2;
+  justify-content: flex-start;
+  padding: 10px;
 }
 
 .Table > tbody > tr:hover {
-	background-color: var(--color_base-2);
+  background-color: var(--color_base-2);
 }
 
 .Table > thead {
-	background-color: var(--color_base-2);
-	border-bottom: var(--border);
-	display: block;
-	flex: 0 0 auto;
-	position: sticky;
-	top: 0;
-	transition: height var(--animation) ease-in-out;
-	z-index: var(--z-index_Table-thead);
+  background-color: var(--color_base-2);
+  border-bottom: var(--border);
+  display: block;
+  flex: 0 0 auto;
+  position: sticky;
+  top: 0;
+  transition: height var(--animation) ease-in-out;
+  z-index: var(--z-index_Table-thead);
 }
 
 .Table > tbody > *:not(:last-child) {
-	border-bottom: var(--border);
-	border-width: 1px;
+  border-bottom: var(--border);
+  border-width: 1px;
 }
 
 .Table__container {
-	background-color: var(--color_base-1);
-	display: grid;
-	grid-template-areas: var(--grid-template-areas_Table__container);
-	grid-template-columns: var(--grid-template-columns_Table__container);
-	grid-template-rows: var(--grid-template-rows_Table__container);
-	height: 100%;
-	justify-content: center;
-	min-height: 0;
-	position: relative;
-	transition: height var(--animation) ease-in-out;
-	width: 100%;
+  background-color: var(--color_base-1);
+  display: grid;
+  grid-template-areas: var(--grid-template-areas_Table__container);
+  grid-template-columns: var(--grid-template-columns_Table__container);
+  grid-template-rows: var(--grid-template-rows_Table__container);
+  height: 100%;
+  justify-content: center;
+  min-height: 0;
+  position: relative;
+  transition: height var(--animation) ease-in-out;
+  width: 100%;
 }
 
 .Table__div {
-	border: var(--border);
-	border-radius: var(--border-radius);
-	box-shadow: var(--box-shadow);
-	overflow: auto;
+  border: var(--border);
+  border-radius: var(--border-radius);
+  box-shadow: var(--box-shadow);
+  overflow: auto;
 }
 
 .Table__container > .Title {
-	grid-area: title;
+  grid-area: title;
 }
 
 .Table__container > .Title__subtitles {
-	grid-area: subtitle;
+  grid-area: subtitle;
 }
 
 .Table__container > .FormItemInputSearch {
-	grid-area: search;
-	margin-left: auto;
-	margin-right: auto;
-	margin-bottom: var(--padding);
+  grid-area: search;
+  margin-left: auto;
+  margin-right: auto;
+  margin-bottom: var(--padding);
 }
 
 .Table__container > .Toolbar {
-	grid-area: toolbar;
+  grid-area: toolbar;
 }
 
 .Table__container > .Table__div {
-	grid-area: table;
+  grid-area: table;
 }
 
 .Table__container .Title__header {
-	border-bottom: 0;
+  border-bottom: 0;
 }
 
 .Table__container > #form-item-input-search-table {
-	align-self: center;
-	margin-top: var(--padding);
+  align-self: center;
+  margin-top: var(--padding);
 }
 
 .AppBreadcrumbs + .Table__container:last-child {
-	overflow: hidden;
+  overflow: hidden;
 }
 
 .Table__container > .Button {
-	margin-bottom: var(--padding);
+  margin-bottom: var(--padding);
 }
 
 .Table__edit {
-	cursor: pointer;
+  cursor: pointer;
 }
 
 .Table__label {
-	align-items: center;
-	display: flex;
-	margin: auto;
-	padding: var(--padding);
+  align-items: center;
+  display: flex;
+  margin: auto;
+  padding: var(--padding);
 }
 
 .Table__label > i {
-	margin-right: 10px;
+  margin-right: 10px;
 }
 
 .Table__link {
-	align-items: center;
-	display: flex;
-	height: 100%;
-	font-size: var(--font-size);
-	justify-content: center;
-	width: 100%;
+  align-items: center;
+  display: flex;
+  height: 100%;
+  font-size: var(--font-size);
+  justify-content: center;
+  width: 100%;
 }
 
 .Table__loading {
-	padding: var(--padding);
+  padding: var(--padding);
 }
 
 .Table__loading > td {
-	background-color: var(--color_base-3);
-	margin-right: var(--padding);
-	padding: var(--padding);
+  background-color: var(--color_base-3);
+  margin-right: var(--padding);
+  padding: var(--padding);
 }
 
 .Table__loading > td:last-of-type {
-	margin-right: 0;
+  margin-right: 0;
 }
 
 .Table__none-icon {
-	display: flex;
-	filter: var(--filter_light);
-	font-size: var(--font-size_4);
-	font-weight: var(--font-weight_normal);
-	justify-content: center;
-	margin-top: var(--padding);
+  display: flex;
+  filter: var(--filter_light);
+  font-size: var(--font-size_4);
+  font-weight: var(--font-weight_normal);
+  justify-content: center;
+  margin-top: var(--padding);
 }
 
 .Table__none {
-	display: flex;
-	flex-direction: column;
-	font-weight: var(--font-weight_bold);
-	padding: var(--padding);
+  display: flex;
+  flex-direction: column;
+  font-weight: var(--font-weight_bold);
+  padding: var(--padding);
 }
 
 .Table__none > .Button {
-	margin-bottom: var(--padding);
+  margin-bottom: var(--padding);
 }
 
 .Table .ButtonArray {
-	width: auto;
+  width: auto;
 }
 
 .Title + .Table__div > .Table > thead,
 .Table__div:first-child > .Table > thead {
-	border-top: 0;
+  border-top: 0;
 }

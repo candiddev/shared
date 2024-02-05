@@ -1,81 +1,81 @@
 .GlobalFooter {
-	align-content: center;
-	align-items: center;
-	border-top: var(--border);
-	display: flex;
-	flex-basis: auto !important;
-	flex-shrink: 0 !important;
-	justify-content: space-between;
-	margin-top: auto;
-	padding: 10px;
-	white-space: pre;
-	width: 100%;
+  align-content: center;
+  align-items: center;
+  border-top: var(--border);
+  display: flex;
+  flex-basis: auto !important;
+  flex-shrink: 0 !important;
+  justify-content: space-between;
+  margin-top: auto;
+  padding: 10px;
+  white-space: pre;
+  width: 100%;
 }
 
 .GlobalFooter > span {
-	align-items: center;
-	display: flex;
-	font-style: italic;
-	margin-left: auto;
+  align-items: center;
+  display: flex;
+  font-style: italic;
+  margin-left: auto;
 }
 
 .GlobalButtonIconAdd {
-	background-color: var(--color_primary);
-	color: var(--color_primary-content);
-	border-radius: var(--border-radius);
-	box-shadow: var(--box-shadow);
-	cursor: pointer;
-	font-size: 1.5rem;
-	margin: 10px;
-	padding: 5px;
-	transition: transform var(--animation) linear;
+  background-color: var(--color_primary);
+  color: var(--color_primary-content);
+  border-radius: var(--border-radius);
+  box-shadow: var(--box-shadow);
+  cursor: pointer;
+  font-size: 1.5rem;
+  margin: 10px;
+  padding: 5px;
+  transition: transform var(--animation) linear;
 }
 
 .GlobalButtonIconAdd:hover {
-	filter: var(--filter_focus);
+  filter: var(--filter_focus);
 }
 
 .GlobalButtonIconExpand {
-	cursor: pointer;
-	filter: var(--filter_light);
-	font-size: 1.5rem;
-	padding: 5px;
-	transition: transform var(--animation) linear;
+  cursor: pointer;
+  filter: var(--filter_light);
+  font-size: 1.5rem;
+  padding: 5px;
+  transition: transform var(--animation) linear;
 }
 
 .GlobalButtonIconExpand--active {
-	transform: rotate(180deg) scaleX(-1);
+  transform: rotate(180deg) scaleX(-1);
 }
 
 .GlobalCount {
-	background-color: var(--color_accent);
-	border-radius: 1rem;
-	box-shadow: var(--box-shadow);
-	color: var(--color_accent-content);
-	font-size: var(--font-size_1);
-	margin-left: 10px;
-	padding-left: 5px;
-	padding-right: 5px;
-	text-align: center;
+  background-color: var(--color_accent);
+  border-radius: 1rem;
+  box-shadow: var(--box-shadow);
+  color: var(--color_accent-content);
+  font-size: var(--font-size_1);
+  margin-left: 10px;
+  padding-left: 5px;
+  padding-right: 5px;
+  text-align: center;
 }
 
 .GlobalLink {
-	align-items: center;
-	cursor: pointer;
-	display: inline-flex;
+  align-items: center;
+  cursor: pointer;
+  display: inline-flex;
 }
 
 .GlobalLink > i {
-	font-weight: var(--font-weight_normal);
-	font-size: inherit;
-	padding-right: 4px;
+  font-weight: var(--font-weight_normal);
+  font-size: inherit;
+  padding-right: 4px;
 }
 
 .GlobalLink > :not(i) {
-	text-decoration: underline;
-	/* stylelint-disable-next-line plugin/no-unsupported-browser-features */
-	text-decoration-color: var(--color_secondary);
-	text-decoration-thickness: 2px;
-	text-underline-offset: 3px;
-	transition: text-decoration-color var(--animation) ease-in-out;
+  text-decoration: underline;
+  /* stylelint-disable-next-line plugin/no-unsupported-browser-features */
+  text-decoration-color: var(--color_secondary);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 3px;
+  transition: text-decoration-color var(--animation) ease-in-out;
 }

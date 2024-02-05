@@ -1,230 +1,231 @@
 .animationExpandAdd {
-	animation: expand 200ms;
+  animation: expand 200ms;
 }
 
 .animationExpandRemove {
-	animation: collapse 200ms;
+  animation: collapse 200ms;
 }
 
 .animationFadeAdd {
-	animation: fadeIn var(--animation);
+  animation: fadeIn var(--animation);
 }
 
 .animationFadeRemove {
-	animation: fadeOut var(--animation);
+  animation: fadeOut var(--animation);
 }
 
 .animationFromBottomAdd {
-	animation: fromBottom var(--animation);
+  animation: fromBottom var(--animation);
 }
 
 .animationFromBottomRemove {
-	animation: toBottom var(--animation);
+  animation: toBottom var(--animation);
 }
 
 .animationFromLeftAdd {
-	animation: fromLeft var(--animation);
+  animation: fromLeft var(--animation);
 }
 
 .animationFromLeftRemove {
-	animation: toLeft var(--animation);
+  animation: toLeft var(--animation);
 }
 
 .animationFromRightAdd {
-	animation: fromRight var(--animation);
+  animation: fromRight var(--animation);
 }
 
 .animationFromRightRemove {
-	animation: toRight var(--animation);
+  animation: toRight var(--animation);
 }
 
 .animationFromTopAdd {
-	animation: fromTop var(--animation);
+  animation: fromTop var(--animation);
 }
 
 .animationFromTopRemove {
-	animation: toTop var(--animation);
+  animation: toTop var(--animation);
 }
 
 .animationPulseAdd {
-	animation: pulse 1s cubic-bezier(0.6, 0.5, 0.8, 1) infinite;
+  animation: pulse 1s cubic-bezier(0.6, 0.5, 0.8, 1) infinite;
 }
 
 .animationSpinAdd {
-	animation: spin 1s linear infinite;
-	animation-name: spin;
-	animation-duration: 2500ms;
-	animation-iteration-count: infinite;
-	animation-timing-function: linear;
+  animation: spin 1s linear infinite;
+  animation-name: spin;
+  animation-duration: 2500ms;
+  animation-iteration-count: infinite;
+  animation-timing-function: linear;
 }
 
 @keyframes collapse {
-	from {
-		opacity: 100%;
-		transform: scaleY(1)
-	}
+  from {
+    opacity: 100%;
+    transform: scaleY(1);
+  }
 
-	to {
-		opacity: 0;
-		transform: scaleY(0)
-	}
+  to {
+    opacity: 0;
+    transform: scaleY(0);
+  }
 }
 
 @keyframes expand {
-	from {
-		opacity: 0;
-		transform: scaleY(0)
-	}
+  from {
+    opacity: 0;
+    transform: scaleY(0);
+  }
 
-	to {
-		opacity: 100%;
-		transform: scaleY(1)
-	}
+  to {
+    opacity: 100%;
+    transform: scaleY(1);
+  }
 }
 
 @keyframes fadeIn {
-	from {
-		opacity: 0;
-	}
+  from {
+    opacity: 0;
+  }
 
-	to {
-		opacity: 100%;
-	}
+  to {
+    opacity: 100%;
+  }
 }
 
 @keyframes fadeOut {
-	from {
-		opacity: 100%;
-	}
+  from {
+    opacity: 100%;
+  }
 
-	to {
-		opacity: 0;
-	}
+  to {
+    opacity: 0;
+  }
 }
 
 @keyframes flicker {
-	0% {
-		opacity: 1;
-	}
-	50% {
-		opacity: 0.5;
-	}
-	100% {
-		opacity: 1;
-	}
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+  100% {
+    opacity: 1;
+  }
 }
 
 @keyframes fromBottom {
-	from {
-		transform: translateY(100%);
-		opacity: 0;
-	}
+  from {
+    transform: translateY(100%);
+    opacity: 0;
+  }
 
-	to {
-		transform: translateY(0%);
-		opacity: 100%;
-	}
+  to {
+    transform: translateY(0%);
+    opacity: 100%;
+  }
 }
 
 @keyframes fromLeft {
-	from {
-		max-width: 0;
-		opacity: 0;
-	}
+  from {
+    max-width: 0;
+    opacity: 0;
+  }
 
-	to {
-		max-width: 100%;
-		opacity: 100%;
-	}
+  to {
+    max-width: 100%;
+    opacity: 100%;
+  }
 }
 
 @keyframes fromRight {
-	from {
-		transform: translateX(100%);
-		opacity: 0;
-	}
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
 
-	to {
-		transform: translateX(0%);
-		opacity: 100%;
-	}
+  to {
+    transform: translateX(0%);
+    opacity: 100%;
+  }
 }
 
 @keyframes fromTop {
-	from {
-		transform: translateY(-100%);
-		opacity: 0;
-	}
+  from {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
 
-	to {
-		transform: translateY(0%);
-		opacity: 100%;
-	}
+  to {
+    transform: translateY(0%);
+    opacity: 100%;
+  }
 }
 
 @keyframes pulse {
-	0%, 100% {
-		opacity: 1;
-	}
-	50% {
-		opacity: .7;
-	}
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
 }
 
 @keyframes spin {
-	from {
-		transform: rotate(0deg);
-	}
+  from {
+    transform: rotate(0deg);
+  }
 
-	to {
-		transform: rotate(360deg);
-	}
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 @keyframes toBottom {
-	from {
-		transform: translateY(0%);
-		opacity: 100%;
-	}
+  from {
+    transform: translateY(0%);
+    opacity: 100%;
+  }
 
-	to {
-		transform: translateY(100%);
-		opacity: 0;
-	}
+  to {
+    transform: translateY(100%);
+    opacity: 0;
+  }
 }
 
 @keyframes toLeft {
-	from {
-		transform: translateX(0%);
-		opacity: 100%;
-	}
+  from {
+    transform: translateX(0%);
+    opacity: 100%;
+  }
 
-	to {
-		transform: translateX(-100%);
-		opacity: 0;
-	}
+  to {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
 }
 
 @keyframes toRight {
-	from {
-		transform: translateX(0%);
-		opacity: 100%;
-	}
+  from {
+    transform: translateX(0%);
+    opacity: 100%;
+  }
 
-	to {
-		transform: translateX(100%);
-		opacity: 0;
-	}
+  to {
+    transform: translateX(100%);
+    opacity: 0;
+  }
 }
 
 @keyframes toTop {
-	from {
-		transform: translateY(0%);
-		opacity: 100%;
-	}
+  from {
+    transform: translateY(0%);
+    opacity: 100%;
+  }
 
-	to {
-		transform: translateY(-100%);
-		opacity: 0;
-	}
+  to {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
 }

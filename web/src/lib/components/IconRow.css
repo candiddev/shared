@@ -1,20 +1,20 @@
 .IconRow {
-	align-items: center;
-	display: flex;
-	grid-area: buttons;
-	flex-wrap: wrap;
-	padding-bottom: 5px;
+  align-items: center;
+  display: flex;
+  grid-area: buttons;
+  flex-wrap: wrap;
+  padding-bottom: 5px;
 }
 
 .IconRow > div {
-	align-items: center;
-	cursor: pointer;
-	display: flex;
-	justify-items: center;
-	margin-left: 5px;
-	margin-top: 5px;
+  align-items: center;
+  cursor: pointer;
+  display: flex;
+  justify-items: center;
+  margin-left: 5px;
+  margin-top: 5px;
 }
 
 .IconRow > div:first-child {
-	margin-left: 0;
+  margin-left: 0;
 }

@@ -1,37 +1,37 @@
 .AppLogo {
-	background-color: var(--color_base-1);
-	display: flex;
-	flex-wrap: wrap;
-	justify-content: space-between;
-	gap: var(--padding);
-	padding: var(--padding);
-	position: sticky;
-	top: 0;
-	width: 100%;
-	z-index: var(--z-index_AppMenu);
+  background-color: var(--color_base-1);
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: var(--padding);
+  padding: var(--padding);
+  position: sticky;
+  top: 0;
+  width: 100%;
+  z-index: var(--z-index_AppMenu);
 }
 
 .AppLogo__toggle {
-	display: var(--display_AppHeaderAppLogo);
-	cursor: pointer;
+  display: var(--display_AppHeaderAppLogo);
+  cursor: pointer;
 }
 
 .AppLogo__toggles {
-	align-items: center;
-	display: flex;
-	justify-content: space-between;
-	width: 100%;
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
 }
 
 .AppLogo > .FormItemInputSearch {
-	box-shadow: var(--box-shadow);
-	width: var(--width_input);
+  box-shadow: var(--box-shadow);
+  width: var(--width_input);
 }
 
 .AppLogo input {
-	box-shadow: none;
+  box-shadow: none;
 }
 
 .AppLogo > :first-child {
-	padding-right: var(--padding);
+  padding-right: var(--padding);
 }

@@ -1,32 +1,32 @@
 .FormItemTextArea {
-	color: var(--color_content);
-	max-height: none;
-	width: 100%;
+  color: var(--color_content);
+  max-height: none;
+  width: 100%;
 }
 
 .FormItemTextArea--list {
-	padding-bottom: 10px;
+  padding-bottom: 10px;
 }
 
 .FormItemTextArea--disabled {
-	padding-bottom: var(--padding);
-	padding-top: var(--padding);
+  padding-bottom: var(--padding);
+  padding-top: var(--padding);
 }
 
 .FormItemTextArea--highlight {
-	color: var(--color_primary);
-	font-weight: var(--font-weight-bold);
+  color: var(--color_primary);
+  font-weight: var(--font-weight-bold);
 }
 
 .FormItemTextArea__spinner {
-	border: 5px solid var(--color_base-1);
-	border-top-color: var(--color_accent);
-	border-radius: 50%;
-	height: 50px;
-	margin-bottom: var(--padding);
-	margin-top: var(--padding);
-	margin-left: auto;
-	margin-right: auto;
-	min-width: auto !important;
-	width: 50px !important;
+  border: 5px solid var(--color_base-1);
+  border-top-color: var(--color_accent);
+  border-radius: 50%;
+  height: 50px;
+  margin-bottom: var(--padding);
+  margin-top: var(--padding);
+  margin-left: auto;
+  margin-right: auto;
+  min-width: auto !important;
+  width: 50px !important;
 }

@@ -1,56 +1,56 @@
 .DropdownMenu__menu {
-	background-color: var(--color_base-2);
-	border: var(--border);
-	border-radius: var(--border-radius);
-	color: var(--color_content);
-	box-shadow: var(--box-shadow);
-	max-height: calc(100vh / 2);
-	min-width: 200px;
-	overflow-y: auto;
-	position: absolute;
-	right: 0;
-	top: 100%;
-	transform-origin: 100% 0;
-	will-change: transform;
-	z-index: var(--z-index_DropdownMenu__menu);
+  background-color: var(--color_base-2);
+  border: var(--border);
+  border-radius: var(--border-radius);
+  color: var(--color_content);
+  box-shadow: var(--box-shadow);
+  max-height: calc(100vh / 2);
+  min-width: 200px;
+  overflow-y: auto;
+  position: absolute;
+  right: 0;
+  top: 100%;
+  transform-origin: 100% 0;
+  will-change: transform;
+  z-index: var(--z-index_DropdownMenu__menu);
 }
 
 .DropdownMenu__menu--above {
-	bottom: 100%;
-	top: auto;
+  bottom: 100%;
+  top: auto;
 }
 
 .DropdownMenu__item {
-	align-items: center;
-	background-color: var(--color_base-2);
-	cursor: pointer;
-	display: flex;
-	font-weight: var(--font-weight_bold);
-	max-width: 360px;
-	padding: 10px;
-	overflow: hidden;
-	text-overflow: ellipsis;
-	transition: background-color var(--animation) ease-in-out;
-	white-space: nowrap;
+  align-items: center;
+  background-color: var(--color_base-2);
+  cursor: pointer;
+  display: flex;
+  font-weight: var(--font-weight_bold);
+  max-width: 360px;
+  padding: 10px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: background-color var(--animation) ease-in-out;
+  white-space: nowrap;
 }
 
 .DropdownMenu__item .Markdown {
-	padding-bottom: 0;
+  padding-bottom: 0;
 }
 
 .DropdownMenu__item--header {
-	cursor: default;
-	opacity: 0.7;
-	text-transform: uppercase;
+  cursor: default;
+  opacity: 0.7;
+  text-transform: uppercase;
 }
 
 .DropdownMenu__item > i {
-	font-weight: var(--font-weight_normal);
-	filter: var(--filter_light);
-	padding-right: var(--padding);
+  font-weight: var(--font-weight_normal);
+  filter: var(--filter_light);
+  padding-right: var(--padding);
 }
 
 .DropdownMenu__item:not(.DropdownMenu__item--header):focus,
 .DropdownMenu__item:not(.DropdownMenu__item--header):hover {
-	filter: var(--filter_focus);
+  filter: var(--filter_focus);
 }

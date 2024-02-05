@@ -1,68 +1,70 @@
 .ButtonArray {
-	align-items: center;
-	display: flex;
-	flex-wrap: wrap;
-	width: var(--width_input);
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  width: var(--width_input);
 }
 
 .ButtonArray + select {
-	bottom: 0;
-	cursor: pointer;
-	height: 1px;
-	opacity: 0;
-	position: absolute;
-	z-index: -1;
+  bottom: 0;
+  cursor: pointer;
+  height: 1px;
+  opacity: 0;
+  position: absolute;
+  z-index: -1;
 }
 
 .ButtonArray__item {
-	align-items: center;
-	border: var(--border);
-	border-radius: var(--border-radius);
-	box-shadow: var(--box-shadow);
-	cursor: pointer;
-	display: flex;
-	font-weight: var(--font-weight_bold);
-	justify-content: center;
-	margin-bottom: 5px;
-	margin-right: 10px;
-	margin-top: 5px;
-	padding: 8px;
-	transition: background-color, filter var(--animation) ease-in-out;
+  align-items: center;
+  border: var(--border);
+  border-radius: var(--border-radius);
+  box-shadow: var(--box-shadow);
+  cursor: pointer;
+  display: flex;
+  font-weight: var(--font-weight_bold);
+  justify-content: center;
+  margin-bottom: 5px;
+  margin-right: 10px;
+  margin-top: 5px;
+  padding: 8px;
+  transition:
+    background-color,
+    filter var(--animation) ease-in-out;
 }
 
 .ButtonArray__item > * {
-	filter: var(--filter_light)
+  filter: var(--filter_light);
 }
 
 .ButtonArray__item--small {
-	padding: 4px;
+  padding: 4px;
 }
 
 .ButtonArray__item i {
-	color: inherit;
-	font-size: var(--font-size_2);
-	font-weight: normal;
-	padding: 0;
-	padding-right: 2px;
+  color: inherit;
+  font-size: var(--font-size_2);
+  font-weight: normal;
+  padding: 0;
+  padding-right: 2px;
 }
 
 .ButtonArray__selected {
-	background-color: var(--color_secondary);
-	border: none;
-	color: var(--color_secondary-content);
-	filter: none;
-	padding: 9px;
+  background-color: var(--color_secondary);
+  border: none;
+  color: var(--color_secondary-content);
+  filter: none;
+  padding: 9px;
 }
 
 .ButtonArray__selected > * {
-	filter: none;
+  filter: none;
 }
 
 .ButtonArray__item:hover,
 .ButtonArray__item:hover > * {
-	filter: var(--filter_focus);
+  filter: var(--filter_focus);
 }
 
 .ButtonArray + .FormItem__disabled {
-	display: none;
+  display: none;
 }

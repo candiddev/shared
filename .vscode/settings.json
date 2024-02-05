@@ -1,9 +1,21 @@
 {
+  "[css]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true
+  },
+  "[javascript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true
+  },
   "[json]": {
     "editor.insertSpaces": true
   },
   "[shellscript]": {
     "editor.insertSpaces": false,
+    "editor.formatOnSave": true
+  },
+  "[typescript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
     "editor.formatOnSave": true
   },
   "editor.tabSize": 2,
@@ -24,5 +36,6 @@
   "go.showWelcome": false,
   "go.survey.prompt": false,
   "go.vetOnSave": "off",
+  "git.ignoreLimitWarning": true,
   "shellcheck.customArgs": ["-x"]
 }

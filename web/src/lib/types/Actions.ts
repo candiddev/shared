@@ -1,5 +1,5 @@
 export enum ActionsEnum {
-	Create,
-	Delete,
-	Update,
+  Create,
+  Delete,
+  Update,
 }

@@ -1,11 +1,11 @@
 .AppMenuFooter {
-	align-items: center;
-	display: flex;
-	flex-direction: column;
-	justify-content: center;
-	margin-top: auto;
-	margin-bottom: 0 !important;
-	padding: 3px;
-	padding-top: 40px;
-	width: 100%;
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  margin-top: auto;
+  margin-bottom: 0 !important;
+  padding: 3px;
+  padding-top: 40px;
+  width: 100%;
 }

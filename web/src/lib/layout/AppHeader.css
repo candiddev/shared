@@ -1,15 +1,15 @@
 .AppHeader {
-	align-items: center;
-	display: flex;
-	height: var(--height_AppHeader);
-	justify-content: space-between;
-	transition: height var(--animation) ease-in-out;
-	width: 100%;
-	z-index: var(--z-index_AppHeader);
+  align-items: center;
+  display: flex;
+  height: var(--height_AppHeader);
+  justify-content: space-between;
+  transition: height var(--animation) ease-in-out;
+  width: 100%;
+  z-index: var(--z-index_AppHeader);
 }
 
 .AppHeader > .AppLogo {
-	display: var(--display_AppHeaderAppLogo);
-	padding-bottom: 0;
-	padding-top: 0;
+  display: var(--display_AppHeaderAppLogo);
+  padding-bottom: 0;
+  padding-top: 0;
 }

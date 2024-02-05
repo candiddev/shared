@@ -1,97 +1,97 @@
 .App {
-	background-color: var(--color_base-1);
-	color: var(--color_content);
-	display: flex;
-	flex-direction: column;
-	font-family: "Noto Sans",Helvetica,Arial,sans-serif;
-	justify-items: center;
-	height: 100vh;
-	max-width: 100%;
-	padding-top: env(safe-area-inset-top, 0);
-	padding-bottom: env(safe-area-inset-bottom, 0);
-	overflow: hidden;
-	position: relative;
-	width: 100vw;
+  background-color: var(--color_base-1);
+  color: var(--color_content);
+  display: flex;
+  flex-direction: column;
+  font-family: "Noto Sans", Helvetica, Arial, sans-serif;
+  justify-items: center;
+  height: 100vh;
+  max-width: 100%;
+  padding-top: env(safe-area-inset-top, 0);
+  padding-bottom: env(safe-area-inset-bottom, 0);
+  overflow: hidden;
+  position: relative;
+  width: 100vw;
 }
 
 .App--primary {
-	background-color: var(--color_primary);
+  background-color: var(--color_primary);
 }
 
 .App__children {
-	align-items: center;
-	display: flex;
-	flex-direction: column;
-	max-width: 100vw;
-	overflow-y: auto;
-	padding-bottom: var(--padding_App__children);
-	padding-left: var(--padding_App__children);
-	padding-right: var(--padding_App__children);
-	position: relative;
-	transition: width var(--animation) ease-in-out;
-	width: 100%;
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  max-width: 100vw;
+  overflow-y: auto;
+  padding-bottom: var(--padding_App__children);
+  padding-left: var(--padding_App__children);
+  padding-right: var(--padding_App__children);
+  position: relative;
+  transition: width var(--animation) ease-in-out;
+  width: 100%;
 }
 
 .App__children--full {
-	padding-top: var(--padding_App__children);
+  padding-top: var(--padding_App__children);
 }
 
 .App__children--full .Form--overlay {
-	height: 100%;
+  height: 100%;
 }
 
 .App__children--full > * {
-	border: var(--border);
-	margin-bottom: auto !important;
-	margin-top: auto !important;
-	max-width: 1000px !important;
+  border: var(--border);
+  margin-bottom: auto !important;
+  margin-top: auto !important;
+  max-width: 1000px !important;
 }
 
 .App__children--full-width {
-	padding-left: 0;
-	padding-right: 0;
+  padding-left: 0;
+  padding-right: 0;
 }
 
 .App__children > *:not(.App__motd):not(.Form--overlay):not(iframe) {
-	max-width: 1800px;
+  max-width: 1800px;
 }
 
 .App__children > .Table__container > .Table__div:first-child {
-	border-top: 0;
+  border-top: 0;
 }
 
 .App__motd {
-	align-items: center;
-	background-color: var(--color_primary);
-	border-bottom-left-radius: var(--border-radius);
-	border-bottom-right-radius: var(--border-radius);
-	box-shadow: var(--box-shadow);
-	color: var(--color_primary-content);
-	display: flex;
-	font-size: var(--font-size_2);
-	justify-content: space-between;
-	padding: var(--padding);
-	padding-left: 10px;
-	padding-right: 10px;
-	position: sticky;
-	white-space: pre;
-	width: 100%;
+  align-items: center;
+  background-color: var(--color_primary);
+  border-bottom-left-radius: var(--border-radius);
+  border-bottom-right-radius: var(--border-radius);
+  box-shadow: var(--box-shadow);
+  color: var(--color_primary-content);
+  display: flex;
+  font-size: var(--font-size_2);
+  justify-content: space-between;
+  padding: var(--padding);
+  padding-left: 10px;
+  padding-right: 10px;
+  position: sticky;
+  white-space: pre;
+  width: 100%;
 }
 
 .App__motd > .Button {
-	filter: none;
-	font-size: var(--font-size_1);
-	margin-left: auto;
+  filter: none;
+  font-size: var(--font-size_1);
+  margin-left: auto;
 }
 
 .App__motd > .Markdown {
-	padding-bottom: 0;
+  padding-bottom: 0;
 }
 
 .App__section {
-	display: flex;
-	height: 100%;
-	min-height: calc(100vh - 100%);
-	overflow-y: hidden;
-	position: relative;
+  display: flex;
+  height: 100%;
+  min-height: calc(100vh - 100%);
+  overflow-y: hidden;
+  position: relative;
 }

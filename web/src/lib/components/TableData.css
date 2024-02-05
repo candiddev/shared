@@ -1,142 +1,142 @@
 .TableData {
-	color: inherit;
-	text-align: left;
-	vertical-align: middle;
-	width: auto;
+  color: inherit;
+  text-align: left;
+  vertical-align: middle;
+  width: auto;
 }
 
 .TableData > .Markdown {
-	padding-bottom: 0;
+  padding-bottom: 0;
 }
 
 .TableData > input {
-	size: 10;
+  size: 10;
 }
 
 .TableData--bold {
-	font-weight: var(--font-weight_bold);
+  font-weight: var(--font-weight_bold);
 }
 
 .TableData--center > * {
-	margin-left: auto;
-	margin-right: auto;
-	max-height: 100px;
-	max-width: 100px;
+  margin-left: auto;
+  margin-right: auto;
+  max-height: 100px;
+  max-width: 100px;
 }
 
 .TableData--collapsible {
-	align-items: center;
-	background-color: var(--color_base-2);
-	cursor: pointer;
-	display: flex;
-	font-weight: var(--font-weight_bold);
-	justify-content: space-between;
-	padding-left: 5px;
-	padding-right: 15px;
-	width: 100%;
+  align-items: center;
+  background-color: var(--color_base-2);
+  cursor: pointer;
+  display: flex;
+  font-weight: var(--font-weight_bold);
+  justify-content: space-between;
+  padding-left: 5px;
+  padding-right: 15px;
+  width: 100%;
 }
 
 .TableData--collapsible ~ * {
-	background-color: var(--color_base-2);
-	font-weight: var(--font-weight_bold);
+  background-color: var(--color_base-2);
+  font-weight: var(--font-weight_bold);
 }
 
 .TableData--negative {
-	color: var(--color_negative);
-	font-weight: var(--font-weight_bold);
+  color: var(--color_negative);
+  font-weight: var(--font-weight_bold);
 }
 
 .TableData--positive {
-	color: var(--color_positive);
-	font-weight: var(--font-weight_bold);
+  color: var(--color_positive);
+  font-weight: var(--font-weight_bold);
 }
 
 td.TableData--right {
-	justify-content: flex-end;
+  justify-content: flex-end;
 }
 
 .TableData__array {
-	display: flex;
-	flex-direction: column;
+  display: flex;
+  flex-direction: column;
 }
 
 .TableData__buttons {
-	display: flex;
-	flex-direction: column;
+  display: flex;
+  flex-direction: column;
 }
 
 .TableData__buttons div {
-	align-items: center;
-	display: flex;
+  align-items: center;
+  display: flex;
 }
 
 .TableData__buttons .Button {
-	align-self: flex-start;
-	margin-top: 5px;
-	padding: 2px;
+  align-self: flex-start;
+  margin-top: 5px;
+  padding: 2px;
 }
 
 .TableData__buttons .Button:first-of-type {
-	margin-left: 0;
+  margin-left: 0;
 }
 
 .TableData__checkbox {
-	cursor: pointer;
-	flex-basis: 100%;
-	flex-grow: 1;
-	font-size: var(--font-size_3) !important;
-	justify-content: center;
-	transition: color var(--animation) ease-in-out;
+  cursor: pointer;
+  flex-basis: 100%;
+  flex-grow: 1;
+  font-size: var(--font-size_3) !important;
+  justify-content: center;
+  transition: color var(--animation) ease-in-out;
 }
 
 .TableData__checkbox i {
-	font-size: var(--font-size-header) !important;
+  font-size: var(--font-size-header) !important;
 }
 
 .TableData__draggable {
-	align-items: center;
-	display: flex;
-	font-size: var(--font-size_2);
-	justify-content: center;
+  align-items: center;
+  display: flex;
+  font-size: var(--font-size_2);
+  justify-content: center;
 }
 
 .TableData__draggable > i {
-	cursor: move;
-	padding-right: var(--padding);
+  cursor: move;
+  padding-right: var(--padding);
 }
 
 .TableData__dragging {
-	box-shadow: var(--box-shadow);
+  box-shadow: var(--box-shadow);
 }
 
 .TableData__dragtarget {
-	background-color: var(--color_base-2) !important;
+  background-color: var(--color_base-2) !important;
 }
 
 .TableData__img {
-	border: var(--border);
-	border-radius: var(--border-radius);
-	box-shadow: var(--box-shadow);
-	display: block;
-	height: auto;
-	max-height: 100px;
-	max-width: 100px;
-	width: auto;
+  border: var(--border);
+  border-radius: var(--border-radius);
+  box-shadow: var(--box-shadow);
+  display: block;
+  height: auto;
+  max-height: 100px;
+  max-width: 100px;
+  width: auto;
 }
 
 .TableData__icon {
-	color: var(--color_accent);
-	font-family: var(--font-family_icon);
-	white-space: nowrap;
+  color: var(--color_accent);
+  font-family: var(--font-family_icon);
+  white-space: nowrap;
 }
 
 .TableData__icon > * {
-	font-size: var(--font-size-normal);
-	padding-right: 5px;
+  font-size: var(--font-size-normal);
+  padding-right: 5px;
 }
 
 .TableData__link {
-	align-items: center;
-	display: flex;
-	justify-content: flex-start;
+  align-items: center;
+  display: flex;
+  justify-content: flex-start;
 }

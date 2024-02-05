@@ -1,22 +1,22 @@
 .NoImage {
-	align-items: center;
-	border: 2px dashed var(--color_accent);
-	border-radius: var(--border-radius);
-	color: var(--color_accent);
-	display: flex;
-	font-weight: var(--font-weight_bold);
-	height: var(--width_input);
-	justify-content: center;
-	max-height: 300px;
-	max-width: 300px;
-	padding: 10px;
-	text-align: center;
-	width: var(--width_input);
-	white-space: normal;
-	word-wrap: break-word;
+  align-items: center;
+  border: 2px dashed var(--color_accent);
+  border-radius: var(--border-radius);
+  color: var(--color_accent);
+  display: flex;
+  font-weight: var(--font-weight_bold);
+  height: var(--width_input);
+  justify-content: center;
+  max-height: 300px;
+  max-width: 300px;
+  padding: 10px;
+  text-align: center;
+  width: var(--width_input);
+  white-space: normal;
+  word-wrap: break-word;
 }
 
 .TableData > .NoImage {
-	height: 100px;
-	width: 100px;
+  height: 100px;
+  width: 100px;
 }

@@ -1,92 +1,92 @@
 .Markdown {
-	white-space: pre-line;
-	/* stylelint-disable-next-line plugin/no-unsupported-browser-features */
+  white-space: pre-line;
+  /* stylelint-disable-next-line plugin/no-unsupported-browser-features */
 }
 
 .Markdown:not(:only-of-type):not(:last-child) {
-	margin-bottom: 30px;
+  margin-bottom: 30px;
 }
 
 .Markdown > .Tooltips {
-	display: inline-block;
-	vertical-align: bottom;
+  display: inline-block;
+  vertical-align: bottom;
 }
 
 .Markdown > i {
-	color: var(--color_secondary);
-	display: inline-block;
-	padding-left: 2px;
-	padding-right: 4px;
-	vertical-align: text-bottom;
+  color: var(--color_secondary);
+  display: inline-block;
+  padding-left: 2px;
+  padding-right: 4px;
+  vertical-align: text-bottom;
 }
 
 blockquote.Markdown {
-	border-left: var(--border);
-	border-left-width: 4px;
-	padding-bottom: 0;
-	padding-left: var(--padding);
+  border-left: var(--border);
+  border-left-width: 4px;
+  padding-bottom: 0;
+  padding-left: var(--padding);
 }
 
 .Markdown > br {
-	display: block;
-	content: "";
-	padding: 5px;
+  display: block;
+  content: "";
+  padding: 5px;
 }
 
 code.Markdown {
-	background-color: rgba(0, 0, 0, 0.1);
-	display: inline-block;
-	padding: var(--padding);
-	white-space: pre-wrap;
+  background-color: rgba(0, 0, 0, 0.1);
+  display: inline-block;
+  padding: var(--padding);
+  white-space: pre-wrap;
 }
 
 .Markdown > code {
-	background-color: rgba(0, 0, 0, 0.1);
-	padding-left: 4px;
-	padding-right: 4px;
+  background-color: rgba(0, 0, 0, 0.1);
+  padding-left: 4px;
+  padding-right: 4px;
 }
 
 h1.Markdown {
-	border-bottom: var(--border);
-	border-color: var(--color_primary);
-	border-width: 2px;
-	font-size: var(--font-size_3);
-	font-weight: var(--font-weight_bold);
-	margin-bottom: var(--padding);
+  border-bottom: var(--border);
+  border-color: var(--color_primary);
+  border-width: 2px;
+  font-size: var(--font-size_3);
+  font-weight: var(--font-weight_bold);
+  margin-bottom: var(--padding);
 }
 
 h2.Markdown {
-	border-bottom: var(--border);
-	border-color: var(--color_primary);
-	border-width: 2px;
-	font-size: var(--font-size_3);
-	margin-bottom: var(--padding);
+  border-bottom: var(--border);
+  border-color: var(--color_primary);
+  border-width: 2px;
+  font-size: var(--font-size_3);
+  margin-bottom: var(--padding);
 }
 
 h3.Markdown {
-	font-size: var(--font-size_3);
-	font-weight: var(--font-weight_bold);
-	margin-bottom: var(--padding);
+  font-size: var(--font-size_3);
+  font-weight: var(--font-weight_bold);
+  margin-bottom: var(--padding);
 }
 
 h4.Markdown {
-	border-bottom: var(--border);
-	border-color: var(--color_primary);
-	border-width: 1px;
-	font-size: var(--font-size_2);
-	margin-bottom: var(--padding);
+  border-bottom: var(--border);
+  border-color: var(--color_primary);
+  border-width: 1px;
+  font-size: var(--font-size_2);
+  margin-bottom: var(--padding);
 }
 
 h5.Markdown {
-	font-size: var(--font-size_1);
-	font-weight: var(--font-weight_bold);
-	margin-bottom: var(--padding);
+  font-size: var(--font-size_1);
+  font-weight: var(--font-weight_bold);
+  margin-bottom: var(--padding);
 }
 
 h6.Markdown {
-	font-size: var(--font-size_1);
-	font-weight: var(--font-weight_bold);
-	margin-bottom: var(--padding);
+  font-size: var(--font-size_1);
+  font-weight: var(--font-weight_bold);
+  margin-bottom: var(--padding);
 }
 
 h1.Markdown:not(:first-child),
@@ -95,75 +95,73 @@ h3.Markdown:not(:first-child),
 h4.Markdown:not(:first-child),
 h5.Markdown:not(:first-child),
 h6.Markdown:not(:first-child) {
-	padding-top: var(--padding);
+  padding-top: var(--padding);
 }
 
-
 li.Markdown {
-	list-style-position: inherit;
-	list-style-type: inherit;
+  list-style-position: inherit;
+  list-style-type: inherit;
 }
 
 ol.Markdown {
-	list-style-position: inside;
-	list-style-type: decimal;
+  list-style-position: inside;
+  list-style-type: decimal;
 }
 
 * > li.Markdown > ol.Markdown {
-	padding-left: calc(var(--padding) * 2);
+  padding-left: calc(var(--padding) * 2);
 }
 
 li > * {
-	position: relative;
-	left: 0px;
+  position: relative;
+  left: 0px;
 }
 
 li.Markdown > p.Markdown {
-	display: inline;
+  display: inline;
 }
 
 ul.Markdown {
-	list-style-position: inside;
-	list-style-type: disc;
+  list-style-position: inside;
+  list-style-type: disc;
 }
 
 * > li.Markdown > ul.Markdown {
-	list-style-type: circle;
-	padding-left: calc(var(--padding) * 2);
+  list-style-type: circle;
+  padding-left: calc(var(--padding) * 2);
 }
 
-* > li.Markdown > * > li.Markdown > ul.Markdown{
-	list-style-type: square;
-	padding-left: calc(var(--padding) * 2);
+* > li.Markdown > * > li.Markdown > ul.Markdown {
+  list-style-type: square;
+  padding-left: calc(var(--padding) * 2);
 }
 
 .Markdown > mark {
-	background-color: inherit;
-	color: var(--color_primary);
-	font-weight: var(--font-weight_bold);
+  background-color: inherit;
+  color: var(--color_primary);
+  font-weight: var(--font-weight_bold);
 }
 
-
 table.Markdown {
-	border-radius: var(--border-radius);
-	border-collapse: collapse;
-	border-spacing: 0;
-	margin-bottom: var(--padding);
-	max-width: 100%;
-	overflow: auto;
-	width: max-content;
+  border-radius: var(--border-radius);
+  border-collapse: collapse;
+  border-spacing: 0;
+  margin-bottom: var(--padding);
+  max-width: 100%;
+  overflow: auto;
+  width: max-content;
 }
 
 thead.Markdown {
-	background-color: var(--color_base-2);
+  background-color: var(--color_base-2);
 }
 
 td.Markdown,
 th.Markdown {
-	border: var(--border);
-	padding: 10px;
+  border: var(--border);
+  padding: 10px;
 }
 
 tr.Markdown {
-	border-top: var(--border);
+  border-top: var(--border);
 }

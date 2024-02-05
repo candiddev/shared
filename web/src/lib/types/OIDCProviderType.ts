@@ -1,13 +1,9 @@
 export const OIDCProviderType = {
-	values: [
-		"None",
-		"Test",
-		"Google",
-	],
+  values: ["None", "Test", "Google"],
 };
 
 export enum OIDCProviderTypeEnum {
-	None,
-	Test,
-	Google,
+  None,
+  Test,
+  Google,
 }

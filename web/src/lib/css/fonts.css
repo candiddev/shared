@@ -1,23 +1,23 @@
 @font-face {
-	font-display: block;
-	font-family: "Material Icons Outlined";
-	font-style: normal;
-	font-weight: 400;
-	src: url("../fonts/material-icons-outlined.woff2") format("woff2");
+  font-display: block;
+  font-family: "Material Icons Outlined";
+  font-style: normal;
+  font-weight: 400;
+  src: url("../fonts/material-icons-outlined.woff2") format("woff2");
 }
 
 @font-face {
-	font-display: block;
-	font-family: "Noto Sans";
-	font-style: normal;
-	font-weight: 400;
-	src: url("../fonts/noto-sans-regular.woff2") format("woff2");
+  font-display: block;
+  font-family: "Noto Sans";
+  font-style: normal;
+  font-weight: 400;
+  src: url("../fonts/noto-sans-regular.woff2") format("woff2");
 }
 
 @font-face {
-	font-display: block;
-	font-family: "Noto Sans";
-	font-style: bold;
-	font-weight: 600;
-	src: url("../fonts/noto-sans-bold.woff2") format("woff2");
+  font-display: block;
+  font-family: "Noto Sans";
+  font-style: bold;
+  font-weight: 600;
+  src: url("../fonts/noto-sans-bold.woff2") format("woff2");
 }

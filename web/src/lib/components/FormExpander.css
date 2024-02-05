@@ -1,12 +1,12 @@
 .FormExpander {
-	align-items: center;
-	cursor: pointer;
-	display: flex;
-	padding-top: var(--padding);
-	width: var(--width_input);
+  align-items: center;
+  cursor: pointer;
+  display: flex;
+  padding-top: var(--padding);
+  width: var(--width_input);
 }
 
 .FormExpander > p {
-	filter: var(--filter_light);
-	font-weight: var(--font-weight_bold);
+  filter: var(--filter_light);
+  font-weight: var(--font-weight_bold);
 }

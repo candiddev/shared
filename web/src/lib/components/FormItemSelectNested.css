@@ -1,34 +1,34 @@
 .FormItemSelectNested__list {
-	border: var(--border);
-	border-radius: var(--border-radius);
-	max-height: 200px;
-	padding: 5px;
-	overflow-y: auto;
-	width: var(--width_input);
+  border: var(--border);
+  border-radius: var(--border-radius);
+  max-height: 200px;
+  padding: 5px;
+  overflow-y: auto;
+  width: var(--width_input);
 }
 
 .FormItemSelectNested__option {
-	align-items: center;
-	border-radius: var(--border-radius);
-	cursor: pointer;
-	display: flex;
-	font-weight: var(--font-weight_bold);
-	padding: 5px;
-	padding-left: 0;
-	white-space: pre;
+  align-items: center;
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  display: flex;
+  font-weight: var(--font-weight_bold);
+  padding: 5px;
+  padding-left: 0;
+  white-space: pre;
 }
 
-.FormItemSelectNested__option  > i {
-	font-weight: normal;
-	padding-right: 5px;
+.FormItemSelectNested__option > i {
+  font-weight: normal;
+  padding-right: 5px;
 }
 
 .FormItemSelectNested__option--selected {
-	background-color: var(--color_secondary);
-	box-shadow: var(--box-shadow);
-	color: var(--color_secondary-content);
+  background-color: var(--color_secondary);
+  box-shadow: var(--box-shadow);
+  color: var(--color_secondary-content);
 }
 
 .FormItemSelectNested__option--selected > i {
-	color: var(--color_secondary-content) !important;
+  color: var(--color_secondary-content) !important;
 }

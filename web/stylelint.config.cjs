@@ -4,16 +4,11 @@ module.exports = {
 		"stylelint-no-unsupported-browser-features",
 	],
 	rules: {
-		"indentation": "tab",
 		"plugin/no-unsupported-browser-features": [
 			true,
 			{
 				ignore: [
-					"css-appearance",
-					"css-resize",
-					"css-sticky",
-					"intrinsic-width",
-					"multicolumn",
+					"text-decoration",
 				],
 				severity: "error",
 			},
@@ -26,6 +21,5 @@ module.exports = {
 				],
 			},
 		],
-		"string-quotes": "double",
 	},
 };

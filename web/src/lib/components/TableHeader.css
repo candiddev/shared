@@ -1,72 +1,72 @@
 .TableHeader {
-	align-items: center;
-	display: flex;
-	font-weight: var(--font-weight_normal);
-	text-align: left;
-	white-space: nowrap;
-	width: auto;
+  align-items: center;
+  display: flex;
+  font-weight: var(--font-weight_normal);
+  text-align: left;
+  white-space: nowrap;
+  width: auto;
 }
 
 .TableHeader > i {
-	filter: var(--filter_light);
-	text-decoration: none !important;
-	vertical-align: bottom;
+  filter: var(--filter_light);
+  text-decoration: none !important;
+  vertical-align: bottom;
 }
 
 .TableHeader > span {
-	filter: var(--filter_light);
-	font-weight: var(--font-weight_bold);
-	text-transform: uppercase;
+  filter: var(--filter_light);
+  font-weight: var(--font-weight_bold);
+  text-transform: uppercase;
 }
 
 .TableHeader--center {
-	justify-content: center;
+  justify-content: center;
 }
 
 th.TableHeader--right {
-	justify-content: flex-end;
+  justify-content: flex-end;
 }
 
 .TableHeader--pointer {
-	cursor: pointer;
+  cursor: pointer;
 }
 
 .TableHeader__filter {
-	align-items: center;
-	display: flex;
-	justify-content: center;
-	padding: 0;
+  align-items: center;
+  display: flex;
+  justify-content: center;
+  padding: 0;
 }
 
 .TableHeader__filter > div {
-	align-items: center;
-	display: flex;
-	justify-content: center;
-	padding: 0;
+  align-items: center;
+  display: flex;
+  justify-content: center;
+  padding: 0;
 }
 
 .TableHeader__filter > div:not(:empty) {
-	padding-bottom: var(--padding);
+  padding-bottom: var(--padding);
 }
 
 .TableHeader__filter input {
-	background-color: var(--color_base-1);
+  background-color: var(--color_base-1);
 }
 
 .TableHeader__filter .ButtonArray {
-	width: var(--width_input);
+  width: var(--width_input);
 }
 
 .TableHeader__filter > div > * {
-	padding-left: var(--padding);
-	padding-right: var(--padding);
+  padding-left: var(--padding);
+  padding-right: var(--padding);
 }
 
 .TableHeader--active > i {
-	color: var(--color_primary) !important;
-	filter: none !important;
+  color: var(--color_primary) !important;
+  filter: none !important;
 }
 
 .TableHeader--pointer:hover i {
-	filter: var(--filter_focus);
+  filter: var(--filter_focus);
 }

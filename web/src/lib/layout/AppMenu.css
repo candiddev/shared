@@ -1,203 +1,203 @@
 .AppMenu {
-	background-color: var(--color_base-1);
-	border-right: var(--border);
-	box-shadow: var(--box-shadow);
-	bottom: 0;
-	display: flex;
-	flex-direction: column;
-	height: 100%;
-	max-width: 0;
-	padding-bottom: env(safe-area-inset-bottom, 0);
-	padding-top: env(safe-area-inset-top, 0);
-	position: var(--position_AppMenu);
-	top: 0;
-	transition: max-width var(--animation) ease-in-out;
-	width: 100%;
-	will-change: width;
-	z-index: var(--z-index_AppMenu);
+  background-color: var(--color_base-1);
+  border-right: var(--border);
+  box-shadow: var(--box-shadow);
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  max-width: 0;
+  padding-bottom: env(safe-area-inset-bottom, 0);
+  padding-top: env(safe-area-inset-top, 0);
+  position: var(--position_AppMenu);
+  top: 0;
+  transition: max-width var(--animation) ease-in-out;
+  width: 100%;
+  will-change: width;
+  z-index: var(--z-index_AppMenu);
 }
 
 .AppMenu .AppLogo {
-	border-bottom: var(--border);
+  border-bottom: var(--border);
 }
 
 .AppMenu .AppLogo__toggles {
-	display: var(--display_AppMenuAppLogo__toggles);
+  display: var(--display_AppMenuAppLogo__toggles);
 }
 
 .AppMenu::-webkit-scrollbar {
-	display: none;
+  display: none;
 }
 
 .AppMenu__container {
-	display: flex;
-	flex-direction: column;
-	height: 100%;
-	overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow-y: auto;
 }
 
 .AppMenu--open {
-	max-width: var(--width_AppMenu);
-	z-index: var(--z-index_AppMenu--open);
+  max-width: var(--width_AppMenu);
+  z-index: var(--z-index_AppMenu--open);
 }
 
 .AppMenu .Form {
-	margin-top: 30px;
+  margin-top: 30px;
 }
 
 .AppMenu .Title__header {
-	border-bottom: 0;
+  border-bottom: 0;
 }
 
 .AppMenu > * {
-	border-width: 4px;
-	flex-shrink: 0;
+  border-width: 4px;
+  flex-shrink: 0;
 }
 
 .AppMenu i {
-	color: var(--color_content);
-	font-weight: var(--font-weight_normal);
-	margin-right: var(--padding);
-	text-transform: none;
+  color: var(--color_content);
+  font-weight: var(--font-weight_normal);
+  margin-right: var(--padding);
+  text-transform: none;
 }
 
 .AppMenu__entry {
-	align-items: center;
-	border-radius: var(--border-radius);
-	cursor: pointer;
-	display: flex;
-	font-weight: var(--font-weight_bold);
-	margin: 5px;
-	padding: 10px;
+  align-items: center;
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  display: flex;
+  font-weight: var(--font-weight_bold);
+  margin: 5px;
+  padding: 10px;
 }
 
 .AppMenu__entry > a,
 .AppMenu__entry > p {
-	align-items: center;
-	display: flex;
-	width: 100%;
+  align-items: center;
+  display: flex;
+  width: 100%;
 }
 
 .AppMenu__component {
-	height: max-content;
-	margin-bottom: 0 !important;
-	padding-left: 15px !important;
-	padding-right: 15px !important;
+  height: max-content;
+  margin-bottom: 0 !important;
+  padding-left: 15px !important;
+  padding-right: 15px !important;
 }
 
 .AppMenu__component--menu {
-	border-bottom-left-radius: 0 !important;
-	border-bottom-right-radius: 0 !important;
+  border-bottom-left-radius: 0 !important;
+  border-bottom-right-radius: 0 !important;
 }
 
 .AppMenu__arrow {
-	margin-left: auto;
-	margin-right: 0 !important;
-	padding: 0;
-	padding-left: 10px;
-	text-align: right;
+  margin-left: auto;
+  margin-right: 0 !important;
+  padding: 0;
+  padding-left: 10px;
+  text-align: right;
 }
 
 .AppMenu__img {
-	border-radius: var(--border-radius);
-	box-shadow: var(--box-shadow);
-	height: 25px;
-	margin-right: var(--padding);
-	width: 25px;
+  border-radius: var(--border-radius);
+  box-shadow: var(--box-shadow);
+  height: 25px;
+  margin-right: var(--padding);
+  width: 25px;
 }
 
 .AppMenu__menu {
-	display: flex;
-	flex-direction: column;
-	height: max-content;
-	max-height: 0;
-	transition-duration: var(--animation);
-	transition-property: max-height, visibility;
-	transition-timing-function: ease-in-out;
-	will-change: max-height, margin;
-	visibility: hidden;
+  display: flex;
+  flex-direction: column;
+  height: max-content;
+  max-height: 0;
+  transition-duration: var(--animation);
+  transition-property: max-height, visibility;
+  transition-timing-function: ease-in-out;
+  will-change: max-height, margin;
+  visibility: hidden;
 }
 
 .AppMenu__menu > *:not(.AppMenu__menu) {
-	padding: 0;
-	max-height: 0;
-	transition-duration: var(--animation);
-	transition-property: max-height, padding;
-	transition-timing-function: ease-in-out;
-	will-change: max-height, padding;
+  padding: 0;
+  max-height: 0;
+  transition-duration: var(--animation);
+  transition-property: max-height, padding;
+  transition-timing-function: ease-in-out;
+  will-change: max-height, padding;
 }
 
 .AppMenu__menu--open {
-	max-height: 4000px;
-	visibility: visible;
+  max-height: 4000px;
+  visibility: visible;
 }
 
 .AppMenu__menu--open > *:not(.AppMenu__menu) {
-	padding: 10px;
-	max-height: 100%;
+  padding: 10px;
+  max-height: 100%;
 }
 
 .AppMenu__menu--comp {
-	background-color: var(--color_base-2);
-	border-radius: var(--border-radius);
-	border-top-left-radius: 0;
-	border-top-right-radius: 0;
-	font-weight: var(--font-weight_bold);
-	margin-left: 5px;
-	margin-right: 5px;
+  background-color: var(--color_base-2);
+  border-radius: var(--border-radius);
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+  font-weight: var(--font-weight_bold);
+  margin-left: 5px;
+  margin-right: 5px;
 }
 
 .AppMenu__menu--view {
-	padding-bottom: 4px;
-	padding-left: var(--padding);
+  padding-bottom: 4px;
+  padding-left: var(--padding);
 }
 
 .AppMenu__menu--view > .AppMenu__menu--view {
-	border-bottom: 0;
-	padding-left: 20px;
+  border-bottom: 0;
+  padding-left: 20px;
 }
 
 .AppMenu__entry--break {
-	border-top: var(--border);
-	border-width: 2px;
-	margin-top: 10px;
-	padding-bottom: 10px;
+  border-top: var(--border);
+  border-width: 2px;
+  margin-top: 10px;
+  padding-bottom: 10px;
 }
 
 .AppMenu__entry--disabled {
-	cursor: inherit;
+  cursor: inherit;
 }
 
 .AppMenu__entry--header {
-	align-items: flex-start;
-	font-weight: var(--font-weight_bold);
+  align-items: flex-start;
+  font-weight: var(--font-weight_bold);
 }
 
 .AppMenu__entry--header span:first-child {
-	text-transform: uppercase;
+  text-transform: uppercase;
 }
 
 .AppMenu__entry--header i {
-	display: none;
-	margin-right: 0;
+  display: none;
+  margin-right: 0;
 }
 
-.AppMenu__entry--header a > a> i {
-	display: block;
-	padding-left: 10px;
+.AppMenu__entry--header a > a > i {
+  display: block;
+  padding-left: 10px;
 }
 
 .AppMenu__entry--header + .AppMenu__menu {
-	padding-left: 0;
+  padding-left: 0;
 }
 
 .AppMenu__entry--text {
-	align-items: center;
-	display: flex;
+  align-items: center;
+  display: flex;
 }
 
 .AppMenu__container > .AppMenu__entry--active {
-	background-color: var(--color_base-2);
+  background-color: var(--color_base-2);
 }
 
 .AppMenu__container > .AppMenu__entry:not(.AppMenu__entry--disabled):hover,
@@ -205,15 +205,15 @@
 .AppMenu__menu .AppMenu__entry:not(.AppMenu__entry--disabled):hover,
 .AppMenu__container > a.AppMenu__entry:hover,
 .AppMenu__container > a.AppMenu__entry--active {
-	background-color: var(--color_secondary) !important;
-	box-shadow: var(--box-shadow);
-	border-bottom-left-radius: var(--border-radius) !important;
-	border-bottom-right-radius: var(--border-radius) !important;
-	color: var(--color_secondary-content) !important;
+  background-color: var(--color_secondary) !important;
+  box-shadow: var(--box-shadow);
+  border-bottom-left-radius: var(--border-radius) !important;
+  border-bottom-right-radius: var(--border-radius) !important;
+  color: var(--color_secondary-content) !important;
 }
 
 /* stylelint-disable-next-line no-descending-specificity */
 .AppMenu__entry--active:not(.AppMenu__component--menu) i,
 .AppMenu__entry:hover i {
-	color: var(--color_secondary-content) !important;
+  color: var(--color_secondary-content) !important;
 }

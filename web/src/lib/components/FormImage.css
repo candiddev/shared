@@ -1,50 +1,50 @@
 .FormImage {
-	align-items: center;
-	align-self: center;
-	font-size: var(--font-size);
-	margin-top: 2px;
-	margin-bottom: 10px;
+  align-items: center;
+  align-self: center;
+  font-size: var(--font-size);
+  margin-top: 2px;
+  margin-bottom: 10px;
 }
 
 .FormImage--click > img {
-	cursor: pointer;
+  cursor: pointer;
 }
 
 .FormImage > .FormItem__label {
-	margin-left: auto;
-	margin-right: auto;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .FormImage > img {
-	border: var(--border);
-	border-radius: var(--border-radius);
-	box-shadow: var(--box-shadow);
-	margin-left: auto;
-	margin-right: auto;
-	max-width: 300px;
-	width: auto;
+  border: var(--border);
+  border-radius: var(--border-radius);
+  box-shadow: var(--box-shadow);
+  margin-left: auto;
+  margin-right: auto;
+  max-width: 300px;
+  width: auto;
 }
 
 .FormImage > span {
-	text-align: center;
+  text-align: center;
 }
 
 .FormImage__buttons {
-	display: flex;
-	justify-content: center;
-	margin-left: auto;
-	margin-right: auto;
-	padding-top: var(--padding);
+  display: flex;
+  justify-content: center;
+  margin-left: auto;
+  margin-right: auto;
+  padding-top: var(--padding);
 }
 
 .FormImage__text {
-	color: var(--color_secondary);
-	font-style: italic;
-	font-weight: var(--font-weight_bold);
-	padding-top: var(--padding);
-	text-align: center;
-	text-decoration: underline;
-	/* stylelint-disable-next-line plugin/no-unsupported-browser-features */
-	text-decoration-color: var(--color_secondary);
-	text-underline-offset: 1px;
+  color: var(--color_secondary);
+  font-style: italic;
+  font-weight: var(--font-weight_bold);
+  padding-top: var(--padding);
+  text-align: center;
+  text-decoration: underline;
+  /* stylelint-disable-next-line plugin/no-unsupported-browser-features */
+  text-decoration-color: var(--color_secondary);
+  text-underline-offset: 1px;
 }

@@ -1,179 +1,179 @@
 .Title {
-	background-color: var(--color_base-1);
-	display: flex;
-	flex-direction: column;
-	flex-shrink: 0;
-	font-weight: var(--font-weight_bold);
-	justify-content: space-between;
-	position: sticky;
-	top: 60px;
-	white-space: pre;
-	width: 100% ;
-	z-index: var(--z-index_Title);
+  background-color: var(--color_base-1);
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  font-weight: var(--font-weight_bold);
+  justify-content: space-between;
+  position: sticky;
+  top: 60px;
+  white-space: pre;
+  width: 100%;
+  z-index: var(--z-index_Title);
 }
 
 .Title__loading > span {
-	background-color: var(--color_base-3);
-	padding: var(--padding);
-	width: 100%;
+  background-color: var(--color_base-3);
+  padding: var(--padding);
+  width: 100%;
 }
 
 .Title + * .Title {
-	position: relative;
-	top: 0;
-	z-index: inherit;
+  position: relative;
+  top: 0;
+  z-index: inherit;
 }
 
 .Title--hidden {
-	visibility: hidden;
+  visibility: hidden;
 }
 
 .Title__header {
-	align-items: center;
-	border-bottom: var(--border);
-	display: flex;
-	justify-content: space-between;
-	padding: 10px;
+  align-items: center;
+  border-bottom: var(--border);
+  display: flex;
+  justify-content: space-between;
+  padding: 10px;
 }
 
 .Title__header .Button {
-	border: 0;
-	box-shadow: none;
-	margin: 0;
+  border: 0;
+  box-shadow: none;
+  margin: 0;
 }
 
 .Title__name {
-	flex-basis: 1;
-	font-size: var(--font-size_3);
-	white-space: normal;
+  flex-basis: 1;
+  font-size: var(--font-size_3);
+  white-space: normal;
 }
 
 .Title__subtitle {
-	align-self: center;
-	display: flex;
-	font-weight: var(--font-weight_bold);
-	justify-content: space-between;
-	padding-top: var(--padding);
-	padding-left: 20px;
-	padding-right: 20px;
-	text-align: center;
-	text-transform: uppercase;
-	min-width: 400px;
+  align-self: center;
+  display: flex;
+  font-weight: var(--font-weight_bold);
+  justify-content: space-between;
+  padding-top: var(--padding);
+  padding-left: 20px;
+  padding-right: 20px;
+  text-align: center;
+  text-transform: uppercase;
+  min-width: 400px;
 }
 
 .Title__subtitle:last-child {
-	padding-bottom: var(--padding);
+  padding-bottom: var(--padding);
 }
 
 .Title__subtitle--key {
-	filter: var(--filter_light);
-	padding-right: var(--padding);
+  filter: var(--filter_light);
+  padding-right: var(--padding);
 }
 
 .Title__subtitle--loading {
-	background-color: var(--color_base-3);
-	width: 100px;
+  background-color: var(--color_base-3);
+  width: 100px;
 }
 
 .Title__subtitle--value {
-	color: var(--color_text-light);
-	font-weight: var(--font-weight-regular);
-	text-transform: none;
+  color: var(--color_text-light);
+  font-weight: var(--font-weight-regular);
+  text-transform: none;
 }
 
 .Title__subtitles {
-	display: flex;
-	flex-direction: column;
+  display: flex;
+  flex-direction: column;
 }
 
 .Title__tabs {
-	border-bottom: var(--border);
-	cursor: pointer;
-	display: flex;
-	flex-wrap: wrap;
-	font-size: var(--font-size_2);
-	font-weight: var(--font-weight_bold);
-	margin-bottom: 0 !important;
-	padding-left: var(--padding);
-	padding-right: var(--padding);
-	width: 100%;
+  border-bottom: var(--border);
+  cursor: pointer;
+  display: flex;
+  flex-wrap: wrap;
+  font-size: var(--font-size_2);
+  font-weight: var(--font-weight_bold);
+  margin-bottom: 0 !important;
+  padding-left: var(--padding);
+  padding-right: var(--padding);
+  width: 100%;
 }
 
 .Title__tabs:empty {
-	border-bottom: 0;
+  border-bottom: 0;
 }
 
 .Title__tabs > .FormItem__field {
-	height: auto;
-	margin: var(--padding);
-	margin-left: auto;
-	margin-right: auto;
-	text-align: left !important;
-	width: 300px !important;
+  height: auto;
+  margin: var(--padding);
+  margin-left: auto;
+  margin-right: auto;
+  text-align: left !important;
+  width: 300px !important;
 }
 
 .Title__tab {
-	align-items: center;
-	display: flex;
-	filter: var(--filter_light);
-	margin-right: var(--padding);
-	padding: var(--padding);
-	transition: filter var(--animation) ease-in-out;
+  align-items: center;
+  display: flex;
+  filter: var(--filter_light);
+  margin-right: var(--padding);
+  padding: var(--padding);
+  transition: filter var(--animation) ease-in-out;
 }
 
 .Title__tab > span {
-	overflow: hidden;
-	text-overflow: ellipsis;
-	white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .Title__tab:hover {
-	filter: var(--filter_focus);
+  filter: var(--filter_focus);
 }
 
 .Title__tab--active {
-	background-color: var(--color_base-2);
-	border-top-left-radius: var(--border-radius);
-	border-top-right-radius: var(--border-radius);
-	filter: none !important;
+  background-color: var(--color_base-2);
+  border-top-left-radius: var(--border-radius);
+  border-top-right-radius: var(--border-radius);
+  filter: none !important;
 }
 
 .Title__tab--hidden {
-	display: none;
+  display: none;
 }
 
 .Title__tabs + * {
-	margin-top: 0 !important;
+  margin-top: 0 !important;
 }
 
 .Title__tabs + *,
 .Title__tabs + * > .Title__tabs {
-	border-top-left-radius: 0;
-	border-top-right-radius: 0;
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
 }
 
 .Title__header > *:not(.Title__name) {
-	display: flex;
-	flex-basis: 0;
-	flex-grow: 1;
-	justify-content: center;
+  display: flex;
+  flex-basis: 0;
+  flex-grow: 1;
+  justify-content: center;
 }
 
 .Title__header > *:first-child {
-	justify-content: flex-start;
-	margin-left: 0;
+  justify-content: flex-start;
+  margin-left: 0;
 }
 
 .Title__header > *:last-child {
-	justify-content: flex-end;
-	margin-right: 0;
+  justify-content: flex-end;
+  margin-right: 0;
 }
 
 .Title > *:not(.Title__tabs) {
-	align-items: center;
-	display: flex;
-	justify-content: center;
-	padding-top: var(--padding);
-	text-align: center;
-	width: 100%;
+  align-items: center;
+  display: flex;
+  justify-content: center;
+  padding-top: var(--padding);
+  text-align: center;
+  width: 100%;
 }

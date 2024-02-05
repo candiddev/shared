@@ -1,6 +1,5 @@
 import { RandString } from "./RandString";
 
 test("RandString", () => {
-	expect(RandString(10))
-		.toHaveLength(10);
+  expect(RandString(10)).toHaveLength(10);
 });
