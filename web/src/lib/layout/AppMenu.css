@@ -63,6 +63,8 @@
 
 .AppMenu__entry {
   align-items: center;
+  border: var(--border);
+  border-color: rgba(0, 0, 0, 0);
   border-radius: var(--border-radius);
   cursor: pointer;
   display: flex;
@@ -206,6 +208,7 @@
 .AppMenu__container > a.AppMenu__entry:hover,
 .AppMenu__container > a.AppMenu__entry--active {
   background-color: var(--color_secondary) !important;
+  border: var(--border);
   box-shadow: var(--box-shadow);
   border-bottom-left-radius: var(--border-radius) !important;
   border-bottom-right-radius: var(--border-radius) !important;

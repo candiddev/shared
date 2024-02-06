@@ -8,7 +8,7 @@
     "build_dev": "NODE_ENV=development vite build -m development -c vite.config.ts",
     "dev": "vite -c vite.config.ts",
     "e2e": "vitest puppeteer",
-    "lint": "tsc --noEmit -p . && eslint --ext .js,.ts src stylelint.config.cjs vite* && stylelint 'src/**/*.css' && prettier -c src && better-npm-audit audit",
+    "lint": "tsc --noEmit -p . && eslint --ext .js,.ts src stylelint.config.cjs vite* && stylelint 'src/**/*.css' && prettier -c . && better-npm-audit audit",
     "screenshot": "PUPPETEER_SCREENSHOT=yes vitest puppeteer",
     "test": "vitest src"
   },

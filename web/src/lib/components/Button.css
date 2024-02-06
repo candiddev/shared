@@ -4,7 +4,6 @@
   background-color: var(--color_base-1);
   border: var(--border);
   border-radius: var(--border-radius);
-  box-shadow: var(--box-shadow);
   color: var(--color_content);
   cursor: pointer;
   display: flex;
@@ -74,18 +73,21 @@
 
 .Button--accent {
   background-color: var(--color_accent);
+  box-shadow: var(--box-shadow);
   color: var(--color_accent-content);
   filter: none;
 }
 
 .Button--primary {
   background-color: var(--color_primary);
+  box-shadow: var(--box-shadow);
   color: var(--color_primary-content);
   filter: none;
 }
 
 .Button--secondary {
   background-color: var(--color_secondary);
+  box-shadow: var(--box-shadow);
   color: var(--color_secondary-content);
   filter: none;
 }

@@ -1,34 +1,39 @@
 {
-	"compilerOptions": {
-		"baseUrl": "./",
-		"moduleResolution": "node",
-		"module": "es2022",
-		"lib": ["es2022", "DOM"],
-		"paths": {
-			"@lib/*": ["./src/lib/*"]
-		},
-		"target": "es2022",
-		"isolatedModules": true,
-		"resolveJsonModule": true,
-		"sourceMap": true,
-		"esModuleInterop": true,
-		"skipLibCheck": true,
-		"forceConsistentCasingInFileNames": true,
-		"allowJs": true,
-		"checkJs": true,
-		"alwaysStrict": true,
-		"noImplicitAny": true,
-		"noImplicitReturns": true,
-		"noImplicitThis": true,
-		"noImplicitOverride": true,
-		"noUnusedLocals": true,
-		"noUnusedParameters": true,
-		"strict": true,
-		"strictFunctionTypes": true,
-		"strictNullChecks": true,
-		"strictPropertyInitialization": true,
-		"types": ["node", "vite/client", "vitest/globals"]
-	},
-	"include": ["src/**/*.d.ts", "src/**/*.js", "src/**/*.ts", "puppeteer/**/*.ts"],
-	"exclude": ["src/**/*.spec.ts"]
+  "compilerOptions": {
+    "baseUrl": "./",
+    "moduleResolution": "node",
+    "module": "es2022",
+    "lib": ["es2022", "DOM"],
+    "paths": {
+      "@lib/*": ["./src/lib/*"]
+    },
+    "target": "es2022",
+    "isolatedModules": true,
+    "resolveJsonModule": true,
+    "sourceMap": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "allowJs": true,
+    "checkJs": true,
+    "alwaysStrict": true,
+    "noImplicitAny": true,
+    "noImplicitReturns": true,
+    "noImplicitThis": true,
+    "noImplicitOverride": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "strict": true,
+    "strictFunctionTypes": true,
+    "strictNullChecks": true,
+    "strictPropertyInitialization": true,
+    "types": ["node", "vite/client", "vitest/globals"]
+  },
+  "include": [
+    "src/**/*.d.ts",
+    "src/**/*.js",
+    "src/**/*.ts",
+    "puppeteer/**/*.ts"
+  ],
+  "exclude": ["src/**/*.spec.ts"]
 }

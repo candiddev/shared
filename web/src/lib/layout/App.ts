@@ -147,7 +147,9 @@ export function App(): m.Component<AppAttrs> {
                   ? m(
                       "p.App__motd#motd",
                       {
-                        onbeforeremove: Animate.onbeforeremove(Animation.Fade),
+                        onbeforeremove: Animate.onbeforeremove(
+                          Animation.FromTop,
+                        ),
                       },
                       [
                         m(Markdown, {

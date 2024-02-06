@@ -3,7 +3,6 @@
   background-color: var(--color_base-1);
   border: var(--border);
   border-radius: var(--border-radius);
-  box-shadow: var(--box-shadow);
   color: var(--color_content);
   display: flex;
   padding-left: 15px;
@@ -21,7 +20,6 @@
 
 .FormItemInputSearch > input {
   border: none;
-  box-shadow: none;
   max-width: 300px;
   transition: max-width 0.2s ease-in-out;
   width: 100%;

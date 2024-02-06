@@ -18,7 +18,6 @@
   align-items: center;
   border: var(--border);
   border-radius: var(--border-radius);
-  box-shadow: var(--box-shadow);
   cursor: pointer;
   display: flex;
   font-weight: var(--font-weight_bold);
@@ -37,7 +36,8 @@
 }
 
 .ButtonArray__item--small {
-  padding: 4px;
+  box-shadow: none;
+  padding: 4px !important;
 }
 
 .ButtonArray__item i {
@@ -50,7 +50,7 @@
 
 .ButtonArray__selected {
   background-color: var(--color_secondary);
-  border: none;
+  box-shadow: var(--box-shadow);
   color: var(--color_secondary-content);
   filter: none;
   padding: 9px;

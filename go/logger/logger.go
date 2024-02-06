@@ -173,7 +173,7 @@ func writeLog(ctx context.Context, level Level, err errs.Err, message string) { 
 		}
 
 		for _, key := range GetAttributes(ctx) {
-			out += fmt.Sprintf(" %s=%#v", key, GetAttribute[any](ctx, key))
+			out += fmt.Sprintf(` %s="%s"`, key, GetAttribute[any](ctx, key))
 		}
 
 		if e != "" {

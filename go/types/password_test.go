@@ -5,7 +5,6 @@ import (
 	"testing"
 
 	"github.com/candiddev/shared/go/assert"
-	"golang.org/x/crypto/bcrypt"
 )
 
 type password struct {
@@ -41,13 +40,6 @@ func TestPasswordHash(t *testing.T) {
 	// Test independent output
 	assert.Equal(t, p2.CompareHashAndPassword("$argon2id$v=19$m=16384,t=2,p=1$VWtKNDVKMENGb3l1RjBxNA$NZ5egRH+wHRcwPPfF36J/LmMk1D58u8s0LteniA/IAY"), nil)
 	assert.Equal[error](t, p2.CompareHashAndPassword("$argon2id$v=19$m=16384,t=2,p=1$VWtKNDVKMENGb3l1RjBxNA$NZ5egRH+MHRcwPPfF36J/LmMk1D58u8s0LteniA/IAY"), ErrClientBadRequestPassword)
-
-	// Test Bcrypt
-	b, _ := bcrypt.GenerateFromPassword([]byte(p), bcrypt.DefaultCost)
-	assert.Equal(t, p.CompareHashAndPassword(string(b)), nil)
-
-	b, _ = bcrypt.GenerateFromPassword([]byte(p2), bcrypt.DefaultCost)
-	assert.Equal[error](t, p.CompareHashAndPassword(string(b)), ErrClientBadRequestPassword)
 
 	// Test unknown/invalid
 	assert.Equal[error](t, p.CompareHashAndPassword("not a password"), ErrClientBadRequestPassword)

@@ -24,7 +24,6 @@
 }
 
 .AppLogo > .FormItemInputSearch {
-  box-shadow: var(--box-shadow);
   width: var(--width_input);
 }
 

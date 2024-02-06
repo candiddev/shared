@@ -12,7 +12,6 @@ import (
 
 	"github.com/candiddev/shared/go/errs"
 	"golang.org/x/crypto/argon2"
-	"golang.org/x/crypto/bcrypt"
 )
 
 // version = 19: https://pkg.go.dev/golang.org/x/crypto/argon2#pkg-constants
@@ -42,12 +41,7 @@ type Password string
 
 // CompareHashAndPassword checks a password against a hashedPassword.
 func (p *Password) CompareHashAndPassword(hashedPassword string) error {
-	switch {
-	case strings.HasPrefix(hashedPassword, "$2a"):
-		if err := bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(*p)); err == nil {
-			return nil
-		}
-	case strings.HasPrefix(hashedPassword, "$argon2id$v=19"):
+	if strings.HasPrefix(hashedPassword, "$argon2id$v=19") {
 		split := strings.Split(hashedPassword, "$")
 
 		if len(split) == 6 {

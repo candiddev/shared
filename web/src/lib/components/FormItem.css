@@ -50,7 +50,6 @@
   background-color: var(--color_base-1);
   border: var(--border);
   border-radius: var(--border-radius);
-  box-shadow: var(--box-shadow);
   font-family: inherit;
   font-size: var(--font-size_1);
   height: min-content;

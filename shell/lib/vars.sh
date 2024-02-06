@@ -117,6 +117,6 @@ export VERSION_NODE=20.11.0 # https://nodejs.org/en/download/
 export VERSION_POSTGRESQL=16 # https://hub.docker.com/_/postgres/tags
 export VERSION_RCLONE=1.65.2 # https://github.com/rclone/rclone/releases
 export VERSION_SHELLCHECK=0.9.0 # https://github.com/koalaman/shellcheck/releases
-export VERSION_SWAG=1.16.3 # https://github.com/swaggo/swag/releases
+export VERSION_SWAG=1.16.2 # https://github.com/swaggo/swag/releases
 export VERSION_TERRAFORM=1.7.2 # https://www.terraform.io/downloads
 export VERSION_VAULT=1.15.5 # https://www.vaultproject.io/downloads

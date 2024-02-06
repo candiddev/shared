@@ -49,6 +49,7 @@
 
 .GlobalCount {
   background-color: var(--color_accent);
+  border: var(--border);
   border-radius: 1rem;
   box-shadow: var(--box-shadow);
   color: var(--color_accent-content);
