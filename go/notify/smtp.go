@@ -15,18 +15,19 @@ import (
 	"github.com/candiddev/shared/go/errs"
 	"github.com/candiddev/shared/go/logger"
 	"github.com/candiddev/shared/go/metrics"
+	"github.com/candiddev/shared/go/types"
 	"github.com/gomarkdown/markdown"
 )
 
 // SMTP is a Notifier for sending emails.
 type SMTP struct {
-	Port           int      `json:"port"`
-	FromAddress    string   `json:"fromAddress"`
-	Hostname       string   `json:"hostname"`
-	NoEmailDomains []string `json:"noEmailDomains"`
-	Password       string   `json:"password"`
-	ReplyTo        string   `json:"replyTo"`
-	Username       string   `json:"username"`
+	Port           int               `json:"port"`
+	FromAddress    string            `json:"fromAddress"`
+	Hostname       string            `json:"hostname"`
+	NoEmailDomains types.SliceString `json:"noEmailDomains"`
+	Password       string            `json:"password"`
+	ReplyTo        string            `json:"replyTo"`
+	Username       string            `json:"username"`
 
 	invalidDomain *regexp.Regexp
 	smtpTemplate  *template.Template
