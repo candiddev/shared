@@ -2,6 +2,7 @@ package cryptolib
 
 import (
 	"fmt"
+	"strconv"
 	"testing"
 
 	"github.com/candiddev/shared/go/assert"
@@ -71,4 +72,17 @@ func TestKeys(t *testing.T) {
 	kout.Scan(vout)
 
 	assert.Equal(t, kout, k)
+
+	k = Keys[KeyProviderPublic]{}
+	assert.HasErr(t, k.UnmarshalJSON([]byte(strconv.Quote(pub1.String()))), nil)
+	assert.Equal(t, k, Keys[KeyProviderPublic]{
+		pub1,
+	})
+
+	k = Keys[KeyProviderPublic]{}
+	assert.HasErr(t, k.UnmarshalJSON(jsonout), nil)
+	assert.Equal(t, k, Keys[KeyProviderPublic]{
+		pub1,
+		pub2,
+	})
 }

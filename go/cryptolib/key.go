@@ -340,6 +340,28 @@ func (k Keys[T]) MarshalJSON() ([]byte, error) {
 	return k.SliceString().MarshalJSON()
 }
 
+func (k *Keys[T]) UnmarshalJSON(data []byte) error {
+	s := types.SliceString{}
+	if err := s.UnmarshalJSON(data); err != nil {
+		return err
+	}
+
+	keys := Keys[T]{}
+
+	for i := range s {
+		v, err := ParseKey[T](s[i])
+		if err != nil {
+			return err
+		}
+
+		keys = append(keys, v)
+	}
+
+	*k = keys
+
+	return nil
+}
+
 func (k Keys[T]) Value() (driver.Value, error) {
 	return k.SliceString().Value()
 }
