@@ -24,14 +24,17 @@ func TestAppRun(t *testing.T) {
 	a := App[*C]{
 		Commands: map[string]Command[*C]{
 			"hello": {
-				ArgumentsOptional: []string{
-					"arg2",
-				},
 				ArgumentsRequired: []string{
 					"arg1",
 				},
+				Flags: Flags{
+					"r": {
+						Placeholder: "value",
+						Usage:       "add value to list",
+					},
+				},
 				Name: "hello-world",
-				Run: func(ctx context.Context, args []string, config *C) errs.Err {
+				Run: func(ctx context.Context, args []string, flags Flags, config *C) errs.Err {
 					run = true
 
 					return nil
@@ -39,7 +42,7 @@ func TestAppRun(t *testing.T) {
 				Usage: "Does the thing",
 			},
 			"fail": {
-				Run: func(ctx context.Context, args []string, config *C) errs.Err {
+				Run: func(ctx context.Context, args []string, flags Flags, config *C) errs.Err {
 					return errs.ErrSenderPaymentRequired
 				},
 				Usage: "Fails the thing",
@@ -66,36 +69,49 @@ func TestAppRun(t *testing.T) {
 	}{
 		"usage": {
 			err: ErrUnknownCommand,
-			output: `Usage: App [flags] [command]
+			output: `App <global flags> [command]
 
 Does things
 
 Commands:
+  autocomplete
+    Source this argument via source <(app autocomplete) to add
+    autocomplete entries
+
   fail
-    	Fails the thing
+    Fails the thing
 
-  hello-world [arg1] [arg2]
-    	Does the thing
+  hello-world <command flags> [arg1]
+    Does the thing
 
-  jq [-r, render raw values] [query string]
-    	Query JSON from stdin using jq. Supports standard JQ queries.
+    Command Flags:
+      -r [value]
+         add value to list
+
+  jq <command flags> [jq query, default: .]
+    Query JSON from stdin using jq. Supports standard JQ queries.
+
+    Command Flags:
+      -r
+         render raw values
 
   show-config
-    	Print the current configuration
+    Print the current configuration
 
   version
-    	Print version information
+    Print version information
 
-Flags:
-  -c string
-    	Path to JSON/Jsonnet configuration files separated by a comma (default "app.jsonnet")
-  -f string
-    	Set log format (human, kv, raw, default: human)
-  -l string
-    	Set minimum log level (none, debug, info, error, default: info)
-  -n	Disable colored logging
-  -x value
-    	Set config key=value (can be provided multiple times)
+Global Flags:
+  -c [path]
+     Path to JSON/Jsonnet configuration file (default: app.jsonnet)
+  -f [format]
+     Set log format: human, kv, raw (default: human)
+  -l [level]
+     Set minimum log level: none, debug, info, error (default: info)
+  -n
+     Disable colored logging
+  -x [key=value]
+     Set config key=value (can be provided multiple times)
 `,
 			wantPath: "app.jsonnet",
 		},
@@ -104,19 +120,24 @@ Flags:
 			err:  ErrUnknownCommand,
 			output: logger.ColorRed + `ERROR missing arguments: [arg1]` + logger.ColorReset + `
 
-  hello-world [arg1] [arg2]
-    	Does the thing
+  hello-world <command flags> [arg1]
+    Does the thing
 
-Flags:
-  -c string
-    	Path to JSON/Jsonnet configuration files separated by a comma (default "app.jsonnet")
-  -f string
-    	Set log format (human, kv, raw, default: human)
-  -l string
-    	Set minimum log level (none, debug, info, error, default: info)
-  -n	Disable colored logging
-  -x value
-    	Set config key=value (can be provided multiple times)
+    Command Flags:
+      -r [value]
+         add value to list
+
+Global Flags:
+  -c [path]
+     Path to JSON/Jsonnet configuration file (default: app.jsonnet)
+  -f [format]
+     Set log format: human, kv, raw (default: human)
+  -l [level]
+     Set minimum log level: none, debug, info, error (default: info)
+  -n
+     Disable colored logging
+  -x [key=value]
+     Set config key=value (can be provided multiple times)
 `,
 			wantPath: "app.jsonnet",
 		},
@@ -141,29 +162,42 @@ Flags:
 			args:    []string{},
 			err:     ErrUnknownCommand,
 			noParse: true,
-			output: `Usage: App [flags] [command]
+			output: `App <global flags> [command]
 
 Does things
 
 Commands:
+  autocomplete
+    Source this argument via source <(app autocomplete) to add
+    autocomplete entries
+
   fail
-    	Fails the thing
+    Fails the thing
 
-  hello-world [arg1] [arg2]
-    	Does the thing
+  hello-world <command flags> [arg1]
+    Does the thing
 
-  jq [-r, render raw values] [query string]
-    	Query JSON from stdin using jq. Supports standard JQ queries.
+    Command Flags:
+      -r [value]
+         add value to list
+
+  jq <command flags> [jq query, default: .]
+    Query JSON from stdin using jq. Supports standard JQ queries.
+
+    Command Flags:
+      -r
+         render raw values
 
   version
-    	Print version information
+    Print version information
 
-Flags:
-  -f string
-    	Set log format (human, kv, raw, default: human)
-  -l string
-    	Set minimum log level (none, debug, info, error, default: info)
-  -n	Disable colored logging
+Global Flags:
+  -f [format]
+     Set log format: human, kv, raw (default: human)
+  -l [level]
+     Set minimum log level: none, debug, info, error (default: info)
+  -n
+     Disable colored logging
 `,
 		},
 		"missing-arg": {
@@ -180,32 +214,45 @@ Build Date: %s`, date),
 		},
 		"bad-flag": {
 			args:    []string{"--version"},
-			err:     ErrUnknownCommand,
+			err:     errs.ErrReceiver,
 			noParse: true,
-			output: `flag provided but not defined: -version
-Usage: App [flags] [command]
+			output: logger.ColorRed + `ERROR flag provided but not defined: --version` + logger.ColorReset + `
+Usage: App <global flags> [command]
 
 Does things
 
 Commands:
+  autocomplete
+    Source this argument via source <(app autocomplete) to add
+    autocomplete entries
+
   fail
-    	Fails the thing
+    Fails the thing
 
-  hello-world [arg1] [arg2]
-    	Does the thing
+  hello-world <command flags> [arg1]
+    Does the thing
 
-  jq [-r, render raw values] [query string]
-    	Query JSON from stdin using jq. Supports standard JQ queries.
+    Command Flags:
+      -r [value]
+         add value to list
+
+  jq <command flags> [jq query, default: .]
+    Query JSON from stdin using jq. Supports standard JQ queries.
+
+    Command Flags:
+      -r
+         render raw values
 
   version
-    	Print version information
+    Print version information
 
-Flags:
-  -f string
-    	Set log format (human, kv, raw, default: human)
-  -l string
-    	Set minimum log level (none, debug, info, error, default: info)
-  -n	Disable colored logging
+Global Flags:
+  -f [format]
+     Set log format: human, kv, raw (default: human)
+  -l [level]
+     Set minimum log level: none, debug, info, error (default: info)
+  -n
+     Disable colored logging
 `,
 		},
 	}

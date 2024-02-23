@@ -28,7 +28,10 @@ func GetAttributes(ctx context.Context) []string {
 		return []string{}
 	}
 
-	return s
+	n := make([]string, len(s))
+	copy(n, s)
+
+	return n
 }
 
 // SetAttribute sets a string value for a key.
@@ -46,7 +49,7 @@ func SetAttribute(ctx context.Context, key string, value any) context.Context {
 		if a[i] == key {
 			m = true
 
-			continue
+			break
 		}
 	}
 

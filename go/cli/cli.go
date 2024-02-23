@@ -2,14 +2,16 @@
 package cli
 
 import (
+	"bytes"
 	"context"
 	"errors"
-	"flag"
 	"fmt"
 	"os"
+	"path/filepath"
 	"sort"
 	"strings"
 	"sync"
+	"text/template"
 
 	"github.com/candiddev/shared/go/config"
 	"github.com/candiddev/shared/go/errs"
@@ -42,36 +44,26 @@ type runMock struct {
 
 // Command is a positional command to run.
 type Command[T AppConfig[any]] struct {
-	/* Optional Positional arguments after command */
-	ArgumentsOptional []string
-
 	/* Positional arguments required after command */
 	ArgumentsRequired []string
+
+	/* Positional arguments optional after command */
+	ArgumentsOptional []string
+
+	/* Optional flags and their usage */
+	Flags Flags
 
 	/* Override the command name in usage */
 	Name string
 
 	/* Function to run when calling the command */
-	Run func(ctx context.Context, args []string, config T) errs.Err
+	Run func(ctx context.Context, args []string, flags Flags, config T) errs.Err
 
 	/* Usage information, omitting this hides the command */
 	Usage string
 }
 
 var ErrUnknownCommand = errs.ErrSenderNotFound.Wrap(errors.New("unknown command"))
-
-// ConfigArgs is a list of config arguments.
-type ConfigArgs []string
-
-func (i *ConfigArgs) Set(value string) error {
-	*i = append(*i, value)
-
-	return nil
-}
-
-func (i *ConfigArgs) String() string {
-	return strings.Join(*i, "")
-}
 
 // App is a CLI application.
 type App[T AppConfig[any]] struct {
@@ -81,6 +73,8 @@ type App[T AppConfig[any]] struct {
 	HideConfigFields []string
 	Name             string
 	NoParse          bool
+
+	flags Flags
 }
 
 func wrapLines(l int, lines string, indent string) string {
@@ -111,98 +105,249 @@ type AppConfig[T any] interface {
 	Parse(ctx context.Context, configArgs []string) errs.Err
 }
 
-// Run is the main entrypoint into a CLI app.
-func (a App[T]) Run() errs.Err { //nolint:gocognit
-	ctx := context.Background()
+type globalFlag string
 
-	f := flag.NewFlagSet("", flag.ContinueOnError)
-	f.Usage = func() {}
-	f.SetOutput(logger.Stdout)
+const (
+	globalFlagConfigPath  = "c"
+	globalFlagFormat      = "f"
+	globalFlagLevel       = "l"
+	globalFlagNoColor     = "n"
+	globalFlagConfigValue = "x"
+)
 
-	usage := func(arg string) {
-		if arg == "" {
-			//nolint:forbidigo
-			fmt.Fprintf(logger.Stdout, `Usage: %s [flags] [command]
+func (a App[T]) autocomplete() string {
+	commandNames := []string{}
+
+	for k, v := range a.Commands {
+		if v.Usage != "" {
+			commandNames = append(commandNames, k)
+		}
+	}
+
+	sort.Strings(commandNames)
+
+	flagNames := []string{}
+
+	for k := range a.flags {
+		f := "-" + k
+
+		flagNames = append(flagNames, f)
+	}
+
+	sort.Strings(flagNames)
+
+	t := template.Must(template.New("source").Funcs(template.FuncMap{
+		"append": func(s1 []string, s2 []string) []string {
+			return append(s1, s2...)
+		},
+		"flagKeys": func(f Flags) []string {
+			keys := []string{}
+
+			for k := range f {
+				keys = append(keys, k)
+			}
+
+			sort.Strings(keys)
+
+			return keys
+		},
+		"join": strings.Join,
+	}).Parse(`#!/usr/bin/env bash
+
+IFS=$'\n'
+
+function _{{ .name }}() {
+	local cur prev opts
+	COMPREPLY=()
+	cur="${COMP_WORDS[${COMP_CWORD}]}"
+	match=""
+	prev="${COMP_WORDS[${COMP_CWORD} - 1]}"
+	words=""
+
+	for ((i=${COMP_CWORD}; i >= 0; i--)); do
+		case "${COMP_WORDS[i]}" in
+{{- range $k, $v := .flags }}
+{{- if $v.Options }}
+		-{{ $k }})
+			words='# {{ $v.Usage }}
+{{ join $v.Options "\n" }}
+'
+			;;
+{{- end }}
+{{- end }}
+{{- range $k, $v := .commands }}
+{{- if $v.Usage }}
+		{{ $k }})
+			match=yes
+			;;
+{{- end }}
+{{- end }}
+	esac
+done
+
+	if [[ -z ${words} ]] && [[ -z ${match} ]]; then
+		case "${cur}" in
+			-*)
+				words="{{ .flagNames }}"
+				;;
+			*)
+				words="{{ .commandNames }}"
+				;;
+		esac
+	fi
+
+	if [[ -z ${words} ]]; then
+	COMPREPLY=($(compgen -f -- "${cur}"))
+	else
+		COMPREPLY=($(compgen -W "${words}" -- "${cur}"))
+	fi
+}
+
+complete -F _{{ .name }} {{ .arg0 }}
+`))
+
+	b := bytes.Buffer{}
+	t.Execute(&b, map[string]any{ //nolint:errcheck
+		"arg0":         filepath.Base(os.Args[0]),
+		"commands":     a.Commands,
+		"commandNames": strings.Join(commandNames, "\n"),
+		"flags":        a.flags,
+		"flagNames":    strings.Join(flagNames, "\n"),
+		"name":         strings.ToLower(a.Name),
+	})
+
+	return b.String()
+}
+
+func (a App[T]) usage(arg string) {
+	if arg == "" {
+		//nolint:forbidigo
+		fmt.Fprintf(logger.Stdout, `Usage: %s <global flags> [command]
 
 %s
 
 Commands:
 `, a.Name, a.Description)
-		} else {
-			//nolint:forbidigo
-			fmt.Fprintln(logger.Stdout)
-		}
-
-		c := []string{}
-
-		for i := range a.Commands {
-			if a.Commands[i].Usage != "" {
-				c = append(c, i)
-			}
-		}
-
-		sort.Strings(c)
-
-		w, _, _ := term.GetSize(0)
-
-		if w == 0 || w > 70 {
-			w = 70
-		}
-
-		for i := range c {
-			name := c[i]
-			if (a.Commands[c[i]]).Name != "" {
-				name = a.Commands[c[i]].Name
-			}
-
-			if arg != "" && arg != name {
-				continue
-			}
-
-			for _, arg := range a.Commands[c[i]].ArgumentsRequired {
-				name += fmt.Sprintf(" [%s]", arg)
-			}
-
-			for _, arg := range a.Commands[c[i]].ArgumentsOptional {
-				name += fmt.Sprintf(" [%s]", arg)
-			}
-
-			fmt.Fprintf(logger.Stdout, "  %s\n    	%s\n\n", wrapLines(w, name, ""), wrapLines(w, a.Commands[c[i]].Usage, "     	")) //nolint:forbidigo
-		}
-
-		//nolint: forbidigo
-		fmt.Fprintf(logger.Stdout, "Flags:\n")
-		f.PrintDefaults()
+	} else {
+		//nolint:forbidigo
+		fmt.Fprintln(logger.Stdout)
 	}
 
+	c := []string{}
+
+	for i := range a.Commands {
+		if a.Commands[i].Usage != "" {
+			c = append(c, i)
+		}
+	}
+
+	sort.Strings(c)
+
+	w, _, _ := term.GetSize(0)
+
+	if w == 0 || w > 70 {
+		w = 70
+	}
+
+	for i := range c {
+		name := c[i]
+		if (a.Commands[c[i]]).Name != "" {
+			name = a.Commands[c[i]].Name
+		}
+
+		if arg != "" && arg != name {
+			continue
+		}
+
+		flags := "\n"
+
+		if len(a.Commands[c[i]].Flags) > 0 {
+			name += " <command flags>"
+			flags = fmt.Sprintf("\n\n    Command Flags:\n%s", a.Commands[c[i]].Flags.Usage(w, "      "))
+		}
+
+		for _, arg := range a.Commands[c[i]].ArgumentsRequired {
+			name += fmt.Sprintf(" [%s]", arg)
+		}
+
+		for _, arg := range a.Commands[c[i]].ArgumentsOptional {
+			name += fmt.Sprintf(" [%s]", arg)
+		}
+
+		usage := a.Commands[c[i]].Usage
+
+		fmt.Fprintf(logger.Stdout, "  %s\n    %s%s\n", wrapLines(w, name, "  "), wrapLines(w, usage, "    "), flags) //nolint:forbidigo
+	}
+
+	//nolint: forbidigo
+	fmt.Fprintf(logger.Stdout, "Global Flags:\n%s", a.flags.Usage(w, "  "))
+}
+
+// Run is the main entrypoint into a CLI app.
+func (a App[T]) Run() errs.Err {
+	ctx := context.Background()
+
+	a.flags = Flags{
+		globalFlagFormat: {
+			Default:     "human",
+			Options:     []string{"human", "kv", "raw"},
+			Placeholder: "format",
+			Usage:       "Set log format",
+		},
+		globalFlagLevel: {
+			Default:     "info",
+			Options:     []string{"none", "debug", "info", "error"},
+			Placeholder: "level",
+			Usage:       "Set minimum log level",
+		},
+		globalFlagNoColor: {
+			Usage: "Disable colored logging",
+		},
+	}
+
+	a.Commands["autocomplete"] = Command[T]{
+		Run: func(ctx context.Context, args []string, flags Flags, config T) errs.Err {
+			logger.Raw(a.autocomplete())
+
+			return nil
+		},
+		Usage: fmt.Sprintf("Source this argument via source <(%s autocomplete) to add autocomplete entries", strings.ToLower(a.Name)),
+	}
 	a.Commands["jq"] = Command[T]{
 		ArgumentsOptional: []string{
-			"-r, render raw values",
-			"query string",
+			"jq query, default: .",
+		},
+		Flags: Flags{
+			"r": {
+				Usage: "render raw values",
+			},
 		},
 		Run:   jq[T],
 		Usage: "Query JSON from stdin using jq.  Supports standard JQ queries.",
 	}
 
-	c := ConfigArgs{}
-
 	if !a.NoParse {
-		a.Config.CLIConfig().ConfigPath = strings.ToLower(a.Name) + ".jsonnet"
-
-		f.StringVar(&a.Config.CLIConfig().ConfigPath, "c", a.Config.CLIConfig().ConfigPath, "Path to JSON/Jsonnet configuration files separated by a comma")
+		a.flags[globalFlagConfigPath] = &Flag{
+			Default:     strings.ToLower(a.Name) + ".jsonnet",
+			Placeholder: "path",
+			Usage:       "Path to JSON/Jsonnet configuration file",
+		}
 
 		a.Commands["show-config"] = Command[T]{
-			Run: func(ctx context.Context, args []string, config T) errs.Err {
+			Run: func(ctx context.Context, args []string, flags Flags, config T) errs.Err {
 				return printConfig(ctx, a)
 			},
 			Usage: "Print the current configuration",
 		}
 
-		f.Var(&c, "x", "Set config key=value (can be provided multiple times)")
+		a.flags[globalFlagConfigValue] = &Flag{
+			Placeholder: "key=value",
+			Usage:       "Set config key=value (can be provided multiple times)",
+		}
 	}
 
 	a.Commands["version"] = Command[T]{
-		Run: func(ctx context.Context, args []string, config T) errs.Err {
+		Run: func(ctx context.Context, args []string, flags Flags, config T) errs.Err {
 			fmt.Fprintf(logger.Stdout, "Build Version: %s\n", BuildVersion) //nolint: forbidigo
 			fmt.Fprintf(logger.Stdout, "Build Date: %s\n", BuildDate)       //nolint: forbidigo
 
@@ -211,17 +356,41 @@ Commands:
 		Usage: "Print version information",
 	}
 
-	f.StringVar((*string)(&a.Config.CLIConfig().LogFormat), "f", string(a.Config.CLIConfig().LogFormat), "Set log format (human, kv, raw, default: human)")
-	f.StringVar((*string)(&a.Config.CLIConfig().LogLevel), "l", string(a.Config.CLIConfig().LogLevel), "Set minimum log level (none, debug, info, error, default: info)")
-	f.BoolVar(&a.Config.CLIConfig().NoColor, "n", a.Config.CLIConfig().NoColor, "Disable colored logging")
+	args, err := a.flags.Parse(os.Args[1:])
+	if err != nil {
+		err = logger.Error(ctx, err)
 
-	if err := f.Parse(os.Args[1:]); err != nil {
-		usage("")
+		a.usage("")
 
-		return ErrUnknownCommand
+		return err
 	}
 
+	configArgs := []string{}
+
 	// Parse CLI environment early for logging options.
+	for k, v := range a.flags {
+		var err errs.Err
+
+		switch globalFlag(k) {
+		case globalFlagConfigPath:
+			a.Config.CLIConfig().ConfigPath, _ = a.flags.Value(k)
+		case globalFlagConfigValue:
+			configArgs = v.Values
+		case globalFlagFormat:
+			format, _ := a.flags.Value(k)
+			a.Config.CLIConfig().LogFormat, err = logger.ParseFormat(format)
+		case globalFlagLevel:
+			level, _ := a.flags.Value(k)
+			a.Config.CLIConfig().LogLevel, err = logger.ParseLevel(level)
+		case globalFlagNoColor:
+			_, a.Config.CLIConfig().NoColor = a.flags.Value(k)
+		}
+
+		if err != nil {
+			return logger.Error(ctx, err)
+		}
+	}
+
 	if err := config.ParseValues(ctx, a.Config, strings.ToUpper(a.Name)+"_cli_", os.Environ()); err != nil {
 		return logger.Error(ctx, errs.ErrReceiver.Wrap(config.ErrUpdateEnv, err))
 	}
@@ -236,7 +405,7 @@ Commands:
 			a.Config.CLIConfig().ConfigPath = p
 		}
 
-		if err := a.Config.Parse(ctx, c); err != nil {
+		if err := a.Config.Parse(ctx, configArgs); err != nil {
 			return err
 		}
 	}
@@ -246,28 +415,42 @@ Commands:
 	ctx = logger.SetLevel(ctx, a.Config.CLIConfig().LogLevel)
 	ctx = logger.SetNoColor(ctx, a.Config.CLIConfig().NoColor)
 
-	args := f.Args()
 	if len(args) < 1 {
-		usage("")
+		a.usage("")
 
 		return ErrUnknownCommand
 	}
 
 	for k, v := range a.Commands {
 		if k == args[0] || strings.Split(v.Name, " ")[0] == args[0] {
+			ar := []string{args[0]}
+
 			if len(v.ArgumentsRequired) != 0 && (len(args)-1) < len(v.ArgumentsRequired) {
 				logger.Error(ctx, errs.ErrReceiver.Wrap(errors.New("missing arguments: ["+strings.Join(v.ArgumentsRequired[0+len(args)-1:], "] [")+"]\n"))) //nolint:errcheck
 
-				usage(args[0])
+				a.usage(args[0])
 
 				return ErrUnknownCommand
 			}
 
-			return v.Run(ctx, args, a.Config)
+			if len(args) > 1 {
+				arr, err := v.Flags.Parse(args[1:])
+				if err != nil {
+					err = logger.Error(ctx, err)
+
+					a.usage("")
+
+					return err
+				}
+
+				ar = append(ar, arr...)
+			}
+
+			return v.Run(ctx, ar, v.Flags, a.Config)
 		}
 	}
 
-	usage("")
+	a.usage("")
 
 	return ErrUnknownCommand
 }

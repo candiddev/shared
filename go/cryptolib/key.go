@@ -94,24 +94,26 @@ func GenerateKeys[T cli.AppConfig[any]]() cli.Command[T] {
 	return cli.Command[T]{
 		ArgumentsOptional: []string{
 			"name",
-			"algorithm, default: best",
+		},
+		Flags: cli.Flags{
+			"a": {
+				Default:     "best",
+				Placeholder: "algorithm",
+				Usage:       "Algorithm to use for generating keys",
+			},
 		},
 		Name: "generate-keys",
-		Run: func(ctx context.Context, args []string, c T) errs.Err {
+		Run: func(ctx context.Context, args []string, flag cli.Flags, c T) errs.Err {
 			m := map[string]string{}
 
-			a := AlgorithmBest
+			a, _ := flag.Value("a")
 			n := newID()
 
 			if len(args) > 1 {
 				n = args[1]
 			}
 
-			if len(args) > 2 {
-				a = Algorithm(args[2])
-			}
-
-			prv, pub, err := NewKeysAsymmetric(a)
+			prv, pub, err := NewKeysAsymmetric(Algorithm(a))
 			if err != nil {
 				return logger.Error(ctx, errs.ErrReceiver.Wrap(err))
 			}

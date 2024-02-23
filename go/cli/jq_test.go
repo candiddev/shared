@@ -15,14 +15,19 @@ func TestJQ(t *testing.T) {
 
 	tests := map[string]struct {
 		args    []string
+		flags   Flags
 		wantOut string
 		wantErr error
 	}{
 		"raw": {
 			args: []string{
 				"",
-				"-r",
 				".nested[0].string",
+			},
+			flags: Flags{
+				"r": {
+					Values: []string{""},
+				},
 			},
 			wantOut: "value\n",
 		},
@@ -75,7 +80,7 @@ func TestJQ(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			SetStdin(`{"nested":[{"string":"value","int":10,"bool":true}]}`)
 			logger.SetStd()
-			assert.HasErr(t, jq(ctx, tc.args, c), tc.wantErr)
+			assert.HasErr(t, jq(ctx, tc.args, tc.flags, c), tc.wantErr)
 			assert.Equal(t, logger.ReadStd(), tc.wantOut)
 		})
 	}

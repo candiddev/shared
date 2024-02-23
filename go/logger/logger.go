@@ -38,6 +38,23 @@ const (
 	LevelNone  Level = "none"
 )
 
+func ParseLevel(s string) (Level, errs.Err) {
+	switch Level(s) {
+	case LevelDebug:
+		return LevelDebug, nil
+	case "":
+		fallthrough
+	case LevelInfo:
+		return LevelInfo, nil
+	case LevelError:
+		return LevelError, nil
+	case LevelNone:
+		return LevelNone, nil
+	}
+
+	return "", errs.ErrReceiver.Wrap(fmt.Errorf("unknown log level: %s", s))
+}
+
 // Format for logs.
 type Format string
 
@@ -47,6 +64,21 @@ const (
 	FormatKV    Format = "kv"
 	FormatRaw   Format = "raw"
 )
+
+func ParseFormat(s string) (Format, errs.Err) {
+	switch Format(s) {
+	case "":
+		fallthrough
+	case FormatHuman:
+		return FormatHuman, nil
+	case FormatKV:
+		return FormatKV, nil
+	case FormatRaw:
+		return FormatRaw, nil
+	}
+
+	return "", errs.ErrReceiver.Wrap(fmt.Errorf("unknown log format: %s", s))
+}
 
 // Stderr is a the current stderr path.
 var Stderr = os.Stderr //nolint:gochecknoglobals

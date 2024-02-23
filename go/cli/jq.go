@@ -15,20 +15,12 @@ import (
 
 var errJQ = errors.New("error querying JSON")
 
-func jq[T AppConfig[any]](ctx context.Context, args []string, _ T) errs.Err {
+func jq[T AppConfig[any]](ctx context.Context, args []string, flags Flags, _ T) errs.Err {
 	s := "."
-	raw := false
+	_, raw := flags.Value("r")
 
-	for i := range args {
-		if i == 0 {
-			continue
-		}
-
-		if args[i] == "-r" {
-			raw = true
-		} else {
-			s = args[i]
-		}
+	if len(args) > 1 {
+		s = args[1]
 	}
 
 	q, err := gojq.Parse(s)
