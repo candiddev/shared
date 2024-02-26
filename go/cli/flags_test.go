@@ -10,7 +10,10 @@ import (
 
 var testFlags = Flags{
 	"a": &Flag{
-		Default:     "yesasssssss",
+		Default: []string{
+			"no",
+			"yesasssssss",
+		},
 		Placeholder: "value",
 		Usage:       "Here is a long usage for the flag",
 	},
@@ -38,17 +41,21 @@ func TestFlagsParse(t *testing.T) {
 	assert.HasErr(t, err, nil)
 	assert.Equal(t, r, []string{"command", "-f"})
 
-	assert.Equal(t, testFlags["a"].Values, []string{"aa"})
-	assert.Equal(t, testFlags["b"].Values, []string{""})
-	assert.Equal(t, testFlags["c"].Values, []string{"bb"})
+	assert.Equal(t, testFlags["a"].values, []string{"aa"})
+	assert.Equal(t, testFlags["b"].values, []string{""})
+	assert.Equal(t, testFlags["c"].values, []string{"bb"})
 	assert.Equal(t, testFlags["d"], nil)
 
-	testFlags["a"].Values = nil
-	testFlags["b"].Values = nil
-	testFlags["c"].Values = nil
+	testFlags["a"].values = nil
+	testFlags["b"].values = nil
+	testFlags["c"].values = nil
 
 	_, err = testFlags.Parse([]string{"-z"})
 	assert.HasErr(t, err, errs.ErrReceiver)
+
+	r, err = Flags{}.Parse([]string{"-"})
+	assert.HasErr(t, err, nil)
+	assert.Equal(t, r, []string{"-"})
 }
 
 func TestFlagsUsage(t *testing.T) {
@@ -59,6 +66,7 @@ func TestFlagsUsage(t *testing.T) {
      for the
      flag
      (default:
+     no,
      yesasssssss)
   -b
      B
@@ -69,15 +77,25 @@ func TestFlagsUsage(t *testing.T) {
 
 func TestFlagsValue(t *testing.T) {
 	f := maps.Clone(testFlags)
-	f["a"].Values = []string{"a", "b", "c"}
+	f["a"].values = []string{"a", "b", "c"}
 
 	v, d := f.Value("a")
 
 	assert.Equal(t, d, true)
 	assert.Equal(t, v, "c")
 
+	vs, d := f.Values("a")
+
+	assert.Equal(t, d, true)
+	assert.Equal(t, vs, []string{"a", "b", "c"})
+
 	v, d = f.Value("b")
 
 	assert.Equal(t, d, false)
 	assert.Equal(t, v, "")
+
+	vs, d = f.Values("a")
+
+	assert.Equal(t, d, true)
+	assert.Equal(t, vs, []string{"a", "b", "c"})
 }

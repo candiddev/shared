@@ -49,7 +49,7 @@ func TestEd25519(t *testing.T) {
 	assert.Equal(t, ed25519PublicKeys.mutex.TryLock(), true)
 	ed25519PublicKeys.mutex.Unlock()
 	assert.Equal(t, len(ed25519PublicKeys.keys), 1)
-	assert.Equal(t, ed25519PublicKeys.keys[pubStr], pubKey)
+	assert.Equal(t, ed25519PublicKeys.keys[pubStr], pubKey.(ed25519.PublicKey))
 	ed25519PublicKeys.keys = map[Ed25519PublicKey]ed25519.PublicKey{}
 
 	// Sign/Verify

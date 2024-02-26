@@ -49,17 +49,17 @@ func NewEd25519() (privateKey Ed25519PrivateKey, publicKey Ed25519PublicKey, err
 		return "", "", fmt.Errorf("%w: %w", ErrGeneratingPrivateKey, err)
 	}
 
-	x509Private, err := x509.MarshalPKCS8PrivateKey(private)
+	derPrivate, err := x509.MarshalPKCS8PrivateKey(private)
 	if err != nil {
 		return "", "", fmt.Errorf("%w: %w", ErrMarshalingPrivateKey, err)
 	}
 
-	x509Public, err := x509.MarshalPKIXPublicKey(public)
+	derPublic, err := x509.MarshalPKIXPublicKey(public)
 	if err != nil {
 		return "", "", fmt.Errorf("%w: %w", ErrMarshalingPublicKey, err)
 	}
 
-	return Ed25519PrivateKey(base64.StdEncoding.EncodeToString(x509Private)), Ed25519PublicKey(base64.StdEncoding.EncodeToString(x509Public)), nil
+	return Ed25519PrivateKey(base64.StdEncoding.EncodeToString(derPrivate)), Ed25519PublicKey(base64.StdEncoding.EncodeToString(derPublic)), nil
 }
 
 func (Ed25519PrivateKey) Algorithm() Algorithm {
@@ -175,6 +175,10 @@ func (e Ed25519PrivateKey) Sign(message []byte, _ crypto.Hash) (signature []byte
 	return ed25519.Sign(k, message), nil
 }
 
+func (e Ed25519PrivateKey) Signer() (crypto.Signer, error) {
+	return e.PrivateKey()
+}
+
 func (Ed25519PublicKey) Algorithm() Algorithm {
 	return AlgorithmEd25519Public
 }
@@ -215,7 +219,7 @@ func (Ed25519PublicKey) Provides(Encryption) bool {
 	return false
 }
 
-func (e Ed25519PublicKey) PublicKey() (ed25519.PublicKey, error) {
+func (e Ed25519PublicKey) PublicKey() (crypto.PublicKey, error) {
 	ed25519PublicKeys.mutex.Lock()
 
 	defer ed25519PublicKeys.mutex.Unlock()
@@ -255,7 +259,7 @@ func (e Ed25519PublicKey) PublicKeyECDH() ([]byte, error) {
 		return nil, fmt.Errorf("%w: %w", ErrParsingPublicKey, err)
 	}
 
-	pk, err := new(edwards25519.Point).SetBytes(p)
+	pk, err := new(edwards25519.Point).SetBytes(p.(ed25519.PublicKey))
 	if err != nil {
 		return nil, fmt.Errorf("%w: %w", ErrParsingPublicKey, err)
 	}
@@ -269,7 +273,7 @@ func (e Ed25519PublicKey) Verify(message []byte, _ crypto.Hash, signature []byte
 		return err
 	}
 
-	if !ed25519.Verify(k, message, signature) {
+	if !ed25519.Verify(k.(ed25519.PublicKey), message, signature) {
 		return ErrVerify
 	}
 

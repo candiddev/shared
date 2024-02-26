@@ -26,7 +26,7 @@ func TestJQ(t *testing.T) {
 			},
 			flags: Flags{
 				"r": {
-					Values: []string{""},
+					values: []string{""},
 				},
 			},
 			wantOut: "value\n",

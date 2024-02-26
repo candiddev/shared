@@ -16,7 +16,7 @@ func (f Flags) Parse(args []string) (remaining []string, err errs.Err) {
 	i := 0
 
 	for i < len(args) {
-		if !strings.HasPrefix(args[i], "-") {
+		if !strings.HasPrefix(args[i], "-") || args[i] == "-" {
 			break
 		}
 
@@ -31,7 +31,7 @@ func (f Flags) Parse(args []string) (remaining []string, err errs.Err) {
 			i++
 		}
 
-		f[a].Values = append(f[a].Values, s)
+		f[a].values = append(f[a].values, s)
 
 		i++
 	}
@@ -65,8 +65,8 @@ func (f Flags) Usage(width int, indent string) string {
 			u += fmt.Sprintf(": %s", strings.Join(f[k].Options, ", "))
 		}
 
-		if f[k].Default != "" {
-			u += fmt.Sprintf(" (default: %s)", f[k].Default)
+		if len(f[k].Default) > 0 {
+			u += fmt.Sprintf(" (default: %s)", strings.Join(f[k].Default, ", "))
 		}
 
 		o += fmt.Sprintf("%s\n%s   %s\n", l, indent, wrapLines(width, u, indent+"   "))
@@ -77,22 +77,39 @@ func (f Flags) Usage(width int, indent string) string {
 
 // Flag is a Flag's usage.
 type Flag struct {
-	Default     string
+	Default     []string
 	Options     []string
 	Placeholder string
 	Usage       string
-	Values      []string
+	values      []string
 }
 
 // Value returns the last value of Flag.Values and whether it was defined.
 func (f Flags) Value(flag string) (value string, defined bool) {
 	if v, ok := f[flag]; ok {
-		if len(v.Values) > 0 {
-			return v.Values[len(v.Values)-1], true
+		if len(v.values) > 0 {
+			return v.values[len(v.values)-1], true
+		}
+
+		if len(v.Default) > 0 {
+			return v.Default[len(v.Default)-1], false
+		}
+
+		return "", false
+	}
+
+	return "", false
+}
+
+// Values returns a list of values for a flag and if it is defined.
+func (f Flags) Values(flag string) (values []string, defined bool) {
+	if v, ok := f[flag]; ok {
+		if len(v.values) > 0 {
+			return v.values, true
 		}
 
 		return v.Default, false
 	}
 
-	return "", false
+	return nil, false
 }

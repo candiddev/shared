@@ -49,18 +49,18 @@ func NewECP256() (privateKey ECP256PrivateKey, publicKey ECP256PublicKey, err er
 		return "", "", fmt.Errorf("%w: %w", ErrGeneratingPrivateKey, err)
 	}
 
-	x509Private, err := x509.MarshalPKCS8PrivateKey(private)
+	derPrivate, err := x509.MarshalPKCS8PrivateKey(private)
 	if err != nil {
 		return "", "", fmt.Errorf("%w: %w", ErrMarshalingPrivateKey, err)
 	}
 
-	x509Public, err := x509.MarshalPKIXPublicKey(&private.PublicKey)
+	derPublic, err := x509.MarshalPKIXPublicKey(&private.PublicKey)
 	if err != nil {
 		return "", "", fmt.Errorf("%w: %w", ErrMarshalingPublicKey, err)
 	}
 
-	return ECP256PrivateKey(base64.StdEncoding.EncodeToString(x509Private)),
-		ECP256PublicKey(base64.StdEncoding.EncodeToString(x509Public)),
+	return ECP256PrivateKey(base64.StdEncoding.EncodeToString(derPrivate)),
+		ECP256PublicKey(base64.StdEncoding.EncodeToString(derPublic)),
 		nil
 }
 
@@ -194,6 +194,10 @@ func (e ECP256PrivateKey) Sign(message []byte, hash crypto.Hash) (signature []by
 	return out, nil
 }
 
+func (e ECP256PrivateKey) Signer() (crypto.Signer, error) {
+	return e.PrivateKey()
+}
+
 func (ECP256PrivateKey) Provides(Encryption) bool {
 	return false
 }
@@ -238,7 +242,7 @@ func (ECP256PublicKey) Provides(Encryption) bool {
 	return false
 }
 
-func (e ECP256PublicKey) PublicKey() (*ecdsa.PublicKey, error) {
+func (e ECP256PublicKey) PublicKey() (crypto.PublicKey, error) {
 	ecp256PublicKeys.mutex.Lock()
 
 	defer ecp256PublicKeys.mutex.Unlock()
@@ -286,7 +290,7 @@ func (e ECP256PublicKey) PublicKeyECDH() (*ecdh.PublicKey, error) {
 		return nil, fmt.Errorf("%w: %w", ErrParsingPublicKey, err)
 	}
 
-	pe, err := p.ECDH()
+	pe, err := p.(*ecdsa.PublicKey).ECDH()
 	if err != nil {
 		return nil, fmt.Errorf("%w: %w", ErrParsingPublicKey, err)
 	}
@@ -309,7 +313,7 @@ func (e ECP256PublicKey) Verify(message []byte, hash crypto.Hash, signature []by
 	r := big.NewInt(0).SetBytes(signature[:32])
 	s := big.NewInt(0).SetBytes(signature[32:])
 
-	if !ecdsa.Verify(k, n.Sum(nil), r, s) {
+	if !ecdsa.Verify(k.(*ecdsa.PublicKey), n.Sum(nil), r, s) {
 		return ErrVerify
 	}
 

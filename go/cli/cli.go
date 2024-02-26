@@ -289,13 +289,13 @@ func (a App[T]) Run() errs.Err {
 
 	a.flags = Flags{
 		globalFlagFormat: {
-			Default:     "human",
+			Default:     []string{"human"},
 			Options:     []string{"human", "kv", "raw"},
 			Placeholder: "format",
 			Usage:       "Set log format",
 		},
 		globalFlagLevel: {
-			Default:     "info",
+			Default:     []string{"info"},
 			Options:     []string{"none", "debug", "info", "error"},
 			Placeholder: "level",
 			Usage:       "Set minimum log level",
@@ -328,7 +328,7 @@ func (a App[T]) Run() errs.Err {
 
 	if !a.NoParse {
 		a.flags[globalFlagConfigPath] = &Flag{
-			Default:     strings.ToLower(a.Name) + ".jsonnet",
+			Default:     []string{strings.ToLower(a.Name) + ".jsonnet"},
 			Placeholder: "path",
 			Usage:       "Path to JSON/Jsonnet configuration file",
 		}
@@ -375,7 +375,7 @@ func (a App[T]) Run() errs.Err {
 		case globalFlagConfigPath:
 			a.Config.CLIConfig().ConfigPath, _ = a.flags.Value(k)
 		case globalFlagConfigValue:
-			configArgs = v.Values
+			configArgs = v.values
 		case globalFlagFormat:
 			format, _ := a.flags.Value(k)
 			a.Config.CLIConfig().LogFormat, err = logger.ParseFormat(format)
@@ -425,14 +425,6 @@ func (a App[T]) Run() errs.Err {
 		if k == args[0] || strings.Split(v.Name, " ")[0] == args[0] {
 			ar := []string{args[0]}
 
-			if len(v.ArgumentsRequired) != 0 && (len(args)-1) < len(v.ArgumentsRequired) {
-				logger.Error(ctx, errs.ErrReceiver.Wrap(errors.New("missing arguments: ["+strings.Join(v.ArgumentsRequired[0+len(args)-1:], "] [")+"]\n"))) //nolint:errcheck
-
-				a.usage(args[0])
-
-				return ErrUnknownCommand
-			}
-
 			if len(args) > 1 {
 				arr, err := v.Flags.Parse(args[1:])
 				if err != nil {
@@ -444,6 +436,14 @@ func (a App[T]) Run() errs.Err {
 				}
 
 				ar = append(ar, arr...)
+			}
+
+			if len(v.ArgumentsRequired) != 0 && (len(ar)-1) < len(v.ArgumentsRequired) {
+				logger.Error(ctx, errs.ErrReceiver.Wrap(errors.New("missing arguments: ["+strings.Join(v.ArgumentsRequired[0+len(ar)-1:], "] [")+"]\n"))) //nolint:errcheck
+
+				a.usage(args[0])
+
+				return ErrUnknownCommand
 			}
 
 			return v.Run(ctx, ar, v.Flags, a.Config)

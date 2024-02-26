@@ -45,7 +45,7 @@ func TestECP256(t *testing.T) {
 	pubKey, err := pubStr.PublicKey()
 	assert.Equal(t, err, nil)
 	assert.Equal(t, len(ecp256PublicKeys.keys), 1)
-	assert.Equal(t, ecp256PublicKeys.keys[pubStr], pubKey)
+	assert.Equal(t, ecp256PublicKeys.keys[pubStr], pubKey.(*ecdsa.PublicKey))
 	ecp256PublicKeys.keys = map[ECP256PublicKey]*ecdsa.PublicKey{}
 
 	// Sign/Verify

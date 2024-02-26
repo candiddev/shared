@@ -8,7 +8,6 @@ import (
 	"encoding/gob"
 	"errors"
 	"fmt"
-	"reflect"
 	"strings"
 
 	"github.com/candiddev/shared/go/cli"
@@ -78,6 +77,7 @@ type KeyProviderKDFSet interface {
 type KeyProviderPrivate interface {
 	DecryptAsymmetric(input EncryptedValue) (output []byte, err error)
 	Sign(message []byte, hash crypto.Hash) (signature []byte, err error)
+	Signer() (crypto.Signer, error)
 	Public() (KeyProviderPublic, error)
 	KeyProvider
 }
@@ -85,6 +85,7 @@ type KeyProviderPrivate interface {
 // KeyProviderPublic is a public key.
 type KeyProviderPublic interface {
 	EncryptAsymmetric(input []byte, keyID string, encryption Encryption) (output EncryptedValue, err error)
+	PublicKey() (crypto.PublicKey, error)
 	Verify(message []byte, hash crypto.Hash, signature []byte) (err error)
 	KeyProvider
 }
@@ -97,7 +98,7 @@ func GenerateKeys[T cli.AppConfig[any]]() cli.Command[T] {
 		},
 		Flags: cli.Flags{
 			"a": {
-				Default:     "best",
+				Default:     []string{"best"},
 				Placeholder: "algorithm",
 				Usage:       "Algorithm to use for generating keys",
 			},
@@ -169,11 +170,13 @@ func ParseKey[T KeyProvider](s string) (Key[T], error) {
 			kp = RSA2048PublicKey(r[1])
 		case AlgorithmNone:
 			kp = None(r[1])
+		case AlgorithmX509Certificate:
+			kp = X509Certificate(r[1])
 		}
 
 		a, ok := any(kp).(T)
 		if !ok {
-			return k, fmt.Errorf("%w: %v", ErrParseKeyNotImplemented, reflect.TypeOf(k))
+			return k, fmt.Errorf("%T %w: %T", kp, ErrParseKeyNotImplemented, k)
 		}
 
 		k.Key = a

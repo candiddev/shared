@@ -44,17 +44,17 @@ func NewRSA2048() (privateKey RSA2048PrivateKey, publicKey RSA2048PublicKey, err
 		return "", "", fmt.Errorf("%w: %w", ErrGeneratingPrivateKey, err)
 	}
 
-	x509Private, err := x509.MarshalPKCS8PrivateKey(rsaPrivate)
+	derPrivate, err := x509.MarshalPKCS8PrivateKey(rsaPrivate)
 	if err != nil {
 		return "", "", fmt.Errorf("%w: %w", ErrMarshalingPrivateKey, err)
 	}
 
-	x509Public, err := x509.MarshalPKIXPublicKey(&rsaPrivate.PublicKey)
+	derPublic, err := x509.MarshalPKIXPublicKey(&rsaPrivate.PublicKey)
 	if err != nil {
 		return "", "", fmt.Errorf("%w: %w", ErrMarshalingPublicKey, err)
 	}
 
-	return RSA2048PrivateKey(base64.StdEncoding.EncodeToString(x509Private)), RSA2048PublicKey(base64.StdEncoding.EncodeToString(x509Public)),
+	return RSA2048PrivateKey(base64.StdEncoding.EncodeToString(derPrivate)), RSA2048PublicKey(base64.StdEncoding.EncodeToString(derPublic)),
 		nil
 }
 
@@ -160,11 +160,15 @@ func (r RSA2048PrivateKey) Sign(message []byte, hash crypto.Hash) (signature []b
 	return sig, nil
 }
 
+func (r RSA2048PrivateKey) Signer() (crypto.Signer, error) {
+	return r.PrivateKey()
+}
+
 func (RSA2048PublicKey) Algorithm() Algorithm {
 	return AlgorithmRSA2048Public
 }
 
-func (r RSA2048PublicKey) PublicKey() (*rsa.PublicKey, error) {
+func (r RSA2048PublicKey) PublicKey() (crypto.PublicKey, error) {
 	rsa2048PublicKeys.mutex.Lock()
 
 	defer rsa2048PublicKeys.mutex.Unlock()
@@ -213,7 +217,7 @@ func (r RSA2048PublicKey) EncryptOAEPSHA256(value []byte) ([]byte, error) {
 		return nil, err
 	}
 
-	out, err := rsa.EncryptOAEP(crypto.SHA256.New(), rand.Reader, p, value, nil)
+	out, err := rsa.EncryptOAEP(crypto.SHA256.New(), rand.Reader, p.(*rsa.PublicKey), value, nil)
 	if err != nil {
 		return nil, fmt.Errorf("%w: %w", ErrEncryptingPublicKey, err)
 	}
@@ -237,7 +241,7 @@ func (r RSA2048PublicKey) Verify(message []byte, hash crypto.Hash, signature []b
 		return fmt.Errorf("%w: %w", ErrCreatingHash, err)
 	}
 
-	if err := rsa.VerifyPKCS1v15(k, hash, n.Sum(nil), signature); err != nil {
+	if err := rsa.VerifyPKCS1v15(k.(*rsa.PublicKey), hash, n.Sum(nil), signature); err != nil {
 		return fmt.Errorf("%w: %w", ErrVerify, err)
 	}
 
