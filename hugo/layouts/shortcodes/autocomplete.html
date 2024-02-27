@@ -1,0 +1,1 @@
+{{ printf "Adds autocomplete for %s commands into your terminal:\n```\n$ source <(%s autocomplete)\n```" (.Get "name") (strings.ToLower (.Get "name")) | markdownify }}
