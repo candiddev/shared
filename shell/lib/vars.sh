@@ -109,7 +109,7 @@ export VAULT_SSH_ROLE=${VAULT_SSH_ROLE:-}
 export VAULT_TOKEN=${VAULT_TOKEN:-$(vault token lookup &>/dev/null && cat ~/.vault-token 2>/dev/null)}
 
 export VERSION_AIR=1.49.0 # https://github.com/cosmtrek/air/releases
-export VERSION_GO=1.21.6 # https://golang.org/dl/
+export VERSION_GO=1.21.8 # https://golang.org/dl/
 export VERSION_GOLANGCILINT=1.55.2 # https://github.com/golangci/golangci-lint/releases
 export VERSION_GOVULNCHECK=1.0.3 # https://pkg.go.dev/golang.org/x/vuln
 export VERSION_HUGO=0.122.0 # https://github.com/gohugoio/hugo/releases
