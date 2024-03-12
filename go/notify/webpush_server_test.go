@@ -201,14 +201,14 @@ func TestWebPushSend(t *testing.T) {
 				})
 				assert.HasErr(t, err, nil)
 
-				wp := webPushJWT{}
-				assert.HasErr(t, token.ParsePayload(&wp, "", "", ""), nil)
+				r, err := token.ParsePayload(nil, "", "", "")
+				assert.HasErr(t, err, nil)
 
 				assert.HasErr(t, err, nil)
 				assert.Equal(t, len(gotBody), 4096)
-				assert.Equal(t, wp.Audience[0], strings.Join(strings.Split(srv.URL, ":")[:2], ":"))
-				assert.Equal(t, time.Unix(wp.ExpiresAt, 0).After(time.Now().Add(4*time.Hour)), true)
-				assert.Equal(t, wp.Subject, "hello")
+				assert.Equal(t, r.Audience[0], strings.Join(strings.Split(srv.URL, ":")[:2], ":"))
+				assert.Equal(t, time.Unix(r.ExpiresAt, 0).After(time.Now().Add(4*time.Hour)), true)
+				assert.Equal(t, r.Subject, "hello")
 
 				salt := gotBody[:16] // Salt is 16 characters
 				l := int(gotBody[20])

@@ -15,6 +15,7 @@ import (
 
 	"github.com/candiddev/shared/go/config"
 	"github.com/candiddev/shared/go/errs"
+	"github.com/candiddev/shared/go/jsonnet"
 	"github.com/candiddev/shared/go/logger"
 	"golang.org/x/term"
 )
@@ -27,12 +28,13 @@ var BuildVersion string //nolint:gochecknoglobals
 
 // Config manages the CLI configuration.
 type Config struct {
-	ConfigPath    string        `json:"configPath"`
-	LogFormat     logger.Format `json:"logFormat"`
-	LogLevel      logger.Level  `json:"logLevel"`
-	NoColor       bool          `json:"noColor"`
-	runMock       *runMock
-	runMockEnable bool
+	ConfigPath            string        `json:"configPath"`
+	DisableExternalNative bool          `json:"disableExternalNative"`
+	LogFormat             logger.Format `json:"logFormat"`
+	LogLevel              logger.Level  `json:"logLevel"`
+	NoColor               bool          `json:"noColor"`
+	runMock               *runMock
+	runMockEnable         bool
 }
 
 type runMock struct {
@@ -108,11 +110,12 @@ type AppConfig[T any] interface {
 type globalFlag string
 
 const (
-	globalFlagConfigPath  = "c"
-	globalFlagFormat      = "f"
-	globalFlagLevel       = "l"
-	globalFlagNoColor     = "n"
-	globalFlagConfigValue = "x"
+	globalFlagConfigPath            = "c"
+	globalFlagDisableExternalNative = "d"
+	globalFlagFormat                = "f"
+	globalFlagLevel                 = "l"
+	globalFlagNoColor               = "n"
+	globalFlagConfigValue           = "x"
 )
 
 func (a App[T]) autocomplete() string {
@@ -311,7 +314,7 @@ func (a App[T]) Run() errs.Err {
 
 			return nil
 		},
-		Usage: fmt.Sprintf("Source this argument via source <(%s autocomplete) to add autocomplete entries", strings.ToLower(a.Name)),
+		Usage: fmt.Sprintf("Source this argument using `source <(%s autocomplete)` to add autocomplete entries.", strings.ToLower(a.Name)),
 	}
 	a.Commands["jq"] = Command[T]{
 		ArgumentsOptional: []string{
@@ -333,11 +336,15 @@ func (a App[T]) Run() errs.Err {
 			Usage:       "Path to JSON/Jsonnet configuration file",
 		}
 
+		a.flags[globalFlagDisableExternalNative] = &Flag{
+			Usage: "Disable external Jsonnet native functions like getPath and getRecord",
+		}
+
 		a.Commands["show-config"] = Command[T]{
 			Run: func(ctx context.Context, args []string, flags Flags, config T) errs.Err {
 				return printConfig(ctx, a)
 			},
-			Usage: "Print the current configuration",
+			Usage: "Print the current configuration.",
 		}
 
 		a.flags[globalFlagConfigValue] = &Flag{
@@ -353,7 +360,7 @@ func (a App[T]) Run() errs.Err {
 
 			return nil
 		},
-		Usage: "Print version information",
+		Usage: "Print version information.",
 	}
 
 	args, err := a.flags.Parse(os.Args[1:])
@@ -376,6 +383,8 @@ func (a App[T]) Run() errs.Err {
 			a.Config.CLIConfig().ConfigPath, _ = a.flags.Value(k)
 		case globalFlagConfigValue:
 			configArgs = v.values
+		case globalFlagDisableExternalNative:
+			_, a.Config.CLIConfig().DisableExternalNative = a.flags.Value(k)
 		case globalFlagFormat:
 			format, _ := a.flags.Value(k)
 			a.Config.CLIConfig().LogFormat, err = logger.ParseFormat(format)
@@ -391,9 +400,13 @@ func (a App[T]) Run() errs.Err {
 		}
 	}
 
+	jsonnet.DisableExternalNative(true)
+
 	if err := config.ParseValues(ctx, a.Config, strings.ToUpper(a.Name)+"_cli_", os.Environ()); err != nil {
 		return logger.Error(ctx, errs.ErrReceiver.Wrap(config.ErrUpdateEnv, err))
 	}
+
+	jsonnet.DisableExternalNative(a.Config.CLIConfig().DisableExternalNative)
 
 	ctx = logger.SetFormat(ctx, a.Config.CLIConfig().LogFormat)
 	ctx = logger.SetLevel(ctx, a.Config.CLIConfig().LogLevel)

@@ -23,6 +23,14 @@ import (
 )
 
 var ErrRender = errors.New("error rendering jsonnet")
+var ErrExternalNativeDisabled = errors.New("external native functions are disabled")
+
+var disableExternalNative = false //nolint:gochecknoglobals
+
+// DisableExternalNative will disable all external native function calls.
+func DisableExternalNative(v bool) {
+	disableExternalNative = v
+}
 
 // Render is a jsonnet renderer.
 type Render struct {
@@ -104,6 +112,10 @@ func NewRender(ctx context.Context, config any) *Render { //nolint:gocognit,gocy
 					return v, nil
 				}
 
+				if strings.HasPrefix(path, "http") && disableExternalNative {
+					return nil, logger.Error(ctx, errs.ErrReceiver.Wrap(fmt.Errorf("error calling getFile: %w", ErrExternalNativeDisabled)))
+				}
+
 				b := &bytes.Buffer{}
 
 				_, err := get.File(ctx, path, b, time.Time{})
@@ -150,6 +162,10 @@ func NewRender(ctx context.Context, config any) *Render { //nolint:gocognit,gocy
 			n, ok := params[1].(string)
 			if !ok {
 				return nil, logger.Error(ctx, errs.ErrReceiver.Wrap(errors.New("no hostname provided")))
+			}
+
+			if disableExternalNative {
+				return nil, logger.Error(ctx, errs.ErrReceiver.Wrap(fmt.Errorf("error calling getRecord: %w", ErrExternalNativeDisabled)))
 			}
 
 			c := fmt.Sprintf("getRecord_%s_%s", t, n)
@@ -273,6 +289,7 @@ func NewRender(ctx context.Context, config any) *Render { //nolint:gocognit,gocy
 		Name:   "render",
 		Params: ast.Identifiers{"string"},
 	})
+
 	r.vm.SetTraceOut(logger.Stderr)
 
 	return r

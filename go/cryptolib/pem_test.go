@@ -26,5 +26,5 @@ func TestPEMKey(t *testing.T) {
 	assert.Equal(t, pub2, pub1)
 
 	_, err = PEMToKey[RSA2048PrivateKey](p)
-	assert.HasErr(t, err, ErrParsingPEM)
+	assert.HasErr(t, err, ErrUnknownKeyType)
 }

@@ -33,6 +33,7 @@ func TestImportRender(t *testing.T) {
 		config       any
 		env          *[]string
 		imports      *Imports
+		noNative     bool
 		wantErr      error
 		wantOut      testdata
 		wantStdout   string
@@ -125,6 +126,22 @@ n.getConfig().Vars`,
 			wantOut: testdata{
 				String: "world",
 			},
+		},
+		"no native": {
+			config: c,
+			imports: &Imports{
+				Entrypoint: "e.jsonnet",
+				Files: map[string]string{
+					"native.libsonnet": Native,
+					"e.jsonnet": `local n = import 'native.libsonnet';
+{
+	String: n.getPath('http://example.com') 
+}
+`,
+				},
+			},
+			noNative: true,
+			wantErr:  errs.ErrReceiver,
 		},
 		"good getEnvStatic": {
 			config: c,
@@ -395,6 +412,8 @@ rendered
 	for name, tc := range tests {
 		t.Run(name, func(t *testing.T) {
 			data := testdata{}
+
+			disableExternalNative = tc.noNative
 
 			logger.SetStd()
 			r := NewRender(ctx, tc.config)

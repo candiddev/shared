@@ -1,9 +1,6 @@
 package cryptolib
 
 import (
-	"crypto/ecdsa"
-	"crypto/ed25519"
-	"crypto/rsa"
 	"crypto/x509"
 	"encoding/base64"
 	"encoding/pem"
@@ -17,55 +14,34 @@ func PEMToKey[T KeyProvider](b []byte) (Key[T], error) {
 		return Key[T]{}, ErrParsingPEM
 	}
 
-	var k KeyProvider
+	var err error
+
+	var pk any
 
 	switch d.Type {
 	case "CERTIFICATE":
-		k = X509Certificate(base64.StdEncoding.EncodeToString(d.Bytes))
+		kp := X509Certificate(base64.StdEncoding.EncodeToString(d.Bytes))
+		if k, ok := any(kp).(T); ok {
+			return Key[T]{
+				ID:  d.Headers["id"],
+				Key: k,
+			}, nil
+		} else {
+			return Key[T]{}, fmt.Errorf("unsupported PEM type: %s does not provide type", d.Type)
+		}
 	case "PRIVATE KEY":
-		pk, err := x509.ParsePKCS8PrivateKey(d.Bytes)
-		if err != nil {
-			return Key[T]{}, fmt.Errorf("%w: %w", ErrParsingPEM, err)
-		}
-
-		switch pk.(type) {
-		case *ecdsa.PrivateKey:
-			k = ECP256PrivateKey(base64.StdEncoding.EncodeToString(d.Bytes))
-		case ed25519.PrivateKey:
-			k = Ed25519PrivateKey(base64.StdEncoding.EncodeToString(d.Bytes))
-		case *rsa.PrivateKey:
-			k = RSA2048PrivateKey(base64.StdEncoding.EncodeToString(d.Bytes))
-		}
+		pk, err = x509.ParsePKCS8PrivateKey(d.Bytes)
 	case "PUBLIC KEY":
-		pk, err := x509.ParsePKIXPublicKey(d.Bytes)
-		if err != nil {
-			return Key[T]{}, fmt.Errorf("%w: %w", ErrParsingPEM, err)
-		}
-
-		switch pk.(type) {
-		case *ecdsa.PublicKey:
-			k = ECP256PublicKey(base64.StdEncoding.EncodeToString(d.Bytes))
-		case ed25519.PublicKey:
-			k = Ed25519PublicKey(base64.StdEncoding.EncodeToString(d.Bytes))
-		case *rsa.PublicKey:
-			k = RSA2048PublicKey(base64.StdEncoding.EncodeToString(d.Bytes))
-		}
+		pk, err = x509.ParsePKIXPublicKey(d.Bytes)
+	default:
+		return Key[T]{}, fmt.Errorf("unrecognized PEM type: %s", d.Type)
 	}
 
-	t, ok := any(k).(T)
-	if !ok {
-		return Key[T]{}, fmt.Errorf("%w: unknown key type: %T", ErrParsingPEM, k)
+	if err != nil {
+		return Key[T]{}, fmt.Errorf("%w: %w", ErrParsingPEM, err)
 	}
 
-	id := ""
-	if a, ok := d.Headers["id"]; ok {
-		id = a
-	}
-
-	return Key[T]{
-		ID:  id,
-		Key: t,
-	}, nil
+	return ParseType[T](pk, d.Headers["id"])
 }
 
 func pemWidth(s string) string {

@@ -75,8 +75,8 @@ Does things
 
 Commands:
   autocomplete
-    Source this argument via source <(app autocomplete) to add
-    autocomplete entries
+    Source this argument using ` + "`source <(app autocomplete)`" + ` to add
+    autocomplete entries.
 
   fail
     Fails the thing
@@ -96,14 +96,16 @@ Commands:
          render raw values
 
   show-config
-    Print the current configuration
+    Print the current configuration.
 
   version
-    Print version information
+    Print version information.
 
 Global Flags:
   -c [path]
      Path to JSON/Jsonnet configuration file (default: app.jsonnet)
+  -d
+     Disable external Jsonnet native functions like getPath and getRecord
   -f [format]
      Set log format: human, kv, raw (default: human)
   -l [level]
@@ -130,6 +132,8 @@ Global Flags:
 Global Flags:
   -c [path]
      Path to JSON/Jsonnet configuration file (default: app.jsonnet)
+  -d
+     Disable external Jsonnet native functions like getPath and getRecord
   -f [format]
      Set log format: human, kv, raw (default: human)
   -l [level]
@@ -168,8 +172,8 @@ Does things
 
 Commands:
   autocomplete
-    Source this argument via source <(app autocomplete) to add
-    autocomplete entries
+    Source this argument using ` + "`source <(app autocomplete)`" + ` to add
+    autocomplete entries.
 
   fail
     Fails the thing
@@ -189,7 +193,7 @@ Commands:
          render raw values
 
   version
-    Print version information
+    Print version information.
 
 Global Flags:
   -f [format]
@@ -223,8 +227,8 @@ Does things
 
 Commands:
   autocomplete
-    Source this argument via source <(app autocomplete) to add
-    autocomplete entries
+    Source this argument using ` + "`source <(app autocomplete)`" + ` to add
+    autocomplete entries.
 
   fail
     Fails the thing
@@ -244,7 +248,7 @@ Commands:
          render raw values
 
   version
-    Print version information
+    Print version information.
 
 Global Flags:
   -f [format]
