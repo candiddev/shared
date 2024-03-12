@@ -3,6 +3,7 @@ package jwt
 import (
 	"encoding/base64"
 	"encoding/json"
+	"fmt"
 	"testing"
 	"time"
 
@@ -50,17 +51,21 @@ func TestToken(t *testing.T) {
 				Licensed: true,
 			}
 
-			got1, err := New(&j1, e, []string{"audience"}, "id", "issuer", "subject")
+			got1, r1, err := New(&j1, e, []string{"audience"}, "id", "issuer", "subject")
 			assert.HasErr(t, err, nil)
-			assert.Equal(t, j1.Audience, []string{"audience"})
-			assert.Equal(t, j1.ExpiresAt, e.Unix())
-			assert.Equal(t, j1.ID, "id")
-			assert.Equal(t, j1.IssuedAt, e.Unix()-10)
-			assert.Equal(t, j1.Issuer, "issuer")
-			assert.Equal(t, j1.NotBefore, e.Unix()-10)
-			assert.Equal(t, j1.Subject, "subject")
+			assert.Equal(t, r1.Audience, []string{"audience"})
+			assert.Equal(t, r1.ExpiresAt, e.Unix())
+			assert.Equal(t, r1.ID, "id")
+			assert.Equal(t, r1.IssuedAt, e.Unix()-10)
+			assert.Equal(t, r1.Issuer, "issuer")
+			assert.Equal(t, r1.NotBefore, e.Unix()-10)
+			assert.Equal(t, r1.Subject, "subject")
 
-			js, _ := json.Marshal(j1)
+			m := map[string]any{}
+			types.AppendStructToMap(j1, &m)
+			types.AppendStructToMap(r1, &m)
+
+			js, _ := json.Marshal(m)
 			assert.Equal(t, got1.PayloadBase64, base64.RawURLEncoding.EncodeToString(js))
 
 			a, err := getSigningMethod(prv.Key.Algorithm())
@@ -80,8 +85,10 @@ func TestToken(t *testing.T) {
 			assert.Equal(t, p, pub)
 
 			jOut1 := &jwtCustom{}
-			assert.HasErr(t, gotT1.ParsePayload(jOut1, "", "", ""), nil)
+			r, err := gotT1.ParsePayload(jOut1, "", "", "")
+			assert.HasErr(t, err, nil)
 			assert.Equal(t, jOut1, &j1)
+			assert.Equal(t, r, r1)
 
 			m2, _ := gotT1.GetSignMessage(a, prv.ID)
 			assert.Equal(t, gotT1.Header, got1.Header)
@@ -91,7 +98,7 @@ func TestToken(t *testing.T) {
 				Licensed: true,
 			}
 
-			got2, err := New(&j2, e, []string{"1", "2"}, "id", "issuer", "subject")
+			got2, r2, err := New(&j2, e, []string{"1", "2"}, "id", "issuer", "subject")
 			assert.HasErr(t, err, nil)
 			assert.HasErr(t, got2.Sign(prv), nil)
 
@@ -101,9 +108,47 @@ func TestToken(t *testing.T) {
 			assert.HasErr(t, err, nil)
 
 			jOut2 := &jwtCustom{}
-			assert.HasErr(t, gotT2.ParsePayload(jOut2, "", "", ""), nil)
+
+			r, err = gotT2.ParsePayload(jOut2, "", "", "")
+			assert.HasErr(t, err, nil)
 			assert.Equal(t, jOut2, &j2)
-			assert.Equal(t, jOut2.Audience, []string{"1", "2"})
+			assert.Equal(t, r, r2)
 		})
 	}
+}
+
+func TestValues(t *testing.T) {
+	prv, _, _ := cryptolib.NewKeysAsymmetric(cryptolib.AlgorithmBest)
+
+	tok, r, _ := New(map[string]any{
+		"a": "a",
+		"b": true,
+		"i": 1,
+	}, time.Now().Add(time.Hour), []string{"audience"}, "id", "issuer", "subject")
+
+	tok.Sign(prv)
+
+	s, err := tok.Values()
+
+	assert.HasErr(t, err, nil)
+	assert.Equal(t, s, fmt.Sprintf(`{
+  "header": {
+    "alg": "EdDSA",
+    "kid": "%s",
+    "typ": "JWT"
+  },
+  "payload": {
+    "a": "a",
+    "aud": "audience",
+    "b": true,
+    "exp": %d,
+    "i": 1,
+    "iat": %d,
+    "iss": "issuer",
+    "jti": "id",
+    "nbf": %d,
+    "sub": "subject"
+  },
+  "signature": "%s"
+}`, prv.ID, r.ExpiresAt, r.IssuedAt, r.NotBefore, tok.SignatureBase64))
 }

@@ -34,6 +34,12 @@ func TestParseKey(t *testing.T) {
 
 	_, err = ParseKey[KeyProviderSymmetric]("hello!")
 	assert.HasErr(t, err, ErrParseKeyUnknown)
+
+	prv, _, _ := NewKeysAsymmetric(BestEncryptionAsymmetric)
+
+	pro, err := ParseKey[KeyProviderPrivate](string(KeyToPEM(prv)))
+	assert.HasErr(t, err, nil)
+	assert.Equal(t, prv.Key, pro.Key)
 }
 
 func TestKey(t *testing.T) {

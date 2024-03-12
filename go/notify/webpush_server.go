@@ -112,18 +112,6 @@ func (c WebPushActions) Value() (driver.Value, error) {
 	return j, err
 }
 
-type webPushJWT struct {
-	jwt.RegisteredClaims
-}
-
-func (w *webPushJWT) GetRegisteredClaims() *jwt.RegisteredClaims {
-	return &w.RegisteredClaims
-}
-
-func (*webPushJWT) Valid() error {
-	return nil
-}
-
 func getWebPushCipherNonce(client *ecdh.PublicKey, server *ecdh.PrivateKey, auth, salt []byte, reversePRK bool) (gcm cipher.AEAD, nonce []byte, err error) {
 	prk := bytes.NewBufferString("WebPush: info\x00")
 
@@ -183,9 +171,7 @@ func (c *WebPush) getJWT(baseURL, endpoint string) (string, error) {
 		return "", fmt.Errorf("error parsing endpoint: %w", err)
 	}
 
-	w := &webPushJWT{}
-
-	t, err := jwt.New(w, time.Now().Add(5*time.Hour), []string{fmt.Sprintf("%s://%s", u.Scheme, u.Hostname())}, "", "", baseURL)
+	t, _, err := jwt.New(nil, time.Now().Add(5*time.Hour), []string{fmt.Sprintf("%s://%s", u.Scheme, u.Hostname())}, "", "", baseURL)
 	if err != nil {
 		return "", err
 	}

@@ -19,7 +19,11 @@ cmd () {
 }
 
 not-running () {
-	! ${CR} inspect "${1}" &> /dev/null
+	if ${CR} inspect "${1}" &> /dev/null; then
+		false
+	else
+		true
+	fi
 }
 
 run () {

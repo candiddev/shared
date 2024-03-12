@@ -17,12 +17,6 @@ type RegisteredClaims struct {
 	Subject   string   `json:"sub,omitempty"`
 }
 
-// CustomClaims is a struct that can be parsed from a JWT payload.
-type CustomClaims interface {
-	GetRegisteredClaims() *RegisteredClaims
-	Valid() error
-}
-
 // Audience is a string or array of strings.
 type Audience []string
 

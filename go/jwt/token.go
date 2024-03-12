@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"github.com/candiddev/shared/go/cryptolib"
+	"github.com/candiddev/shared/go/types"
 )
 
 var (
@@ -68,9 +69,9 @@ func getSigningMethod(k cryptolib.Algorithm) (Algorithm, error) {
 }
 
 // New creates a new Token from CustomClaims.
-func New(claims CustomClaims, expiresAt time.Time, audience []string, id, issuer, subject string) (*Token, error) { //nolint:revive
+func New(claims any, expiresAt time.Time, audience []string, id, issuer, subject string) (*Token, *RegisteredClaims, error) { //nolint:revive
 	t := Token{}
-	r := claims.GetRegisteredClaims()
+	r := RegisteredClaims{}
 
 	var expires int64
 
@@ -86,14 +87,26 @@ func New(claims CustomClaims, expiresAt time.Time, audience []string, id, issuer
 	r.NotBefore = time.Now().Unix()
 	r.Subject = subject
 
-	p, err := json.Marshal(claims)
+	m := map[string]any{}
+
+	if claims != nil {
+		if err := types.AppendStructToMap(claims, &m); err != nil {
+			return nil, &r, fmt.Errorf("%w: %w", ErrNewMarshalJSON, err)
+		}
+	}
+
+	if err := types.AppendStructToMap(r, &m); err != nil {
+		return nil, &r, fmt.Errorf("%w: %w", ErrNewMarshalJSON, err)
+	}
+
+	p, err := json.Marshal(m)
 	if err != nil {
-		return nil, fmt.Errorf("%w: %w", ErrNewMarshalJSON, err)
+		return nil, &r, fmt.Errorf("%w: %w", ErrNewMarshalJSON, err)
 	}
 
 	t.PayloadBase64 = base64.RawURLEncoding.EncodeToString(p)
 
-	return &t, nil
+	return &t, &r, nil
 }
 
 // Parse takes a token and parses it into a Token struct for future use and the public key that verified it.  Returns an error if the signature does not match or the token format is invalid.
@@ -184,24 +197,32 @@ func (t *Token) GetSignMessage(a Algorithm, keyID string) (string, error) {
 }
 
 // ParsePayload parses a token payload and validates it.  Returns an error if any validation fails.
-func (t *Token) ParsePayload(claims CustomClaims, audRegex string, jidRegex string, subRegex string) error {
+func (t *Token) ParsePayload(claims any, audRegex string, jidRegex string, subRegex string) (*RegisteredClaims, error) {
 	p64, err := base64.RawURLEncoding.DecodeString(t.PayloadBase64)
 	if err != nil {
-		return fmt.Errorf("%w: %w", ErrUnmarshalingJWT, err)
-	}
-
-	err = json.Unmarshal(p64, claims)
-	if err != nil {
-		return fmt.Errorf("%w: %w", ErrUnmarshalingJWT, err)
+		return nil, fmt.Errorf("%w: %w", ErrUnmarshalingJWT, err)
 	}
 
 	// Check claims
-	r := claims.GetRegisteredClaims()
+	r := RegisteredClaims{}
+
+	err = json.Unmarshal(p64, &r)
+	if err != nil {
+		return nil, fmt.Errorf("%w: %w", ErrUnmarshalingJWT, err)
+	}
+
+	// Parse payload
+	if claims != nil {
+		err = json.Unmarshal(p64, claims)
+		if err != nil {
+			return nil, fmt.Errorf("%w: %w", ErrUnmarshalingJWT, err)
+		}
+	}
 
 	if audRegex != "" {
 		audReg, err := regexp.Compile(audRegex)
 		if err != nil {
-			return fmt.Errorf("%w: error compiling audience regex: %w", ErrTokenParsePayloadValidation, err)
+			return &r, fmt.Errorf("%w: error compiling audience regex: %w", ErrTokenParsePayloadValidation, err)
 		}
 
 		match := false
@@ -215,18 +236,18 @@ func (t *Token) ParsePayload(claims CustomClaims, audRegex string, jidRegex stri
 		}
 
 		if !match {
-			return fmt.Errorf("%w: no aud matches", ErrTokenParsePayloadValidation)
+			return &r, fmt.Errorf("%w: no aud matches", ErrTokenParsePayloadValidation)
 		}
 	}
 
 	if jidRegex != "" {
 		jidReg, err := regexp.Compile(jidRegex)
 		if err != nil {
-			return fmt.Errorf("%w: error compiling id regex: %w", ErrTokenParsePayloadValidation, err)
+			return &r, fmt.Errorf("%w: error compiling id regex: %w", ErrTokenParsePayloadValidation, err)
 		}
 
 		if !jidReg.MatchString(r.ID) {
-			return fmt.Errorf("%w: no jid matches", ErrTokenParsePayloadValidation)
+			return &r, fmt.Errorf("%w: no jid matches", ErrTokenParsePayloadValidation)
 		}
 	}
 
@@ -234,25 +255,25 @@ func (t *Token) ParsePayload(claims CustomClaims, audRegex string, jidRegex stri
 
 	// Allow up to 30 seconds clock skew for nbf and eat claims
 	if time.Unix(r.NotBefore, 0).After(now.Add(time.Second * 30)) {
-		return fmt.Errorf("%w: token is not valid yet", ErrTokenParsePayloadValidation)
+		return &r, fmt.Errorf("%w: token is not valid yet", ErrTokenParsePayloadValidation)
 	}
 
 	if r.ExpiresAt != 0 && now.Add(time.Second*-30).After(time.Unix(r.ExpiresAt, 0)) {
-		return fmt.Errorf("%w: token has expired", ErrTokenParsePayloadValidation)
+		return &r, fmt.Errorf("%w: token has expired", ErrTokenParsePayloadValidation)
 	}
 
 	if subRegex != "" {
 		subReg, err := regexp.Compile(jidRegex)
 		if err != nil {
-			return fmt.Errorf("%w: error compiling id regex: %w", ErrTokenParsePayloadValidation, err)
+			return &r, fmt.Errorf("%w: error compiling id regex: %w", ErrTokenParsePayloadValidation, err)
 		}
 
 		if !subReg.MatchString(r.ID) {
-			return fmt.Errorf("%w: no jid matches", ErrTokenParsePayloadValidation)
+			return &r, fmt.Errorf("%w: no jid matches", ErrTokenParsePayloadValidation)
 		}
 	}
 
-	return claims.Valid()
+	return &r, nil
 }
 
 func (t *Token) Sign(k cryptolib.Key[cryptolib.KeyProviderPrivate]) error {
@@ -278,4 +299,29 @@ func (t *Token) Sign(k cryptolib.Key[cryptolib.KeyProviderPrivate]) error {
 
 func (t *Token) String() string {
 	return fmt.Sprintf("%s.%s.%s", t.HeaderBase64, t.PayloadBase64, t.SignatureBase64)
+}
+
+func (t *Token) Values() (string, error) {
+	h := map[string]any{}
+
+	if err := types.AppendStructToMap(t.Header, &h); err != nil {
+		return "", err
+	}
+
+	b, err := base64.RawURLEncoding.DecodeString(t.PayloadBase64)
+	if err != nil {
+		return "", fmt.Errorf("error parsing payload: %w", err)
+	}
+
+	p := map[string]any{}
+
+	if err := json.Unmarshal(b, &p); err != nil {
+		return "", err
+	}
+
+	return types.JSONToString(map[string]any{
+		"header":    h,
+		"payload":   p,
+		"signature": t.SignatureBase64,
+	}), nil
 }

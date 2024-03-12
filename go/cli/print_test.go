@@ -71,6 +71,7 @@ func TestPrintConfig(t *testing.T) {
 	assert.Equal(t, logger.ReadStd(), `{
   "CLI": {
     "configPath": "",
+    "disableExternalNative": false,
     "logFormat": "",
     "logLevel": "",
     "noColor": false

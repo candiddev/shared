@@ -3,8 +3,13 @@ package cryptolib
 import (
 	"context"
 	"crypto"
+	"crypto/ecdsa"
+	"crypto/ed25519"
 	"crypto/rand"
+	"crypto/rsa"
+	"crypto/x509"
 	"database/sql/driver"
+	"encoding/base64"
 	"encoding/gob"
 	"errors"
 	"fmt"
@@ -186,9 +191,73 @@ func ParseKey[T KeyProvider](s string) (Key[T], error) {
 		}
 
 		return k, nil
+	} else if strings.HasPrefix(s, "-----BEGIN OPENSSH") || strings.HasPrefix(s, "ssh-") {
+		return SSHToKey[T]([]byte(s))
+	} else if strings.HasPrefix(s, "-----") {
+		return PEMToKey[T]([]byte(s))
 	}
 
 	return k, fmt.Errorf("%w: %s", ErrParseKeyUnknown, s)
+}
+
+// ParseType is used to convert from crypto types to a Key.
+func ParseType[T KeyProvider](t any, id string) (Key[T], error) {
+	var k KeyProvider
+
+	switch t.(type) {
+	case *ecdsa.PrivateKey:
+		key, err := x509.MarshalPKCS8PrivateKey(t)
+		if err != nil {
+			return Key[T]{}, fmt.Errorf("error parsing type: %w", err)
+		}
+
+		k = ECP256PrivateKey(base64.StdEncoding.EncodeToString(key))
+	case ed25519.PrivateKey:
+		key, err := x509.MarshalPKCS8PrivateKey(t)
+		if err != nil {
+			return Key[T]{}, fmt.Errorf("error parsing type: %w", err)
+		}
+
+		k = Ed25519PrivateKey(base64.StdEncoding.EncodeToString(key))
+	case *rsa.PrivateKey:
+		key, err := x509.MarshalPKCS8PrivateKey(t)
+		if err != nil {
+			return Key[T]{}, fmt.Errorf("error parsing type: %w", err)
+		}
+
+		k = RSA2048PrivateKey(base64.StdEncoding.EncodeToString(key))
+	case *ecdsa.PublicKey:
+		key, err := x509.MarshalPKIXPublicKey(t)
+		if err != nil {
+			return Key[T]{}, fmt.Errorf("error parsing type: %w", err)
+		}
+
+		k = ECP256PublicKey(base64.StdEncoding.EncodeToString(key))
+	case ed25519.PublicKey:
+		key, err := x509.MarshalPKIXPublicKey(t)
+		if err != nil {
+			return Key[T]{}, fmt.Errorf("error parsing type: %w", err)
+		}
+
+		k = Ed25519PublicKey(base64.StdEncoding.EncodeToString(key))
+	case *rsa.PublicKey:
+		key, err := x509.MarshalPKIXPublicKey(t)
+		if err != nil {
+			return Key[T]{}, fmt.Errorf("error parsing type: %w", err)
+		}
+
+		k = RSA2048PublicKey(base64.StdEncoding.EncodeToString(key))
+	}
+
+	kp, ok := any(k).(T)
+	if !ok {
+		return Key[T]{}, fmt.Errorf("%w: %T", ErrUnknownKeyType, t)
+	}
+
+	return Key[T]{
+		ID:  id,
+		Key: kp,
+	}, nil
 }
 
 // IsNil returns whether the key is nil.
