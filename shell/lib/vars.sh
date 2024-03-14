@@ -53,13 +53,18 @@ export BUILD_VERSION=${BUILD_TAG}+${BUILD_COMMIT}
 
 export CR=${CR:-}
 
+CR_USER=${CR_USER:-"-u $(id -u):$(id -g) -e HOME=${HOME}"}
+
 if [ -n "${CR}" ]; then
 	export CR
 elif command -v docker > /dev/null; then
 	export CR=docker
 elif command -v podman > /dev/null; then
 	export CR="podman"
+	CR_USER="${CR_USER} --userns=keep-id"
 fi
+
+export CR_USER
 
 export CR_EXEC_POSTGRESQL="-i -e PGPASSWORD=postgres candiddev_postgresql psql -U postgres"
 
@@ -67,8 +72,6 @@ export CR_IMAGE=docker.io/debian:stable-slim
 export CR_LOGOPTS="--log-opt max-file=1 --log-opt max-size=100k"
 export CR_REGISTRY=ghcr.io
 export CR_REPOSITORY=${CR_REPOSITORY:-}
-CR_USER="-u $(id -u):$(id -g) -e HOME=${HOME}"
-export CR_USER
 export CR_VOLUME="-v /etc/ssl:/etc/ssl:ro -v ${CACHEDIR}:${CACHEDIR} -v ${LOCALDIR}:${LOCALDIR} -v ${DIR}:/work -w /work"
 
 export CUSTOMGOROOT=${CUSTOMGOROOT:-${LOCALDIR}/lib/go}
