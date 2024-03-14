@@ -277,7 +277,12 @@ func NewRender(ctx context.Context, config any) *Render { //nolint:gocognit,gocy
 			}
 
 			r := NewRender(ctx, config)
-			r.Import(r.GetString(s))
+			i, err := r.GetString(ctx, s)
+			if err != nil {
+				return nil, logger.Error(ctx, err)
+			}
+
+			r.Import(i)
 
 			m := map[string]any{}
 			if err := r.Render(ctx, &m); err != nil {

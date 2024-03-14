@@ -58,7 +58,7 @@ if [ -n "${CR}" ]; then
 elif command -v docker > /dev/null; then
 	export CR=docker
 elif command -v podman > /dev/null; then
-	export CR="sudo podman"
+	export CR="podman"
 fi
 
 export CR_EXEC_POSTGRESQL="-i -e PGPASSWORD=postgres candiddev_postgresql psql -U postgres"

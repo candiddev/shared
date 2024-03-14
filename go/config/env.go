@@ -17,7 +17,13 @@ var ErrUpdateEnv = errors.New("error updating config from environment variable")
 func getEnv(ctx context.Context, config any, prefix string) errs.Err {
 	if c := os.Getenv(strings.ToUpper(prefix) + "_CONFIG"); c != "" {
 		r := jsonnet.NewRender(ctx, config)
-		r.Import(r.GetString(c))
+
+		i, err := r.GetString(ctx, c)
+		if err != nil {
+			return logger.Error(ctx, err)
+		}
+
+		r.Import(i)
 
 		if err := r.Render(ctx, config); err != nil {
 			return logger.Error(ctx, err)

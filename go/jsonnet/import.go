@@ -94,15 +94,23 @@ func (r *Render) GetPath(ctx context.Context, path string) (*Imports, errs.Err) 
 }
 
 // GetString returns imports from a string.
-func (*Render) GetString(content string) *Imports {
-	im := Imports{
-		Entrypoint: "main.jsonnet",
-		Files: map[string]string{
-			"main.jsonnet": content,
-		},
+func (r *Render) GetString(ctx context.Context, content string) (*Imports, errs.Err) {
+	m := filepath.Join(os.TempDir(), "/main.jsonnet")
+
+	if err := os.WriteFile(m, []byte(content), 0600); err != nil {
+		return nil, errs.ErrReceiver.Wrap(fmt.Errorf("error writing temporary file: %w", err))
 	}
 
-	return &im
+	i, err := r.GetPath(ctx, m)
+	if err != nil {
+		return nil, err
+	}
+
+	if err := os.Remove(m); err != nil {
+		return nil, errs.ErrReceiver.Wrap(fmt.Errorf("error removing temporary file: %w", err))
+	}
+
+	return i, nil
 }
 
 // Import takes an Imports, converts them into importContent, and sets the vm.Importer.

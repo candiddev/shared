@@ -59,7 +59,8 @@ func TestGetPath(t *testing.T) {
 	goodJson, _ := os.ReadFile("testdata/good.json") //nolint:revive,stylecheck
 	otherDirMore, _ := os.ReadFile("testdata/otherDir/more.txt")
 
-	os.WriteFile("import.jsonnet", []byte(`import '/tmp/test.libsonnet'`), 0600)
+	os.WriteFile("import.jsonnet", []byte(`import 'test.libsonnet'`), 0600)
+	os.WriteFile("test.libsonnet", []byte(`import '/tmp/test.libsonnet'`), 0600)
 
 	os.WriteFile("/tmp/test.libsonnet", []byte(`{
   hello: 'world',
@@ -107,7 +108,8 @@ func TestGetPath(t *testing.T) {
 			wantOut: &Imports{
 				Entrypoint: filepath.Join(wd, "import.jsonnet"),
 				Files: map[string]string{
-					filepath.Join(wd, "import.jsonnet"): `import '/tmp/test.libsonnet'`,
+					filepath.Join(wd, "import.jsonnet"): `import 'test.libsonnet'`,
+					filepath.Join(wd, "test.libsonnet"): `import '/tmp/test.libsonnet'`,
 					"/tmp/test.libsonnet": `{
   hello: 'world',
 }`,
@@ -125,10 +127,20 @@ func TestGetPath(t *testing.T) {
 			if err == nil {
 				assert.Equal(t, i, tc.wantOut)
 			}
+
+			if name == "good import" {
+				o := map[string]string{}
+				r.Import(i)
+				assert.HasErr(t, r.Render(ctx, &o), nil)
+				assert.Equal(t, o, map[string]string{
+					"hello": "world",
+				})
+			}
 		})
 	}
 
 	os.Remove("import.jsonnet")
+	os.Remove("test.libsonnet")
 	os.Remove("/tmp/test.libsonnet")
 }
 
@@ -146,10 +158,33 @@ func TestGetString(t *testing.T) {
 	hello: "world"
 }`
 
-	assert.Equal(t, r.GetString(s), &Imports{
-		Entrypoint: "main.jsonnet",
+	i, err := r.GetString(ctx, s)
+
+	assert.HasErr(t, err, nil)
+	assert.Equal(t, i, &Imports{
+		Entrypoint: "/main.jsonnet",
 		Files: map[string]string{
-			"main.jsonnet": s,
+			"/main.jsonnet": s,
 		},
 	})
+
+	os.WriteFile("test.libsonnet", []byte(`import '/tmp/test.libsonnet'`), 0600)
+	os.WriteFile("/tmp/test.libsonnet", []byte(`{
+  hello: 'world!',
+}`), 0600)
+
+	r = NewRender(ctx, &c)
+
+	i, err = r.GetString(ctx, "import 'test.libsonnet'")
+	assert.HasErr(t, err, nil)
+	assert.Equal(t, i, &Imports{
+		Entrypoint: "/main.jsonnet",
+		Files: map[string]string{
+			"/main.jsonnet":   "import 'test.libsonnet'",
+			"/test.libsonnet": "{\n  hello: 'world!',\n}",
+		},
+	})
+
+	os.Remove("test.libsonnet")
+	os.Remove("/tmp/test.libsonnet")
 }

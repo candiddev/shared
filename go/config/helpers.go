@@ -218,7 +218,13 @@ func ParseValues(ctx context.Context, config any, prefix string, kvs []string) e
 
 	if jsn != "" {
 		r := jsonnet.NewRender(ctx, config)
-		r.Import(r.GetString(jsn))
+
+		i, err := r.GetString(ctx, jsn)
+		if err != nil {
+			return logger.Error(ctx, err)
+		}
+
+		r.Import(i)
 
 		if err := r.Render(ctx, config); err != nil {
 			return logger.Error(ctx, err)
