@@ -74,6 +74,10 @@ func (r *Render) GetPath(ctx context.Context, path string) (*Imports, errs.Err) 
 		}
 	}
 
+	if basePath == "/" {
+		basePath = ""
+	}
+
 	for i := range imports {
 		c, _, err := r.vm.ImportData(path, imports[i])
 		if err != nil {

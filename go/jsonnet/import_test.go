@@ -2,6 +2,7 @@ package jsonnet
 
 import (
 	"os"
+	"path/filepath"
 	"testing"
 
 	"github.com/candiddev/shared/go/assert"
@@ -58,6 +59,14 @@ func TestGetPath(t *testing.T) {
 	goodJson, _ := os.ReadFile("testdata/good.json") //nolint:revive,stylecheck
 	otherDirMore, _ := os.ReadFile("testdata/otherDir/more.txt")
 
+	os.WriteFile("import.jsonnet", []byte(`import '/tmp/test.libsonnet'`), 0600)
+
+	os.WriteFile("/tmp/test.libsonnet", []byte(`{
+  hello: 'world',
+}`), 0600)
+
+	wd, _ := os.Getwd()
+
 	tests := map[string]struct {
 		path    string
 		wantOut *Imports
@@ -93,6 +102,18 @@ func TestGetPath(t *testing.T) {
 				},
 			},
 		},
+		"good import": {
+			path: "import.jsonnet",
+			wantOut: &Imports{
+				Entrypoint: filepath.Join(wd, "import.jsonnet"),
+				Files: map[string]string{
+					filepath.Join(wd, "import.jsonnet"): `import '/tmp/test.libsonnet'`,
+					"/tmp/test.libsonnet": `{
+  hello: 'world',
+}`,
+				},
+			},
+		},
 	}
 
 	for name, tc := range tests {
@@ -106,6 +127,9 @@ func TestGetPath(t *testing.T) {
 			}
 		})
 	}
+
+	os.Remove("import.jsonnet")
+	os.Remove("/tmp/test.libsonnet")
 }
 
 func TestGetString(t *testing.T) {
