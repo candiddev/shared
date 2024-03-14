@@ -85,7 +85,7 @@ run-hugo-stop () {
 	printf "Stopping Hugo..."
 
 	# shellcheck disable=SC2016
-	try 'for i in $(${CR} ps --filter=name=candiddev_hugo -qa); do ${CR} rm -f ${i}; done'
+	try 'for i in $(${CR} ps --filter=name=candiddev_hugo -qa); do ${CR} ${CR_RM} ${i}; done'
 }
 
 cmd run-network Start network
@@ -162,7 +162,7 @@ rpr () {
 cmd run-postgresql-stop Stop PostgreSQL container
 run-postgresql-stop () {
 	printf "Stopping PostgreSQL container..."
-	try "${CR} rm -fv candiddev_postgresql || true"
+	try "${CR} ${CR_RM}v candiddev_postgresql || true"
 }
 
 cmd run-rclone,rr Run Rclone
@@ -261,6 +261,6 @@ cmd run-yaml8n-stop Stop YAML8n listeners
 run-yaml8n-stop() {
 	printf "Stopping all YAML8n containers..."
 	for i in "${DIR}"/yaml8n/*; do
-		try "${CR} rm -f candiddev_yaml8n_$(basename "${i}" | cut -d. -f1) || true"
+		try "${CR} ${CR_RM} candiddev_yaml8n_$(basename "${i}" | cut -d. -f1) || true"
 	done
 }

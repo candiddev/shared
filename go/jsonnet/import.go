@@ -13,6 +13,7 @@ import (
 	"github.com/candiddev/shared/go/diff"
 	"github.com/candiddev/shared/go/errs"
 	"github.com/candiddev/shared/go/logger"
+	"github.com/candiddev/shared/go/types"
 	"github.com/google/go-jsonnet"
 )
 
@@ -95,7 +96,12 @@ func (r *Render) GetPath(ctx context.Context, path string) (*Imports, errs.Err) 
 
 // GetString returns imports from a string.
 func (r *Render) GetString(ctx context.Context, content string) (*Imports, errs.Err) {
-	m := filepath.Join(os.TempDir(), "/main.jsonnet")
+	d, e := os.Getwd()
+	if e != nil {
+		return nil, logger.Error(ctx, errs.ErrReceiver.Wrap(fmt.Errorf("error determining wd: %w", e)))
+	}
+
+	m := filepath.Join(d, ".etcha."+types.RandString(10))
 
 	if err := os.WriteFile(m, []byte(content), 0600); err != nil {
 		return nil, errs.ErrReceiver.Wrap(fmt.Errorf("error writing temporary file: %w", err))
@@ -106,11 +112,11 @@ func (r *Render) GetString(ctx context.Context, content string) (*Imports, errs.
 		return nil, err
 	}
 
-	if err := os.Remove(m); err != nil {
-		return nil, errs.ErrReceiver.Wrap(fmt.Errorf("error removing temporary file: %w", err))
+	if e := os.Remove(m); e != nil {
+		return nil, errs.ErrReceiver.Wrap(fmt.Errorf("error removing temporary file: %w", e))
 	}
 
-	return i, nil
+	return i, err
 }
 
 // Import takes an Imports, converts them into importContent, and sets the vm.Importer.

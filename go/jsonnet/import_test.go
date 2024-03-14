@@ -3,6 +3,7 @@ package jsonnet
 import (
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 
 	"github.com/candiddev/shared/go/assert"
@@ -161,12 +162,12 @@ func TestGetString(t *testing.T) {
 	i, err := r.GetString(ctx, s)
 
 	assert.HasErr(t, err, nil)
-	assert.Equal(t, i, &Imports{
-		Entrypoint: "/main.jsonnet",
-		Files: map[string]string{
-			"/main.jsonnet": s,
-		},
-	})
+	assert.Equal(t, len(i.Files), 1)
+
+	for k, v := range i.Files {
+		assert.Equal(t, k, i.Entrypoint)
+		assert.Equal(t, v, s)
+	}
 
 	os.WriteFile("test.libsonnet", []byte(`import '/tmp/test.libsonnet'`), 0600)
 	os.WriteFile("/tmp/test.libsonnet", []byte(`{
@@ -177,13 +178,24 @@ func TestGetString(t *testing.T) {
 
 	i, err = r.GetString(ctx, "import 'test.libsonnet'")
 	assert.HasErr(t, err, nil)
-	assert.Equal(t, i, &Imports{
-		Entrypoint: "/main.jsonnet",
-		Files: map[string]string{
-			"/main.jsonnet":   "import 'test.libsonnet'",
-			"/test.libsonnet": "{\n  hello: 'world!',\n}",
-		},
-	})
+
+	assert.Equal(t, len(i.Files), 3)
+
+	wd, _ := os.Getwd()
+
+	for k, v := range i.Files {
+		switch {
+		case strings.Contains(k, ".etcha"):
+			assert.Equal(t, k, i.Entrypoint)
+			assert.Equal(t, v, "import 'test.libsonnet'")
+		case k == "/tmp/test.libsonnet":
+			assert.Equal(t, k, "/tmp/test.libsonnet")
+			assert.Equal(t, v, "{\n  hello: 'world!',\n}")
+		default:
+			assert.Equal(t, k, filepath.Join(wd, "test.libsonnet"))
+			assert.Equal(t, v, "import '/tmp/test.libsonnet'")
+		}
+	}
 
 	os.Remove("test.libsonnet")
 	os.Remove("/tmp/test.libsonnet")

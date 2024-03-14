@@ -53,6 +53,7 @@ export BUILD_VERSION=${BUILD_TAG}+${BUILD_COMMIT}
 
 export CR=${CR:-}
 
+CR_RM="rm -f"
 CR_USER=${CR_USER:-"-u $(id -u):$(id -g) -e HOME=${HOME}"}
 
 if [ -n "${CR}" ]; then
@@ -61,9 +62,11 @@ elif command -v docker > /dev/null; then
 	export CR=docker
 elif command -v podman > /dev/null; then
 	export CR="podman"
+	CR_RM="${CR_RM} -t0"
 	CR_USER="${CR_USER} --userns=keep-id"
 fi
 
+export CR_RM
 export CR_USER
 
 export CR_EXEC_POSTGRESQL="-i -e PGPASSWORD=postgres candiddev_postgresql psql -U postgres"
