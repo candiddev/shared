@@ -53,7 +53,7 @@ export BUILD_VERSION=${BUILD_TAG}+${BUILD_COMMIT}
 
 export CR=${CR:-}
 
-CR_RM="rm -f"
+CR_RM=${CR_RM:-"rm -f"}
 CR_USER=${CR_USER:-"-u $(id -u):$(id -g) -e HOME=${HOME}"}
 
 if [ -n "${CR}" ]; then
