@@ -68,7 +68,7 @@ func (h *HTTPMock) handler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if str := r.Header.Get("If-Modified-Since"); str == h.responseLastModified.Format(http.TimeFormat) {
+	if str := r.Header.Get("If-Modified-Since"); str == h.responseLastModified.UTC().Format(http.TimeFormat) {
 		w.WriteHeader(http.StatusNotModified)
 		req.Status = http.StatusNotModified
 		h.requests = append(h.requests, req)
@@ -80,12 +80,12 @@ func (h *HTTPMock) handler(w http.ResponseWriter, r *http.Request) {
 	h.requests = append(h.requests, req)
 
 	w.Header().Add("content-type", http.DetectContentType(h.responseBody))
-	w.Header().Add("last-modified", h.responseLastModified.Format(http.TimeFormat))
+	w.Header().Add("last-modified", h.responseLastModified.UTC().Format(http.TimeFormat))
 
 	w.Write(h.responseBody) //nolint:errcheck
 }
 
-// LastModified returns the last modified header for the last request.
+// LastModified returns the last modified time.
 func (h *HTTPMock) LastModified() time.Time {
 	h.mux.Lock()
 	defer h.mux.Unlock()
@@ -93,12 +93,19 @@ func (h *HTTPMock) LastModified() time.Time {
 	return h.responseLastModified.Truncate(time.Second)
 }
 
-// LastModifiedHeader returns the last modified header for the last request as a string.
-func (h *HTTPMock) LastModifiedHeader() string {
+// LastModifiedHeader returns the last modified header for the last request.
+func (h *HTTPMock) LastModifiedHeader() time.Time {
 	h.mux.Lock()
 	defer h.mux.Unlock()
 
-	return h.responseLastModified.Format(http.TimeFormat)
+	r := HTTPMockRequest{}
+	if len(h.requests) > 0 {
+		r = h.requests[len(h.requests)-1]
+	}
+
+	t, _ := time.Parse(http.TimeFormat, r.Headers.Get("If-Modified-Since"))
+
+	return t
 }
 
 // Requests returns a list of all requests made to the mock.

@@ -230,12 +230,13 @@ func TestRun(t *testing.T) {
 			"/b:/b",
 		},
 		ContainerWorkDir: "/test1",
+		Sudo:             true,
 		WorkDir:          "/test2",
 	})
 
 	cri, _ := GetContainerRuntime()
 
-	assert.Equal(t, c.runMock.inputs[0].Exec, fmt.Sprintf("/usr/bin/%s run -i --rm --network test --privileged -v /a:/a -v /b:/b -w /test1 example hello ${world}", cri))
+	assert.Equal(t, c.runMock.inputs[0].Exec, fmt.Sprintf("/usr/bin/sudo -E %s run -i --rm --network test --privileged -v /a:/a -v /b:/b -w /test1 example hello ${world}", cri))
 	assert.Equal(t, c.runMock.inputs[0].WorkDir, "/test2")
 
 	c.runMockEnable = false

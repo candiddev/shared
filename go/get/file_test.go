@@ -74,7 +74,7 @@ func TestFile(t *testing.T) {
 					"C": {
 						"d",
 					},
-					"If-Modified-Since": []string{h.LastModifiedHeader()},
+					"If-Modified-Since": []string{h.LastModified().Format(http.TimeFormat)},
 				},
 				Status: http.StatusNotModified,
 				Path:   "/good2",

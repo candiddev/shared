@@ -115,6 +115,7 @@ type RunOpts struct {
 	EnvironmentInherit  bool
 	Group               string
 	NoErrorLog          bool
+	Sudo                bool
 	Stdin               string
 	Stderr              io.Writer
 	Stdout              io.Writer
@@ -191,6 +192,11 @@ func (r *RunOpts) getCmd(ctx context.Context) (*exec.Cmd, []string, errs.Err) {
 	}
 
 	env = append(env, r.Environment...)
+
+	if r.Sudo && os.Getuid() != 0 {
+		args = append([]string{"-E", cmd}, args...)
+		cmd = "sudo"
+	}
 
 	// Parse quotes
 	a, err := parseArgs(args)
