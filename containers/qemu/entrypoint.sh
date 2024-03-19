@@ -1,23 +1,26 @@
 #!/usr/bin/env bash
 
-# Add userdata IP and start web listener
-echo Starting web listener...
+if capsh --print | grep "Current:.*cap_net_admin" > /dev/null; then
+	echo Adding 169.254.169.254 address...
 
-ip addr add 169.254.169.254/32 dev lo
-python3 -m http.server 80 --directory "${WEBDIR}" &
+	ip addr add 169.254.169.254/32 dev lo
 
-# Start TPM
-echo Starting TPM...
+	if [[ -n ${DNSMASQARGS} ]]; then
+		# Start DNSMASQ
+		echo Starting DNSMASQ...
 
-mkdir /tpm
-swtpm socket --tpm2 --tpmstate dir=/tpm --ctrl type=unixio,path=/tpm.sock &
+		# shellcheck disable=SC2086
+		dnsmasq -a 169.254.169.254 -d ${DNSMASQARGS} &
+		echo -e "nameserver 169.254.169.254\n$(cat /etc/resolv.conf)" > /etc/resolv.conf
+	fi
+fi
 
-# Start DNSMASQ
-echo Starting DNSMASQ...
+if [[ -n ${WEBDIR} ]]; then
+	# Add userdata IP and start web listener
+	echo Starting web listener...
 
-# shellcheck disable=SC2086
-dnsmasq -a 169.254.169.254 -d ${DNSMASQARGS} &
-echo -e "nameserver 169.254.169.254\n$(cat /etc/resolv.conf)" > /etc/resolv.conf
+	python3 -m http.server 80 --directory "${WEBDIR}" &
+fi
 
 qemu_accel="tcg,thread=multi"
 
@@ -30,6 +33,7 @@ qemu_efi_code="-drive if=pflash,unit=0,format=raw,readonly=on,file="
 qemu_efi_vars="-drive if=pflash,unit=1,format=raw,file="
 qemu_machine=""
 qemu_tpm=""
+tpm=""
 
 case ${ARCH} in
 	amd64)
@@ -37,7 +41,7 @@ case ${ARCH} in
 		qemu_efi_code="${qemu_efi_code}/usr/share/OVMF/OVMF_CODE_4M.ms.fd"
 		qemu_efi_vars="${qemu_efi_vars}/usr/share/OVMF/OVMF_VARS_4M.ms.fd -global driver=cfi.pflash01,property=secure,value=on"
 		qemu_machine=q35
-		qemu_tpm=tpm-crb
+		tpm="tpm-crb"
 	;;
 	arm)
 		qemu_binary=qemu-system-arm
@@ -50,7 +54,7 @@ case ${ARCH} in
 		qemu_efi_code="${qemu_efi_code}/usr/share/AAVMF/AAVMF_CODE.ms.fd"
 		qemu_efi_vars="${qemu_efi_vars}/usr/share/AAVMF/AAVMF_VARS.ms.fd"
 		qemu_machine="virt"
-		qemu_tpm=tpm-tis-device
+		tpm="tpm-tis-device"
 	;;
 esac
 
@@ -59,19 +63,20 @@ if [[ -n "${BIOS}" ]]; then
 	qemu_efi_vars=""
 fi
 
-if [[ -n ${qemu_tpm} ]]; then
-	qemu_tpm="-device ${qemu_tpm},tpmdev=tpm0 -tpmdev emulator,id=tpm0,chardev=tpm"
-fi
+if [[ -n ${TPM} ]] && [[ -n ${tpm} ]]; then
+	# Start TPM
+	echo Starting TPM...
 
-MEMORY=${MEMORY:-2G}
-SMP=${SMP:-2}
+	mkdir /tpm
+	swtpm socket --tpm2 --tpmstate dir=/tpm --ctrl type=unixio,path=/tpm.sock &
+	qemu_tpm="-chardev socket,id=tpm,path=/tpm.sock -device ${tpm},tpmdev=tpm0 -tpmdev emulator,id=tpm0,chardev=tpm"
+fi
 
 echo Starting VM...
 
 # shellcheck disable=SC2086
 ${qemu_binary} \
 	-accel ${qemu_accel} \
-	-chardev socket,id=tpm,path=/tpm.sock \
 	-device virtio-rng-pci,rng=rng0 \
 	${qemu_efi_code} \
 	${qemu_efi_vars} \
