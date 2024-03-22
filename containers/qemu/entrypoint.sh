@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 
-if capsh --print | grep "Current:.*cap_net_admin" > /dev/null; then
-	echo Adding 169.254.169.254 address...
-
-	ip addr add 169.254.169.254/32 dev lo
-
+if capsh --print | grep "Current:.*cap_net_admin" > /dev/null && [[ -n ${DNSMASQARGS} ]]; then
 	if [[ -n ${DNSMASQARGS} ]]; then
+		echo Adding 169.254.169.254 address...
+
+		ip addr add 169.254.169.254/32 dev lo
+
 		# Start DNSMASQ
 		echo Starting DNSMASQ...
 
@@ -24,13 +24,14 @@ fi
 
 qemu_accel="tcg,thread=multi"
 
-if [[ -e /dev/kvm ]] && uname -a | grep "${ARCH}"; then
+if [[ -e /dev/kvm ]] && uname -a | grep "${ARCH}" > /dev/null; then
 	qemu_accel="kvm"
 fi
 
 qemu_binary=""
 qemu_efi_code="-drive if=pflash,unit=0,format=raw,readonly=on,file="
-qemu_efi_vars="-drive if=pflash,unit=1,format=raw,file="
+qemu_efi_vars=""
+qemu_efi_vars_src=""
 qemu_machine=""
 qemu_tpm=""
 tpm=""
@@ -39,24 +40,33 @@ case ${ARCH} in
 	amd64)
 		qemu_binary=qemu-system-x86_64
 		qemu_efi_code="${qemu_efi_code}/usr/share/OVMF/OVMF_CODE_4M.ms.fd"
-		qemu_efi_vars="${qemu_efi_vars}/usr/share/OVMF/OVMF_VARS_4M.ms.fd -global driver=cfi.pflash01,property=secure,value=on"
+		qemu_efi_vars="-global driver=cfi.pflash01,property=secure,value=on"
+		qemu_efi_vars_src=/usr/share/OVMF/OVMF_VARS_4M.ms.fd
 		qemu_machine=q35
 		tpm="tpm-crb"
 	;;
 	arm)
 		qemu_binary=qemu-system-arm
 		qemu_efi_code="${qemu_efi_code}/usr/share/AAVMF/AAVMF32_CODE.fd"
-		qemu_efi_vars="${qemu_efi_vars}/usr/share/AAVMF/AAVMF32_VARS.fd"
+		qemu_efi_vars_src=/usr/share/AAVMF/AAVMF32_VARS.fd
 		qemu_machine="virt"
 	;;
 	arm64)
 		qemu_binary=qemu-system-aarch64
 		qemu_efi_code="${qemu_efi_code}/usr/share/AAVMF/AAVMF_CODE.ms.fd"
-		qemu_efi_vars="${qemu_efi_vars}/usr/share/AAVMF/AAVMF_VARS.ms.fd"
+		qemu_efi_vars_src=/usr/share/AAVMF/AAVMF_VARS.ms.fd
 		qemu_machine="virt"
 		tpm="tpm-tis-device"
 	;;
 esac
+
+if [[ -n "${qemu_efi_vars_src}" ]]; then
+	qemu_efi_vars="-drive if=pflash,unit=1,format=raw,file=${QEMUEFIVARSFILE}"
+
+	if ! [[ -f "${QEMUEFIVARSFILE}" ]]; then
+		cp "${qemu_efi_vars_src}" "${QEMUEFIVARSFILE}"
+	fi
+fi
 
 if [[ -n "${BIOS}" ]]; then
 	qemu_efi_code=""
@@ -86,7 +96,7 @@ ${qemu_binary} \
 	-nographic \
 	-object rng-random,filename=/dev/urandom,id=rng0 \
 	-rtc base=utc,clock=host \
-	-serial tcp::23,server=on,wait=off \
+	-serial tcp::${SERIALPORT},server=on,wait=off \
 	-smp ${SMP} \
 	${qemu_tpm} \
 	${QEMUARGS}
