@@ -64,7 +64,7 @@ func TestFile(t *testing.T) {
 		{
 			lastModified: h.LastModified(),
 			name:         "no change",
-			src:          h.URL() + "/good2#a:b\r\na:c\r\nc:d",
+			src:          h.URL() + "/good2#a:b\r\na:c\r\nc:d\r\nclientSkipVerify\r\nclientTimeout:20",
 			wantHTTPRequest: HTTPMockRequest{
 				Headers: http.Header{
 					"A": {

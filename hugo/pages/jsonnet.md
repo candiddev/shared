@@ -138,6 +138,11 @@ getEnv('PWD')
 
 This function returns the string value of a `path` (local or http/https via GET).  The results are cached for repeat lookups within the current render cycle.  For HTTP or HTTPS paths, you can set headers for your request using a `#`, the header as a `k:v`, and deliminiated by a newline `\r\n`, e.g. `getEnv('https://example.com/api#myHeader:myValue\r\nmyOtherHeader:myOtherValue'`.
 
+In addition to adding headers, a few "special headers" can be set that will change the underlying client transport:
+
+- `clientSkipVerify` Disable TLS verification (`:` is optional).
+- `clientTimeout:2` Change the default HTTP client timeout from 10 seconds to 2 seconds.
+
 If the path is unreachable, an error will be thrown and rendering will halt.  You can optionally provide a fallback value to prevent this, this value will be returned instead on failure.
 
 {{< highlight jsonnet >}}

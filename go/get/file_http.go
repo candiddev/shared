@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -23,14 +24,27 @@ func fileHTTP(ctx context.Context, src string, dst io.Writer, lastModified time.
 	}
 
 	skipVerify := false
+	timeout := 10
 
 	if len(h) == 2 {
 		for _, header := range strings.Split(h[1], "\r\n") {
 			kv := strings.Split(header, ":")
+			v := ""
+
 			if len(kv) == 2 {
-				req.Header[kv[0]] = append(req.Header[kv[0]], kv[1])
-			} else if header == "skipVerify" {
+				v = kv[1]
+			}
+
+			switch kv[0] {
+			case "clientSkipVerify":
 				skipVerify = true
+			case "clientTimeout":
+				timeout, err = strconv.Atoi(v)
+				if err != nil {
+					return time.Time{}, fmt.Errorf("error parsing clientTimeout: %w", err)
+				}
+			default:
+				req.Header[kv[0]] = append(req.Header[kv[0]], v)
 			}
 		}
 	}
@@ -42,7 +56,7 @@ func fileHTTP(ctx context.Context, src string, dst io.Writer, lastModified time.
 			InsecureSkipVerify: skipVerify, //nolint:gosec
 		},
 	}
-	client.Timeout = 10 * time.Second
+	client.Timeout = time.Duration(timeout) * time.Second
 
 	res, err := client.Do(req)
 	if err != nil {
