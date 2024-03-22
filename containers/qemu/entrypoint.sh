@@ -33,6 +33,7 @@ qemu_efi_code="-drive if=pflash,unit=0,format=raw,readonly=on,file="
 qemu_efi_vars=""
 qemu_efi_vars_src=""
 qemu_machine=""
+qemu_smbios=""
 qemu_tpm=""
 tpm=""
 
@@ -73,6 +74,11 @@ if [[ -n "${BIOS}" ]]; then
 	qemu_efi_vars=""
 fi
 
+if [[ -n "${SMBIOS}" ]]; then
+	echo "${SMBIOS}" > /tmp/smbios
+	qemu_smbios="-smbios type=11,path=/tmp/smbios"
+fi
+
 if [[ -n ${TPM} ]] && [[ -n ${tpm} ]]; then
 	# Start TPM
 	echo Starting TPM...
@@ -98,5 +104,6 @@ ${qemu_binary} \
 	-rtc base=utc,clock=host \
 	-serial tcp::${SERIALPORT},server=on,wait=off \
 	-smp ${SMP} \
+	${qemu_smbios} \
 	${qemu_tpm} \
 	${QEMUARGS}
