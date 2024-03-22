@@ -22,7 +22,8 @@ RUN apt-get update && \
       swtpm && \
     groupadd -g 999 qemu && \
     useradd -rm -d /var/lib/qemu -g qemu -s /usr/sbin/nologin qemu && \
-    chown -R qemu:qemu /usr/share/OVMF
+    chown -R qemu:qemu /usr/share/OVMF && \
+    rm -rf /var/lib/apt/lists/*
 
 COPY --chmod=755 entrypoint.sh /entrypoint.sh
 

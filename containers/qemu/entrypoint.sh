@@ -11,7 +11,10 @@ if capsh --print | grep "Current:.*cap_net_admin" > /dev/null && [[ -n ${DNSMASQ
 
 		# shellcheck disable=SC2086
 		dnsmasq -a 169.254.169.254 -d ${DNSMASQARGS} &
-		echo -e "nameserver 169.254.169.254\n$(cat /etc/resolv.conf)" > /etc/resolv.conf
+
+		if [[ $(id -u) = 0 ]]; then
+			echo -e "nameserver 169.254.169.254\n$(cat /etc/resolv.conf)" > /etc/resolv.conf
+		fi
 	fi
 fi
 
@@ -83,9 +86,8 @@ if [[ -n ${TPM} ]] && [[ -n ${tpm} ]]; then
 	# Start TPM
 	echo Starting TPM...
 
-	mkdir /tpm
-	swtpm socket --tpm2 --tpmstate dir=/tpm --ctrl type=unixio,path=/tpm.sock &
-	qemu_tpm="-chardev socket,id=tpm,path=/tpm.sock -device ${tpm},tpmdev=tpm0 -tpmdev emulator,id=tpm0,chardev=tpm"
+	swtpm socket --tpm2 --tpmstate dir=/tmp --ctrl type=unixio,path=/tmp/tpm.sock &
+	qemu_tpm="-chardev socket,id=tpm,path=/tmp/tpm.sock -device ${tpm},tpmdev=tpm0 -tpmdev emulator,id=tpm0,chardev=tpm"
 fi
 
 echo Starting VM...
