@@ -36,7 +36,6 @@ qemu_efi_code="-drive if=pflash,unit=0,format=raw,readonly=on,file="
 qemu_efi_vars=""
 qemu_efi_vars_src=""
 qemu_machine=""
-qemu_smbios=""
 qemu_tpm=""
 tpm=""
 
@@ -65,10 +64,10 @@ case ${ARCH} in
 esac
 
 if [[ -n "${qemu_efi_vars_src}" ]]; then
-	qemu_efi_vars="-drive if=pflash,unit=1,format=raw,file=${QEMUEFIVARSFILE}"
+	qemu_efi_vars="-drive if=pflash,unit=1,format=raw,file=/tmp/vars.fd"
 
 	if ! [[ -f "${QEMUEFIVARSFILE}" ]]; then
-		cp "${qemu_efi_vars_src}" "${QEMUEFIVARSFILE}"
+		cp "${qemu_efi_vars_src}" /tmp/vars.fd
 	fi
 fi
 
@@ -77,6 +76,12 @@ if [[ -n "${BIOS}" ]]; then
 	qemu_efi_vars=""
 fi
 
+qemu_serial=""
+if [[ -n ${SERIALPORT} ]]; then
+	qemu_serial="-serial tcp::${SERIALPORT},server=on,wait=off"
+fi
+
+qemu_smbios=""
 if [[ -n "${SMBIOS}" ]]; then
 	echo "${SMBIOS}" > /tmp/smbios
 	qemu_smbios="-smbios type=11,path=/tmp/smbios"
@@ -106,6 +111,7 @@ ${qemu_binary} \
 	-rtc base=utc,clock=host \
 	-serial tcp::${SERIALPORT},server=on,wait=off \
 	-smp ${SMP} \
+	${qemu_serial} \
 	${qemu_smbios} \
 	${qemu_tpm} \
 	${QEMUARGS}
