@@ -4,7 +4,10 @@ import { OTLPTraceExporter } from "@opentelemetry/exporter-trace-otlp-http";
 import { Resource } from "@opentelemetry/resources";
 import { SimpleSpanProcessor } from "@opentelemetry/sdk-trace-base";
 import { WebTracerProvider } from "@opentelemetry/sdk-trace-web";
-import { SemanticResourceAttributes } from "@opentelemetry/semantic-conventions";
+import {
+  SEMRESATTRS_SERVICE_NAME,
+  SEMRESATTRS_SERVICE_VERSION,
+} from "@opentelemetry/semantic-conventions";
 
 const spans: {
   func: string;
@@ -31,10 +34,8 @@ export const Telemetry = {
       const p = new WebTracerProvider({
         resource: Resource.default().merge(
           new Resource({
-            [SemanticResourceAttributes.SERVICE_NAME]:
-              Telemetry.state.serviceName,
-            [SemanticResourceAttributes.SERVICE_VERSION]:
-              process.env.BUILD_VERSION,
+            [SEMRESATTRS_SERVICE_NAME]: Telemetry.state.serviceName,
+            [SEMRESATTRS_SERVICE_VERSION]: process.env.BUILD_VERSION,
             url: Telemetry.state.endpoint,
           }),
         ),

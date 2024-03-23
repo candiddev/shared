@@ -82,6 +82,10 @@ ln -sf ${LIBDIR}/node/bin/* ${BINDIR}/
 
 	mkdir -p "${CDIR}/node_modules"
 
+	if ! [[ -L "${DIR}/web/node_modules" ]]; then
+		ln -sf "${CDIR}/node_modules" "${DIR}/web/node_modules"
+	fi
+
 	printf "Refreshing node_modules..."
 	try "${EXEC_YARN} install"
 }

@@ -1,4 +1,4 @@
-.Table {
+css-content-visibility.Table {
   border-spacing: 0;
   empty-cells: show;
   height: min-content;
@@ -10,7 +10,6 @@
   contain-intrinsic-size: calc(
     100vh - calc(60px + env(safe-area-inset-top, 0))
   );
-  content-visibility: auto;
 }
 
 .Table > * > tr {
