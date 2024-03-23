@@ -75,14 +75,14 @@ export CR_IMAGE=docker.io/debian:stable-slim
 export CR_LOGOPTS="--log-opt max-file=1 --log-opt max-size=100k"
 export CR_REGISTRY=ghcr.io
 export CR_REPOSITORY=${CR_REPOSITORY:-}
-export CR_VOLUME="-v /etc/ssl:/etc/ssl:ro -v ${CACHEDIR}:${CACHEDIR} -v ${LOCALDIR}:${LOCALDIR} -v ${DIR}:/work -w /work"
+export CR_VOLUME="-v /etc/ssl:/etc/ssl:ro -v ${CDIR}:${CDIR} -v ${DIR}:/work -w /work"
 
-export CUSTOMGOROOT=${CUSTOMGOROOT:-${LOCALDIR}/lib/go}
+export CUSTOMGOROOT=${CUSTOMGOROOT:-${LIBDIR}/go}
 export DEBUG=${DEBUG:-}
 export DEPLOY_HOSTS=${DEPLOY_HOSTS:-}
 
-export GOCACHE=${CACHEDIR}/go
-export GOPATH=${LOCALDIR}/go
+export GOCACHE=${CDIR}/go/cache
+export GOPATH=${CDIR}/go
 export GOPROXY=direct
 export GOROOT=${CUSTOMGOROOT}
 
@@ -92,7 +92,6 @@ export EXEC_GO=${BINDIR}/go
 export EXEC_GOLANGCILINT="${BINDIR}/golangci-lint"
 export EXEC_GOVULNCHECK=${BINDIR}/govulncheck
 export EXEC_HUGO=${BINDIR}/hugo
-export EXEC_NPM=${NPM:-${BINDIR}/npm --prefix ${DIR}/web}
 export EXEC_NODE=${BINDIR}/node
 export EXEC_RCLONE=${BINDIR}/rclone
 export EXEC_ROT=${BINDIR}/rot
@@ -101,13 +100,12 @@ export EXEC_SWAG=${BINDIR}/swag
 export EXEC_TERRAFORM=${BINDIR}/terraform
 export EXEC_VAULT=${BINDIR}/vault
 export EXEC_YAML8N=${BINDIR}/yaml8n
+export EXEC_YARN=${YARN:-${BINDIR}/yarn --cwd ${DIR}/web}
 
 export GITHUB_PATH="/repos/candiddev/${APP_NAME}"
 export GITHUB_TOKEN=${GITHUB_TOKEN:-}
 
 export INSTALL_ALL=${INSTALL_ALL:-"install-go install-node install-shellcheck install-yaml8n"}
-
-export npm_config_cache=${CACHEDIR}/npm
 
 export RUN_GO_ARGS=${RUN_GO_ARGS:-}
 

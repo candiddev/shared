@@ -53,7 +53,7 @@ lint-web () {
 	run lint-web-pre
 
 	printf "Linting Web..."
-	try "${EXEC_NPM} run lint"
+	try "${EXEC_YARN} run lint"
 }
 
 cmd lint-yaml8n Lint YAML8n translations

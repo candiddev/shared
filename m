@@ -5,9 +5,9 @@ set -ue
 COMMANDS=""
 DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 export DIR
-export CACHEDIR=${CACHEDIR:-"${HOME}/.cache"}
-export LOCALDIR=${LOCALDIR:-"${HOME}/.local"}
-export BINDIR=${BINDIR:-"${LOCALDIR}/bin"}
+export CDIR=${CDIR:-"${HOME}/.candid"}
+export BINDIR=${BINDIR:-"${CDIR}/bin"}
+export LIBDIR=${LIBDIR:-"${CDIR}/lib"}
 export PATH="${BINDIR}:${DIR}:${PATH}"
 
 cmd () {
@@ -108,7 +108,7 @@ fi
 
 if [ "$0" == "${BASH_SOURCE[0]}" ]; then
 	mkdir -p "${BINDIR}"
-	mkdir -p "${CACHEDIR}"
+	mkdir -p "${LIBDIR}"
 
 	# shellcheck disable=2086
 	if [ "$(type -t ${1:-not-a-command})" != function ]; then

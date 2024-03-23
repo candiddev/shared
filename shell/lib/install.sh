@@ -71,21 +71,19 @@ cmd install-node Install Node.js
 install-node () {
 	if ! ${EXEC_NODE} --version 2>&1 | grep "${VERSION_NODE}" > /dev/null; then
 		printf "Installing Node..."
-		try "rm -rf ${LOCALDIR}/lib/node
-mkdir -p ${LOCALDIR}/lib/node
-curl -s -L https://nodejs.org/dist/v${VERSION_NODE}/node-v${VERSION_NODE}-${OSNAME}-x64.tar.xz | tar --no-same-owner -C ${LOCALDIR}/lib/node --strip-components=1 -xJ
-ln -sf ${LOCALDIR}/lib/node/bin/* ${BINDIR}/
+		try "rm -rf ${LIBDIR}/node
+mkdir -p ${LIBDIR}/node
+curl -s -L https://nodejs.org/dist/v${VERSION_NODE}/node-v${VERSION_NODE}-${OSNAME}-x64.tar.xz | tar --no-same-owner -C ${LIBDIR}/node --strip-components=1 -xJ
+ln -sf ${LIBDIR}/node/bin/* ${BINDIR}/
 "
 	fi
 
-	NPM_INSTALL=${EXEC_NPM}
+	"${BINDIR}/corepack" enable
+
+	mkdir -p "${CDIR}/node_modules"
 
 	printf "Refreshing node_modules..."
-	if [[ -d ${DIR}/shared ]]; then
-		NPM_INSTALL="${EXEC_NPM} --prefix ${DIR}/shared/web"
-	fi
-
-	try "${NPM_INSTALL} install"
+	try "${EXEC_YARN} install"
 }
 
 cmd install-rclone Install Rclone, a tool for managing files

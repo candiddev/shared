@@ -41,9 +41,7 @@ runs:
       with:
         key: ${{ runner.os }}-${{ hashFiles('shell/**', 'web/package-lock.json') }}
         path: |
-          ~/.local
-          ~/.cache/go
-          web/node_modules
+          ~/.candid
         restore-keys: |
           ${{ runner.os }}-
     - if: steps.cache.outputs.cache-hit != 'true'

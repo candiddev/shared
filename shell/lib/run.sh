@@ -225,7 +225,7 @@ cmd run-web Run web dev server
 run-web () {
 	install-node
 
-	${EXEC_NPM} run dev
+	${EXEC_YARN} run dev
 }
 
 cmd run-yaml8n-start,rys Run YAML8n listeners

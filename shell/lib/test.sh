@@ -17,6 +17,6 @@ test-web() {
 
 	run test-web-pre
 
-	${EXEC_NPM} run test
+	${EXEC_YARN} run test
 }
 

@@ -28,7 +28,7 @@ build-web () {
 
 	printf "Building web..."
 	export BUILD_TAGS=release
-	try "(cd ${DIR}/web; ${EXEC_NPM} run build)"
+	try "(cd ${DIR}/web; ${EXEC_YARN} run build)"
 }
 bw () {
 	build-web
