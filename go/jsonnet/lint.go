@@ -31,8 +31,12 @@ func Lint(ctx context.Context, config any, path string, checkFormat bool, exclud
 
 	if f.IsDir() {
 		if err := filepath.WalkDir(path, func(path string, d fs.DirEntry, err error) error {
+			if exclude.String() != "" && exclude.MatchString(path) {
+				return nil
+			}
+
 			if err == nil && !d.Type().IsDir() {
-				if p := filepath.Ext(path); (p != ".jsonnet" && p != ".libsonnet") || (exclude.String() != "" && exclude.MatchString(path)) {
+				if p := filepath.Ext(path); p != ".jsonnet" && p != ".libsonnet" {
 					return nil
 				}
 
