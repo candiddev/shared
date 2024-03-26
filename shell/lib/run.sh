@@ -74,6 +74,7 @@ run-hugo-start () {
 			--network candiddev \
 			-p 1313:1313 \
 			--restart always \
+			-v ${BINDIR}:${BINDIR} \
 			${CR_VOLUME} \
 			${CR_IMAGE} \
 			${EXEC_HUGO} server -b http://localhost:1313 --verbose --watch --bind 0.0.0.0 -s hugo"

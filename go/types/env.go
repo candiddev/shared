@@ -31,6 +31,10 @@ func EnvValidate(s string) error {
 
 // GetEnv returns a list of environment variables in k=v format.
 func (e EnvVars) GetEnv() []string {
+	if len(e) == 0 {
+		return nil
+	}
+
 	keys := []string{}
 
 	for k := range e {
