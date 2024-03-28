@@ -19,7 +19,7 @@ func TestResults(t *testing.T) {
 			"b\nc\nd",
 		},
 	}.Show(), []string{
-		"a:\n\tb\n\tc\n\td",
-		"hello:\n\tperson\n\twoman\n\tman\n\tcamera\n\ttv",
+		"a:\n    b\n    c\n    d",
+		"hello:\n    person\n    woman\n    man\n    camera\n    tv",
 	})
 }

@@ -26,10 +26,10 @@ func (l Results) Show() []string {
 	for i := range keys {
 		s := []string{}
 		for j := range l[keys[i]] {
-			s = append(s, strings.Join(strings.Split(l[keys[i]][j], "\n"), "\n\t"))
+			s = append(s, strings.Join(strings.Split(l[keys[i]][j], "\n"), "\n    "))
 		}
 
-		out = append(out, fmt.Sprintf("%s:\n\t%s", keys[i], strings.Join(s, "\n\t")))
+		out = append(out, fmt.Sprintf("%s:\n    %s", keys[i], strings.Join(s, "\n    ")))
 	}
 
 	return out
